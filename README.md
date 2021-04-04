@@ -9,3 +9,4 @@ TODO
 - Implement scoring system. Probably with leaderboard
 - Let the user pick categories
 - Hint in biddingbox
+- Create CI
