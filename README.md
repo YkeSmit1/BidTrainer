@@ -10,3 +10,4 @@ TODO
 - Let the user pick categories
 - Hint in biddingbox
 - Create CI
+- Add unittest and integration test

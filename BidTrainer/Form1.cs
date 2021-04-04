@@ -18,7 +18,7 @@ namespace BidTrainer
         private readonly BidManager bidManager = new BidManager();
         private readonly Pbn pbn = new Pbn();
         private int boardIndex = 0;
-        private string[] deal => pbn.Boards[boardIndex].Deal;
+        private string[] Deal => pbn.Boards[boardIndex].Deal;
 
 
         public Form1()
@@ -39,8 +39,8 @@ namespace BidTrainer
 
         private void ShowBothHands()
         {
-            ShowHand(deal[(int)Player.North], panelNorth);
-            ShowHand(deal[(int)Player.South], panelSouth);
+            ShowHand(Deal[(int)Player.North], panelNorth);
+            ShowHand(Deal[(int)Player.South], panelSouth);
         }
 
         private void ShowHand(string hand, Panel parent)
@@ -78,7 +78,7 @@ namespace BidTrainer
             void handler(object x, EventArgs y)
             {
                 var biddingBoxButton = (BiddingBoxButton)x;
-                var bid = bidManager.GetBid(auctionControl.auction, deal[(int)Player.South]);
+                var bid = bidManager.GetBid(auctionControl.auction, Deal[(int)Player.South]);
                 auctionControl.auction.AddBid(bid);
 
                 if (biddingBoxButton.bid != bid)
@@ -122,7 +122,7 @@ namespace BidTrainer
         {
             while (auction.currentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, deal[(int)auction.currentPlayer]);
+                var bid = bidManager.GetBid(auction, Deal[(int)auction.currentPlayer]);
                 auction.AddBid(bid);
                 biddingBox.UpdateButtons(bid, auction.currentPlayer);
             }
