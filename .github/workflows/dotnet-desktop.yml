@@ -89,6 +89,8 @@ jobs:
         $VCPKG_ROOT/vcpkg install SQLiteCpp:x64-windows
         $VCPKG_ROOT/vcpkg integrate install
       shell: bash       
+    - name: Install dependencies
+      run: dotnet restore
     - name: NuGet Restore
       run: nuget restore BidTrainer.sln
     # Execute all unit tests in the solution
