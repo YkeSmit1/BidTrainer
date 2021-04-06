@@ -57,7 +57,7 @@ jobs:
 
     env:
       Solution_Name: BidTrainer.sln                             # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: BidTrainer\BidTrainerTests\BidTrainerTests.csproj                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Test_Project_Path: .\BidTrainerTests\BidTrainerTests.csproj                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
 
     steps:
     - name: Checkout
@@ -79,7 +79,7 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Run c# Test
-      run: dotnet test --no-restore --configuration Release --verbosity normal .\BidTrainerTest\BidTrainerTest.csproj
+      run: dotnet test --no-restore --configuration Release --verbosity normal $env:Test_Project_Path
     
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
