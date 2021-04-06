@@ -1,42 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
-# built on .NET Core.
-# To learn how to migrate your existing application to .NET Core,
-# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
-#
-# To configure this workflow:
-#
-# 1. Configure environment variables
-# GitHub sets default environment variables for every workflow run.
-# Replace the variables relative to your project in the "env" section below.
-#
-# 2. Signing
-# Generate a signing certificate in the Windows Application
-# Packaging Project or add an existing signing certificate to the project.
-# Next, use PowerShell to encode the .pfx file using Base64 encoding
-# by running the following Powershell script to generate the output string:
-#
-# $pfx_cert = Get-Content '.\SigningCertificate.pfx' -Encoding Byte
-# [System.Convert]::ToBase64String($pfx_cert) | Out-File 'SigningCertificate_Encoded.txt'
-#
-# Open the output file, SigningCertificate_Encoded.txt, and copy the
-# string inside. Then, add the string to the repo as a GitHub secret
-# and name it "Base64_Encoded_Pfx."
-# For more information on how to configure your signing certificate for
-# this workflow, refer to https://github.com/microsoft/github-actions-for-desktop-apps#signing
-#
-# Finally, add the signing certificate password to the repo as a secret and name it "Pfx_Key".
-# See "Build the Windows Application Packaging project" below to see how the secret is used.
-#
-# For more information on GitHub Actions, refer to https://github.com/features/actions
-# For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
-# refer to https://github.com/microsoft/github-actions-for-desktop-apps
-
-name: .NET Core Desktop
+name: .NET Core
 
 on:
   push:
@@ -45,70 +7,41 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
 
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-
-    env:
-      Solution_Name: BidTrainer.sln                             # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: .\BidTrainerTests\BidTrainerTests.csproj                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+    runs-on:  windows-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
       with:
-        fetch-depth: 0
-        submodules: true        
-
-    # Install the .NET Core workload
-    - name: Install .NET Core
+          submodules: true      
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-        
     - name: Install dependencies
       run: dotnet restore
-      
     - name: NuGet Restore
       run: nuget restore BidTrainer.sln
-    # Execute all unit tests in the solution
-    - name: Run c# Test
-      run: dotnet test --no-restore --configuration Release --verbosity normal $env:Test_Project_Path
-    
-    # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
+    # Restore from cache the previously built ports. If cache-miss, download, build vcpkg.
     - name: Restore from cache and install vcpkg
+      # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
       uses: lukka/run-vcpkg@v4
       with:
         setupOnly: true
-
     # Now that vcpkg is installed, it is being used to run with desired arguments.
     - name: Install SQLiteCpp using vcpg      
       run: |
         $VCPKG_ROOT/vcpkg install SQLiteCpp:x64-windows
         $VCPKG_ROOT/vcpkg integrate install
-      shell: bash       
-
-# Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
-
-    # Upload the distribute folder: https://github.com/marketplace/actions/upload-artifact
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+      shell: bash      
+    - name: Build
+      run: msbuild /t:Build /p:Configuration=Release -m BidTrainer.sln
+    - name: Run c# Test
+      run: dotnet test --no-restore --configuration Release --verbosity normal .\BidTrainerTests\BidTrainerTests.csproj
+    - uses: actions/upload-artifact@v2
       with:
         name: distribute
-        path: .\BidTrainer\bin\Release\netcoreapp3.1\      
+        path: .\BidTrainer\bin\Release\netcoreapp3.1\
