@@ -78,26 +78,29 @@ jobs:
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         
-    - name: Restore from cache and install vcpkg
-      # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
-      uses: lukka/run-vcpkg@v4
-      with:
-        setupOnly: true
-      # Now that vcpkg is installed, it is being used to run with desired arguments.
-    - name: Install SQLiteCpp using vcpg      
-      run: |
-        $VCPKG_ROOT/vcpkg install SQLiteCpp:x64-windows
-        $VCPKG_ROOT/vcpkg integrate install
-      shell: bash       
     - name: Install dependencies
       run: dotnet restore
+      
     - name: NuGet Restore
       run: nuget restore BidTrainer.sln
     # Execute all unit tests in the solution
     - name: Run c# Test
       run: dotnet test --no-restore --configuration Release --verbosity normal $env:Test_Project_Path
     
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
+    - name: Restore from cache and install vcpkg
+      uses: lukka/run-vcpkg@v4
+      with:
+        setupOnly: true
+
+    # Now that vcpkg is installed, it is being used to run with desired arguments.
+    - name: Install SQLiteCpp using vcpg      
+      run: |
+        $VCPKG_ROOT/vcpkg install SQLiteCpp:x64-windows
+        $VCPKG_ROOT/vcpkg integrate install
+      shell: bash       
+
+# Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
       env:
