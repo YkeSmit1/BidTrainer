@@ -78,9 +78,9 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: dotnet test
-
+    - name: Run c# Test
+      run: dotnet test --no-restore --configuration Release --verbosity normal .\BidTrainerTest\BidTrainerTest.csproj
+    
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
