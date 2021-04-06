@@ -2,7 +2,7 @@
 
 namespace BidTrainer
 {
-    internal class BidManager
+    public class BidManager
     {
         private readonly BidGenerator bidGenerator = new BidGenerator();
         private Phase phase = Phase.Opening;
