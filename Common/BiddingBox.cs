@@ -20,8 +20,10 @@ namespace Common
 
         public BiddingBox(EventHandler eventHandler)
         {
-            BiddingBoxClick += eventHandler;
             InitializeComponent();
+            BiddingBoxClick += eventHandler;
+            Left = 50;
+            Top = 200;
             Name = "BiddingBox";
             Size = new Size(200, 210);
 

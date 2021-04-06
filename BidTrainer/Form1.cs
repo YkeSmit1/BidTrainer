@@ -18,8 +18,7 @@ namespace BidTrainer
         private readonly BidManager bidManager = new BidManager();
         private readonly Pbn pbn = new Pbn();
         private int boardIndex = 0;
-        private string[] Deal => pbn.Boards[boardIndex].Deal;
-
+        private Dictionary<Player, string> Deal => pbn.Boards[boardIndex].Deal;
 
         public Form1()
         {
@@ -30,17 +29,28 @@ namespace BidTrainer
         {
             ShowBiddingBox();
             ShowAuction();
-            pbn.Boards.Add(new BoardDto { Deal = new string[] { "864,Q743,Q3,AQ95", "AJ32,J9,AJ65,K84", "KT5,652,KT4,JT63", "Q97,AKT8,9872,72" } });
-            pbn.Boards.Add(new BoardDto { Deal = new string[] { "864,Q743,Q3,AQ95", "AKJ3,J9,AJ65,K84", "T52,652,KT4,JT63", "Q97,AKT8,9872,72" } });
+            pbn.Boards.Add(new BoardDto { Deal = new Dictionary<Player, string> {
+                { Player.West, "864,Q743,Q3,AQ95" },
+                { Player.North, "AJ32,J9,AJ65,K84" },
+                { Player.East, "KT5,652,KT4,JT63" },
+                { Player.South, "Q97,AKT8,9872,72" } 
+            }});
+            pbn.Boards.Add(new BoardDto {Deal = new Dictionary<Player, string> {
+                { Player.West, "864,Q743,Q3,AQ95" },
+                { Player.North,"AKJ3,J9,AJ65,K84" },
+                { Player.East, "T52,652,KT4,JT63" },
+                { Player.South,"Q97,AKT8,9872,72" } 
+            }});
 
             ShowBothHands();
             StartBidding();
+            auctionControl.Select();
         }
 
         private void ShowBothHands()
         {
-            ShowHand(Deal[(int)Player.North], panelNorth);
-            ShowHand(Deal[(int)Player.South], panelSouth);
+            ShowHand(Deal[Player.North], panelNorth);
+            ShowHand(Deal[Player.South], panelSouth);
         }
 
         private void ShowHand(string hand, Panel parent)
@@ -78,7 +88,7 @@ namespace BidTrainer
             void handler(object x, EventArgs y)
             {
                 var biddingBoxButton = (BiddingBoxButton)x;
-                var bid = bidManager.GetBid(auctionControl.auction, Deal[(int)Player.South]);
+                var bid = bidManager.GetBid(auctionControl.auction, Deal[Player.South]);
                 auctionControl.auction.AddBid(bid);
 
                 if (biddingBoxButton.bid != bid)
@@ -88,26 +98,14 @@ namespace BidTrainer
 
                 BidTillSouth(auctionControl.auction);
             }
-            biddingBox = new BiddingBox(handler)
-            {
-                Parent = this,
-                Left = 50,
-                Top = 200
-            };
+            biddingBox = new BiddingBox(handler) {Parent = this};
             biddingBox.Show();
         }
 
         private void ShowAuction()
         {
-            auctionControl = new AuctionControl
-            {
-                Parent = this,
-                Left = 300,
-                Top = 200,
-                Width = 220,
-                Height = 200
-            };
-            auctionControl.Show();
+            auctionControl = new AuctionControl {Parent = this};
+                auctionControl.Show();
         }
 
         private void StartBidding()
@@ -115,6 +113,8 @@ namespace BidTrainer
             auctionControl.auction.Clear();
             biddingBox.Clear();
             bidManager.Init();
+            toolStripStatusLabel1.Text = $"Board:{boardIndex + 1}";
+            auctionControl.auction.currentPlayer = pbn.Boards[boardIndex].Dealer;
             BidTillSouth(auctionControl.auction);
         }
 
@@ -122,7 +122,7 @@ namespace BidTrainer
         {
             while (auction.currentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, Deal[(int)auction.currentPlayer]);
+                var bid = bidManager.GetBid(auction, Deal[auction.currentPlayer]);
                 auction.AddBid(bid);
                 biddingBox.UpdateButtons(bid, auction.currentPlayer);
             }

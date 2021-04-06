@@ -21,7 +21,7 @@ namespace Common
         public int BoardNumber { get; set; }
         public Player Dealer { get; set; }
         public string Vulnerable { get; set; }
-        public string[] Deal { get; set; }
+        public Dictionary<Player, string> Deal { get; set; }
         public Player Declarer { get; set; }
         public Auction Auction { get; set; }
 
@@ -37,7 +37,9 @@ namespace Common
             sb.AppendLine($@"[Vulnerable ""{Vulnerable}""]");
             if (!string.IsNullOrWhiteSpace(Description))
                 sb.AppendLine($@"[Description ""{Description}""]");
-            sb.AppendLine($@"[Deal ""{Util.GetPlayerString(Dealer)}:{string.Join(' ', Deal.ToList().Rotate(GetOffSetForPlayerToPbn(Dealer)).Select(x => x.Replace(',', '.')))}""]");
+            var sortedDeal = new SortedDictionary<Player, string>(Deal);
+            sb.AppendLine($@"[Deal ""{Util.GetPlayerString(Dealer)}:{string.Join(' ', sortedDeal.ToList().Rotate((int)Dealer)
+                .Select(x => x.Value.Replace(',', '.')))}""]");
             if (Declarer != Player.UnKnown)
                 sb.AppendLine($@"[Declarer ""{Util.GetPlayerString(Declarer)}""]");
             if (Auction != null)
@@ -48,15 +50,6 @@ namespace Common
             }
 
             return sb.ToString();
-
-            static int GetOffSetForPlayerToPbn(Player player) => player switch
-            {
-                Player.West => 0,
-                Player.North => 3,
-                Player.East => 2,
-                Player.South => 1,
-                _ => throw new ArgumentException(nameof(player)),
-            };
         }
 
         public static BoardDto FromString(string pbnString)
@@ -85,14 +78,15 @@ namespace Common
                         if (int.TryParse(value, out var boardNumber))
                             board.BoardNumber = boardNumber;
                         break;
-                    case "Dealer": 
+                    case "Dealer":
                         board.Dealer = Util.GetPlayer(value);
                         break;
                     case "Vulnerable":
                         board.Vulnerable = value;
                         break;
                     case "Deal":
-                        board.Deal = value.Replace('.', ',')[2..].Split(" ").ToList().Rotate(GetOffSetForPlayerFromPbn(board.Dealer)).ToArray();
+                        board.Deal = value.Replace('.', ',')[2..].Split(" ").ToList().Rotate(4 - (int)board.Dealer).Select((suit, Index) => (suit, Index))
+                            .ToDictionary(x => (Player)x.Index, x => x.suit);
                         break;
                     case "Declarer":
                         board.Declarer = Util.GetPlayer(value);
@@ -117,15 +111,6 @@ namespace Common
                 }
             }
             return board;
-
-            static int GetOffSetForPlayerFromPbn(Player player) => player switch
-            {
-                Player.West => 0,
-                Player.North => 1,
-                Player.East => 2,
-                Player.South => 3,
-                _ => throw new ArgumentException(nameof(player)),
-            };
         }
     }
 }

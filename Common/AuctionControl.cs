@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,6 +14,12 @@ namespace Common
         public AuctionControl()
         {
             InitializeComponent();
+            Width = TextRenderer.MeasureText("West        North        East        South", richTextBox1.Font).Width + 20;
+            Left = 300;
+            Top = 200;
+            Height = 200;
+            richTextBox1.ReadOnly = true;
+
             void handler(object x, MouseEventArgs y)
             {
                 var index = richTextBox1.GetCharIndexFromPosition(y.Location);
@@ -40,6 +47,9 @@ namespace Common
             {
                 richTextBox1.AppendText(Environment.NewLine);
                 string strBiddingRound = string.Empty;
+
+                AddLeadingTabs(biddingRound);
+
                 foreach (var bid in biddingRound.Value)
                 {
                     if (bid.Value.suit == Suit.Hearts || bid.Value.suit == Suit.Diamonds)
@@ -52,6 +62,19 @@ namespace Common
                         richTextBox1.AppendText(bid.Value.ToString());
                     }
                     richTextBox1.AppendText("\t");
+                }
+            }
+
+            void AddLeadingTabs(KeyValuePair<int, Dictionary<Player, Bid>> biddingRound)
+            {
+                if (biddingRound.Key == 1)
+                {
+                    var player = Player.West;
+                    while (player != biddingRound.Value.First().Key)
+                    {
+                        richTextBox1.AppendText("\t");
+                        player++;
+                    }
                 }
             }
         }
