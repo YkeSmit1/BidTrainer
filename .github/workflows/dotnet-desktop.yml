@@ -76,6 +76,18 @@ jobs:
       uses: microsoft/setup-msbuild@2008f912f56e61277eefaac6d1888b750582aa16
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        
+    - name: Restore from cache and install vcpkg
+      # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
+      uses: lukka/run-vcpkg@v4
+      with:
+        setupOnly: true
+      # Now that vcpkg is installed, it is being used to run with desired arguments.
+    - name: Install SQLiteCpp using vcpg      
+      run: |
+        $VCPKG_ROOT/vcpkg install SQLiteCpp:x64-windows
+        $VCPKG_ROOT/vcpkg integrate install
+      shell: bash       
 
     # Execute all unit tests in the solution
     - name: Run c# Test
