@@ -179,12 +179,6 @@
     <ClCompile Include="SQLiteCppWrapper.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\four_card_majors.db3">
-      <DeploymentContent>true</DeploymentContent>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
