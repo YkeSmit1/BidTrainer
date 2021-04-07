@@ -88,15 +88,25 @@ namespace BidTrainer
             void handler(object x, EventArgs y)
             {
                 var biddingBoxButton = (BiddingBoxButton)x;
-                var bid = bidManager.GetBid(auctionControl.auction, Deal[Player.South]);
-                auctionControl.auction.AddBid(bid);
-
-                if (biddingBoxButton.bid != bid)
+                if (this.Cursor == Cursors.Help)
                 {
-                    MessageBox.Show($"The correct bid is {bid}. Description: {bid.description}.", "Incorrect bid");
+                    var (minRecords, maxRecords) = BidGenerator.GetRecords(biddingBoxButton.bid, bidManager.phase, auctionControl.auction.currentPosition);
+                    var information = Util.GetInformation(minRecords, maxRecords);
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(information, "Information");
                 }
+                else
+                {
+                    var bid = bidManager.GetBid(auctionControl.auction, Deal[Player.South]);
+                    auctionControl.auction.AddBid(bid);
 
-                BidTillSouth(auctionControl.auction);
+                    if (biddingBoxButton.bid != bid)
+                    {
+                        MessageBox.Show($"The correct bid is {bid}. Description: {bid.description}.", "Incorrect bid");
+                    }
+
+                    BidTillSouth(auctionControl.auction);
+                }
             }
             biddingBox = new BiddingBox(handler) {Parent = this};
             biddingBox.Show();
@@ -175,6 +185,11 @@ namespace BidTrainer
                     MessageBox.Show($"Error saving PBN({ex.Message})", "Error");
                 }
             }
+        }
+
+        private void ButtonHintClick(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.Help;
         }
     }
 }

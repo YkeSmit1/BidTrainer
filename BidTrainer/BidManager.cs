@@ -5,22 +5,26 @@ namespace BidTrainer
     public class BidManager
     {
         private readonly BidGenerator bidGenerator = new BidGenerator();
-        private Phase phase = Phase.Opening;
+        public Phase phase = Phase.Opening;
 
         public Bid GetBid(Auction auction, string handsString)
         {
             var (bidIdFromRule, nextPhase, description) = bidGenerator.GetBid(handsString, auction, phase);
             phase = nextPhase;
-            return CalculateBid(bidIdFromRule, description);
+            return CalculateBid(bidIdFromRule, description, auction.currentPosition);
         }
 
-        private Bid CalculateBid(int bidIdFromRule, string description)
+        private Bid CalculateBid(int bidIdFromRule, string description, int position)
         {
             if (bidIdFromRule == 0)
                 return Bid.PassBid;
 
             var currentBid = Bid.GetBid(bidIdFromRule);
             currentBid.description = description;
+
+            if (bidIdFromRule != 0)
+                (currentBid.minRecords, currentBid.maxRecords) = BidGenerator.GetRecords(currentBid, phase, position);
+
             return currentBid;
         }
 

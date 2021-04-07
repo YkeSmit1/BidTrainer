@@ -18,8 +18,15 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND Phase = ?
         ORDER BY Priority ASC)";
 
+    constexpr static std::string_view rulesSql = R"(SELECT * FROM Rules 
+        WHERE bidId = ?
+        AND Phase = ?
+        AND Position = ?)";
+
+
     std::unique_ptr<SQLite::Database> db;
     std::unique_ptr<SQLite::Statement> queryShape;
+    std::unique_ptr<SQLite::Statement> queryRules;
 
 public:
     SQLiteCppWrapper(const std::string& database);
@@ -27,5 +34,6 @@ private:
     void GetBid(int bidId, int& rank, int& suit) final;
     std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const Phase& phase, int lastBidId, int position) final;
     void SetDatabase(const std::string& database) override;
+    std::string GetRulesByBid(Phase phase, int bidId, int position) final;
 };
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Common
 {
@@ -39,6 +40,8 @@ namespace Common
         public Fase fase = Fase.Unknown;
         public Fase pullFase = Fase.Unknown;
         public bool zoom;
+        public Dictionary<string, int> minRecords;
+        public Dictionary<string, int> maxRecords;
 
         public Bid(int rank, Suit suit)
         {
@@ -150,6 +153,11 @@ namespace Common
                 ExpectedContract.GrandSlam => new Bid(7, item1),
                 _ => throw new ArgumentException(nameof(expectedContract)),
             };
+        }
+
+        public string GetMinString()
+        {
+            return $"{minRecords["MinSpades"]}{minRecords["MinHearts"]}{minRecords["MinDiamonds"]}{minRecords["MinClubs"]}";
         }
 
         // Operators

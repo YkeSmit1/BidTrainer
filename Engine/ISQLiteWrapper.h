@@ -13,5 +13,6 @@ public:
     virtual std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& handCharacteristic, const Phase& phase, int lastBidId, int position) = 0;
     virtual void GetBid(int bidId, int& rank, int& suit) = 0;
     virtual void SetDatabase(const std::string& database) = 0;
+    virtual std::string GetRulesByBid(Phase phase, int bidId, int position) = 0;
 };
 

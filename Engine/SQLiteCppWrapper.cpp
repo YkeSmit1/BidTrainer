@@ -1,9 +1,12 @@
 #include "pch.h"
-#include "SQLiteCppWrapper.h"
 #include <iostream>
-#include "Rule.h"
 #include <algorithm>
 #include <vector>
+
+#include "SQLiteCppWrapper.h"
+#include "nlohmann/json.hpp"
+
+#include "Rule.h"
 #include "Utils.h"
 #include "Api.h"
 
@@ -57,12 +60,48 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
     }
 }
 
-
-
 void SQLiteCppWrapper::SetDatabase(const std::string& database)
 {
     db.release();
     db = std::make_unique<SQLite::Database>(database);
 
     queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
+    queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
+}
+
+std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position)
+{
+    using nlohmann::json;
+
+    try
+    {
+        // Bind parameters
+        queryRules->reset();
+        queryRules->bind(1, bidId);
+        queryRules->bind(2, (int)phase);
+        queryRules->bind(3, position);
+
+        std::vector<std::unordered_map<std::string, std::string>> records;
+
+        while (queryRules->executeStep())
+        {
+            std::unordered_map<std::string, std::string> record;
+            for (int i = 0; i < queryRules->getColumnCount() - 1; i++)
+            {
+                auto column = queryRules->getColumn(i);
+                record.emplace(std::make_pair(column.getName(), column.getString()));
+            }
+            records.push_back(record);
+        }
+        json j = records;
+        std::stringstream ss;
+        ss << j;
+        auto s = ss.str();
+        return s;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what();
+        throw;
+    }
 }

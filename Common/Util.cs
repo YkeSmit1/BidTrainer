@@ -403,5 +403,14 @@ namespace Common
                 return reader.ReadToEnd();
             }
         }
+
+        public static string GetInformation(Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords)
+        {
+            return minRecords.Count() == 0 ? "No information" : $"Spades: {minRecords["MinSpades"]} - {maxRecords["MaxSpades"]}" +
+                $"\nHearts: {minRecords["MinHearts"]} - {maxRecords["MaxHearts"]}" +
+                $"\nDiamonds: {minRecords["MinDiamonds"]} - {maxRecords["MaxDiamonds"]}" +
+                $"\nClubs: {minRecords["MinClubs"]} - {maxRecords["MaxClubs"]}" +
+                $"\nHcp: {minRecords["MinHcp"]} - {maxRecords["MaxHcp"]}";
+        }
     }
 }

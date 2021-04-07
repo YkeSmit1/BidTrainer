@@ -50,3 +50,10 @@ void GetBid(int bidId, int& rank, int& suit)
 {
     GetSqliteWrapper()->GetBid(bidId, rank, suit);
 }
+
+void GetRulesByBid(Phase phase, int bidId, int position, char* information)
+{
+    auto linformation = GetSqliteWrapper()->GetRulesByBid(phase, bidId, position);
+    strncpy(information, linformation.c_str(), linformation.size());
+    information[linformation.size()] = '\0';
+}
