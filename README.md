@@ -8,6 +8,4 @@ TODO
 - Implement the ability to save the auction
 - Implement scoring system. Probably with leaderboard
 - Let the user pick categories
-- Hint in biddingbox
-- Create CI
 - Add unittest and integration test
