@@ -10,8 +10,9 @@ namespace BidTrainer
         public Bid GetBid(Auction auction, string handsString)
         {
             var (bidIdFromRule, nextPhase, description) = bidGenerator.GetBid(handsString, auction, phase);
+            var bid = CalculateBid(bidIdFromRule, description, auction.currentPosition);
             phase = nextPhase;
-            return CalculateBid(bidIdFromRule, description, auction.currentPosition);
+            return bid;
         }
 
         private Bid CalculateBid(int bidIdFromRule, string description, int position)

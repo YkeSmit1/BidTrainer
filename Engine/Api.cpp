@@ -25,10 +25,17 @@ ISQLiteWrapper* GetSqliteWrapper()
     return sqliteWrapper.get();
 }
 
-int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, Phase* newPhase, char* description)
+int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, int minSpades, int minHearts, int minDiamonds, int minClubs, Phase* newPhase, char* description)
 {
     auto handCharacteristic = GetHandCharacteristic(hand);
-    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, phase, lastBidId, position);
+    auto fitSpades = handCharacteristic.Spades + minSpades >= 8;
+    auto fitHearts = handCharacteristic.Hearts + minHearts >= 8;
+    auto fitDiamonds = handCharacteristic.Diamonds + minDiamonds >= 8;
+    auto fitClubs = handCharacteristic.Clubs + minClubs >= 8;
+
+    std::vector<bool> fits = { fitSpades, fitHearts, fitDiamonds, fitClubs};
+
+    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, fits, phase, lastBidId, position);
     strncpy(description, descr.c_str(), descr.size());
     description[descr.size()] = '\0';
     *newPhase = lNewfase;

@@ -412,5 +412,17 @@ namespace Common
                 $"\nClubs: {minRecords["MinClubs"]} - {maxRecords["MaxClubs"]}" +
                 $"\nHcp: {minRecords["MinHcp"]} - {maxRecords["MaxHcp"]}";
         }
+
+        public static Player GetPartner(Player player)
+        {
+            return player switch
+            {
+                Player.West => Player.East,
+                Player.North => Player.South,
+                Player.East => Player.West,
+                Player.South => Player.North,
+                _ => throw new ArgumentException(nameof(player)),
+            };
+        }
     }
 }

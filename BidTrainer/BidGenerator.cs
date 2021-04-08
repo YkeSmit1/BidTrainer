@@ -12,20 +12,21 @@ namespace BidTrainer
         internal (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase)
         {
             var description = new StringBuilder(128);
-            int lastBidId = Bid.GetBidId(auction.currentContract);
-            var bidId = Pinvoke.GetBidFromRule(phase, handsString, lastBidId, auction.currentPosition, out var nextPhase, description);
+            var bidsPartner = auction.GetBids(Util.GetPartner(auction.currentPlayer));
+            var minLengthPartner = bidsPartner.Count() > 0 ? bidsPartner.Last().GetMinSuitLength() : new[] { 0, 0, 0, 0 };
+            var bidId = Pinvoke.GetBidFromRule(phase, handsString, Bid.GetBidId(auction.currentContract), auction.currentPosition, 
+                minLengthPartner[0], minLengthPartner[1], minLengthPartner[2], minLengthPartner[3], out var nextPhase, description);
             return (bidId, nextPhase, description.ToString());
         }
 
         internal static (Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords) GetRecords(Bid bid, Phase phase, int position)
         {
-            var informationJson = new StringBuilder(1024);
+            var informationJson = new StringBuilder(4096);
             Pinvoke.GetRulesByBid(phase, Bid.GetBidId(bid), position, informationJson);
             var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
             var minRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Min")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Min());
             var maxRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Max")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Max());
             return (minRecords, maxRecords);
         }
-
     }
 }

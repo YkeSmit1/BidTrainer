@@ -14,6 +14,10 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND ? BETWEEN MinHcp AND MaxHcp
         AND (IsBalanced IS NULL or IsBalanced = ?)
         AND (IsReverse IS NULL or IsReverse = ?)
+        AND (FitSpades IS NULL or FitSpades = ?)
+        AND (FitHearts IS NULL or FitHearts = ?)
+        AND (FitDiamonds IS NULL or FitDiamonds = ?)
+        AND (FitClubs IS NULL or FitClubs = ?)
         AND Position = ?
         AND Phase = ?
         ORDER BY Priority ASC)";
@@ -32,7 +36,7 @@ public:
     SQLiteCppWrapper(const std::string& database);
 private:
     void GetBid(int bidId, int& rank, int& suit) final;
-    std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const Phase& phase, int lastBidId, int position) final;
+    std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, std::vector<bool>& fits, const Phase& phase, int lastBidId, int position) final;
     void SetDatabase(const std::string& database) override;
     std::string GetRulesByBid(Phase phase, int bidId, int position) final;
 };

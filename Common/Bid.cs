@@ -155,9 +155,9 @@ namespace Common
             };
         }
 
-        public string GetMinString()
+        public int[] GetMinSuitLength()
         {
-            return $"{minRecords["MinSpades"]}{minRecords["MinHearts"]}{minRecords["MinDiamonds"]}{minRecords["MinClubs"]}";
+            return (minRecords == null || minRecords.Keys.Count == 0) ? new[] { 0, 0, 0, 0 } : new[] { minRecords["MinSpades"], minRecords["MinHearts"], minRecords["MinDiamonds"], minRecords["MinClubs"] };
         }
 
         // Operators

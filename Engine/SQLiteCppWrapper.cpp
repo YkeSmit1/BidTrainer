@@ -26,7 +26,8 @@ void SQLiteCppWrapper::GetBid(int bidId, int& rank, int& suit)
         suit = query.getColumn(1);
     }
 }
-std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic& hand, const Phase& phase, int lastBidId, int position)
+
+std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic& hand, std::vector<bool>& fits, const Phase& phase, int lastBidId, int position)
 {
     try
     {
@@ -41,8 +42,13 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
         queryShape->bind(6, hand.Hcp);
         queryShape->bind(7, hand.isBalanced);
         queryShape->bind(8, hand.isReverse);
-        queryShape->bind(9, position);
-        queryShape->bind(10, (int)phase);
+
+        queryShape->bind(9, fits[0]);
+        queryShape->bind(10, fits[1]);
+        queryShape->bind(11, fits[2]);
+        queryShape->bind(12, fits[3]);
+        queryShape->bind(13, position);
+        queryShape->bind(14, (int)phase);
 
         if (!queryShape->executeStep())
             return std::make_tuple(0, phase, "");
