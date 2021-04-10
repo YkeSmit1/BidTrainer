@@ -79,17 +79,18 @@ namespace Common
                             board.BoardNumber = boardNumber;
                         break;
                     case "Dealer":
-                        board.Dealer = Util.GetPlayer(value);
+                        board.Dealer = value.Length > 0 ? Util.GetPlayer(value[0]) : Player.UnKnown;
                         break;
                     case "Vulnerable":
                         board.Vulnerable = value;
                         break;
                     case "Deal":
-                        board.Deal = value.Replace('.', ',')[2..].Split(" ").ToList().Rotate(4 - (int)board.Dealer).Select((suit, Index) => (suit, Index))
+                        var firstPlayer = value.Length > 0 ? Util.GetPlayer(value[0]) : Player.UnKnown;
+                        board.Deal = value.Replace('.', ',')[2..].Split(" ").ToList().Rotate(4 - (int)firstPlayer).Select((suit, Index) => (suit, Index))
                             .ToDictionary(x => (Player)x.Index, x => x.suit);
                         break;
                     case "Declarer":
-                        board.Declarer = Util.GetPlayer(value);
+                        board.Declarer = value.Length > 0 ? Util.GetPlayer(value[0]) : Player.UnKnown;
                         break;
                     case "Auction":
                         {

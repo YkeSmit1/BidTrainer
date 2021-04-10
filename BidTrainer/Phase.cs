@@ -6,6 +6,8 @@
         Opening,
         OneSuit,
         OneNT,
-        Fit,
+        Stayman,
+        JacobyHearts,
+        JacobySpades
     }
 }

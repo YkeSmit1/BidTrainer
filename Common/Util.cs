@@ -363,21 +363,21 @@ namespace Common
                 { ExpectedContract.Game, scores.Count(x => x < 12)}});
         }
 
-        public static Player GetPlayer(string player) => player switch
+        public static Player GetPlayer(char player) => player switch
         {
-            "N" => Player.North,
-            "E" => Player.East,
-            "S" => Player.South,
-            "W" => Player.West,
+            'N' => Player.North,
+            'E' => Player.East,
+            'S' => Player.South,
+            'W' => Player.West,
             _ => Player.UnKnown,
         };
 
-        public static string GetPlayerString(Player player) => player switch
+        public static char GetPlayerString(Player player) => player switch
         {
-            Player.North => "N",
-            Player.East => "E",
-            Player.South => "S",
-            Player.West => "W",
+            Player.North => 'N',
+            Player.East => 'E',
+            Player.South => 'S',
+            Player.West => 'W',
             _ => throw new ArgumentException("Unknown player"),
         };
 

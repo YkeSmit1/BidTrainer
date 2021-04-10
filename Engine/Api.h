@@ -6,7 +6,9 @@ enum class Phase
     Opening,
     OneSuit,
     OneNT,
-    Fit,
+    Stayman,
+    JacobyHearts,
+    JacobySpades
 };
 
 extern "C" __declspec(dllexport) int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, 
