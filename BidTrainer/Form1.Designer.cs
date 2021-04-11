@@ -35,6 +35,8 @@ namespace BidTrainer
             this.toolStripMenuItemOpenPBN = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemSavePBN = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemSelectDatabase = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemAlternateSuits = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.panelNorth = new System.Windows.Forms.Panel();
@@ -57,7 +59,8 @@ namespace BidTrainer
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemFile});
+            this.toolStripMenuItemFile,
+            this.toolStripMenuItemOptions});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(730, 24);
@@ -93,6 +96,21 @@ namespace BidTrainer
             this.toolStripMenuItemSelectDatabase.Name = "toolStripMenuItemSelectDatabase";
             this.toolStripMenuItemSelectDatabase.Size = new System.Drawing.Size(183, 22);
             this.toolStripMenuItemSelectDatabase.Text = "Select rules database";
+            // 
+            // toolStripMenuItemOptions
+            // 
+            this.toolStripMenuItemOptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemAlternateSuits});
+            this.toolStripMenuItemOptions.Name = "toolStripMenuItemOptions";
+            this.toolStripMenuItemOptions.Size = new System.Drawing.Size(61, 20);
+            this.toolStripMenuItemOptions.Text = "Options";
+            // 
+            // toolStripMenuItemAlternateSuits
+            // 
+            this.toolStripMenuItemAlternateSuits.Name = "toolStripMenuItemAlternateSuits";
+            this.toolStripMenuItemAlternateSuits.Size = new System.Drawing.Size(149, 22);
+            this.toolStripMenuItemAlternateSuits.Text = "Alternate suits";
+            this.toolStripMenuItemAlternateSuits.Click += new System.EventHandler(this.ToolStripMenuItemAlternateSuitsClick);
             // 
             // openFileDialog1
             // 
@@ -148,7 +166,9 @@ namespace BidTrainer
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Bid Trainer";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -173,6 +193,8 @@ namespace BidTrainer
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Button buttonHint;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemOptions;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemAlternateSuits;
     }
 }
 

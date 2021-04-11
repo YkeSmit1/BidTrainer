@@ -24,6 +24,7 @@ namespace BidTrainer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            toolStripMenuItemAlternateSuits.Checked = Settings1.Default.AlternateSuits;
             ShowBiddingBox();
             ShowAuction();
             pbn.Boards.Add(new BoardDto { Deal = new Dictionary<Player, string> {
@@ -50,23 +51,25 @@ namespace BidTrainer
             ShowHand(Deal[Player.South], panelSouth);
         }
 
-        private static void ShowHand(string hand, Panel parent)
+        private void ShowHand(string hand, Panel parent)
         {
             parent.Controls.OfType<PictureBox>().ToList().ForEach((card) =>
             {
                 parent.Controls.Remove(card);
                 card.Dispose();
             });
-            var suits = hand.Split(',');
-            var suit = Suit.Clubs;
+            var suitOrder = toolStripMenuItemAlternateSuits.Checked ?
+                new List<Suit> { Suit.Spades, Suit.Hearts, Suit.Clubs, Suit.Diamonds } :
+                new List<Suit> { Suit.Spades, Suit.Hearts, Suit.Diamonds, Suit.Clubs };
+            var suits = hand.Split(',').Select((x, index) => (x, (Suit)(3 - index))).OrderBy(x => suitOrder.IndexOf(x.Item2));
             var left = 20 * 12;
             foreach (var suitStr in suits.Reverse())
             {
-                foreach (var card in suitStr.Reverse())
+                foreach (var card in suitStr.x.Reverse())
                 {
                     var pictureBox = new PictureBox
                     {
-                        Image = CardControl.GetFaceImageForCard(suit, Util.GetFaceFromDescription(card)),
+                        Image = CardControl.GetFaceImageForCard(suitStr.Item2, Util.GetFaceFromDescription(card)),
                         Left = left,
                         Parent = parent,
                         Height = 97,
@@ -76,7 +79,6 @@ namespace BidTrainer
                     pictureBox.Show();
                     left -= 20;
                 }
-                suit++;
             }
         }
 
@@ -187,6 +189,18 @@ namespace BidTrainer
         private void ButtonHintClick(object sender, EventArgs e)
         {
             Cursor = Cursors.Help;
+        }
+
+        private void Form1FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Settings1.Default.AlternateSuits = toolStripMenuItemAlternateSuits.Checked;
+            Settings1.Default.Save();
+        }
+
+        private void ToolStripMenuItemAlternateSuitsClick(object sender, EventArgs e)
+        {
+            toolStripMenuItemAlternateSuits.Checked = !toolStripMenuItemAlternateSuits.Checked;
+            ShowBothHands();
         }
     }
 }
