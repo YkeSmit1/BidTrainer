@@ -20,7 +20,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: '5.0.x'
     - name: Install dependencies
       run: dotnet restore
     # Restore from cache the previously built ports. If cache-miss, download, build vcpkg.
@@ -43,4 +43,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: distribute
-        path: .\BidTrainer\bin\Release\netcoreapp3.1\
+        path: .\BidTrainer\bin\Release\net5.0-windows\
