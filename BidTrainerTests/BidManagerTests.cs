@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using BidTrainer;
 using System;
 using System.Collections.Generic;
 using System.Text;

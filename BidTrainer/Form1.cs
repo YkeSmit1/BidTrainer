@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Common;
 
@@ -15,8 +12,8 @@ namespace BidTrainer
     {
         private BiddingBox biddingBox;
         private AuctionControl auctionControl;
-        private readonly BidManager bidManager = new BidManager();
-        private readonly Pbn pbn = new Pbn();
+        private readonly BidManager bidManager = new();
+        private readonly Pbn pbn = new();
         private int boardIndex = 0;
         private Dictionary<Player, string> Deal => pbn.Boards[boardIndex].Deal;
 
@@ -53,7 +50,7 @@ namespace BidTrainer
             ShowHand(Deal[Player.South], panelSouth);
         }
 
-        private void ShowHand(string hand, Panel parent)
+        private static void ShowHand(string hand, Panel parent)
         {
             parent.Controls.OfType<PictureBox>().ToList().ForEach((card) =>
             {
@@ -88,11 +85,11 @@ namespace BidTrainer
             void handler(object x, EventArgs y)
             {
                 var biddingBoxButton = (BiddingBoxButton)x;
-                if (this.Cursor == Cursors.Help)
+                if (Cursor == Cursors.Help)
                 {
                     var (minRecords, maxRecords) = BidGenerator.GetRecords(biddingBoxButton.bid, bidManager.phase, auctionControl.auction.currentPosition);
                     var information = Util.GetInformation(minRecords, maxRecords);
-                    this.Cursor = Cursors.Default;
+                    Cursor = Cursors.Default;
                     MessageBox.Show(information, "Information");
                 }
                 else
@@ -145,7 +142,7 @@ namespace BidTrainer
                 panelNorth.Show();
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
                 panelNorth.Hide();
-                if (boardIndex < pbn.Boards.Count() - 1)
+                if (boardIndex < pbn.Boards.Count - 1)
                 {
                     boardIndex++;
                     ShowBothHands();
@@ -189,7 +186,7 @@ namespace BidTrainer
 
         private void ButtonHintClick(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.Help;
+            Cursor = Cursors.Help;
         }
     }
 }

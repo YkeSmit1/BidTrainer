@@ -9,11 +9,11 @@ namespace BidTrainer
 {
     internal class BidGenerator
     {
-        internal (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase)
+        internal static (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase)
         {
             var description = new StringBuilder(128);
             var bidsPartner = auction.GetBids(Util.GetPartner(auction.currentPlayer));
-            var minLengthPartner = bidsPartner.Count() > 0 ? bidsPartner.Last().GetMinSuitLength() : new[] { 0, 0, 0, 0 };
+            var minLengthPartner = bidsPartner.Any() ? bidsPartner.Last().GetMinSuitLength() : new[] { 0, 0, 0, 0 };
             var bidId = Pinvoke.GetBidFromRule(phase, handsString, Bid.GetBidId(auction.currentContract), auction.currentPosition, 
                 minLengthPartner[0], minLengthPartner[1], minLengthPartner[2], minLengthPartner[3], out var nextPhase, description);
             return (bidId, nextPhase, description.ToString());
