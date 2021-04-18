@@ -10,10 +10,12 @@ namespace Common
         dbl,
         rdbl,
         invalid,
+        align
     }
 
     public class Bid : IEquatable<Bid>, IComparable<Bid>
     {
+        public static readonly Bid AlignBid = new Bid(BidType.align);
         public static readonly Bid InvalidBid = new Bid(BidType.invalid);
         public static readonly Bid PassBid = new Bid(BidType.pass);
         public static readonly Bid Dbl = new Bid(BidType.dbl);
@@ -34,8 +36,8 @@ namespace Common
         public static readonly Bid sixSpadeBid = new Bid(6, Suit.Spades);
 
         public readonly BidType bidType;
-        public readonly int rank;
-        public readonly Suit suit;
+        public int rank { get; set; }
+        public Suit suit { get; set; }
         public string description = string.Empty;
         public Fase fase = Fase.Unknown;
         public Fase pullFase = Fase.Unknown;
@@ -66,6 +68,7 @@ namespace Common
                 BidType.dbl => "Dbl",
                 BidType.rdbl => "Rdbl",
                 BidType.invalid => "Invalid",
+                BidType.align => "",
                 _ => throw new ArgumentOutOfRangeException(nameof(bidType)),
             };
         }

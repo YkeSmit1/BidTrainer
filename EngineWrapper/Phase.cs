@@ -1,4 +1,4 @@
-﻿namespace BidTrainer
+﻿namespace EngineWrapper
 {
     public enum Phase
     {

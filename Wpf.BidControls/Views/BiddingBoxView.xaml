@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="Wpf.BidControls.Views.BiddingBoxView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Wpf.BidControls.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:SuitToColorConverter x:Key="SuitToColorConverter"/>
+        <converters:BidToSuitStringConverter x:Key="BidToSuitStringConverter"/>
+        <converters:BidToRankStringConverter x:Key="BidToRankStringConverter"/>
+        <DataTemplate x:Key="NonSuitBidsTemplate">
+            <Button Content="{Binding Bid}" Height="23" Width="40" Margin="1,1,1,1" Background="White" IsEnabled="{Binding IsEnabled}" 
+                    Command="{Binding Path=DataContext.DoBid, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}} }" 
+                    CommandParameter="{Binding Bid}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DataTemplate_Level2">
+            <Button Height="23" Width="40" Margin="1,1,1,1" Background="White" IsEnabled="{Binding IsEnabled}"
+                    Command="{Binding Path=DataContext.DoBid, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=2} }" 
+                    CommandParameter="{Binding Bid}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Bid, Converter={StaticResource BidToRankStringConverter}}"/>
+                    <TextBlock Text="{Binding Bid, Converter={StaticResource BidToSuitStringConverter}}" 
+                        Foreground="{Binding Bid.suit, Converter={StaticResource SuitToColorConverter}}"/>
+                </StackPanel>   
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DataTemplate_Level1">
+            <ItemsControl ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate_Level2}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel Grid.Column="1">
+            <ItemsControl ItemsSource="{Binding SuitBids}" ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
+            <ItemsControl ItemsSource="{Binding NonSuitBids, Mode=OneTime, UpdateSourceTrigger=PropertyChanged}" ItemTemplate="{DynamicResource NonSuitBidsTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

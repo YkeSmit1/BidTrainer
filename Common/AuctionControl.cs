@@ -28,7 +28,7 @@ namespace Common
                     toolTip.Show(bid.description, richTextBox1);
             }
             richTextBox1.MouseMove += handler;
-            auction.Clear();
+            auction.Clear(Player.West);
             ReDraw();
         }
 
@@ -48,33 +48,21 @@ namespace Common
                 richTextBox1.AppendText(Environment.NewLine);
                 string strBiddingRound = string.Empty;
 
-                AddLeadingTabs(biddingRound);
-
                 foreach (var bid in biddingRound.Value)
                 {
-                    if (bid.Value.suit == Suit.Hearts || bid.Value.suit == Suit.Diamonds)
+                    if (bid.Value != Bid.AlignBid)
                     {
-                        richTextBox1.AppendText(bid.Value.rank.ToString());
-                        richTextBox1.AppendText(Util.GetSuitDescription(bid.Value.suit), Color.Red);
-                    }
-                    else
-                    {
-                        richTextBox1.AppendText(bid.Value.ToString());
+                        if (bid.Value.suit == Suit.Hearts || bid.Value.suit == Suit.Diamonds)
+                        {
+                            richTextBox1.AppendText(bid.Value.rank.ToString());
+                            richTextBox1.AppendText(Util.GetSuitDescription(bid.Value.suit), Color.Red);
+                        }
+                        else
+                        {
+                            richTextBox1.AppendText(bid.Value.ToString());
+                        }
                     }
                     richTextBox1.AppendText("\t");
-                }
-            }
-
-            void AddLeadingTabs(KeyValuePair<int, Dictionary<Player, Bid>> biddingRound)
-            {
-                if (biddingRound.Key == 1)
-                {
-                    var player = Player.West;
-                    while (player != biddingRound.Value.First().Key)
-                    {
-                        richTextBox1.AppendText("\t");
-                        player++;
-                    }
                 }
             }
         }

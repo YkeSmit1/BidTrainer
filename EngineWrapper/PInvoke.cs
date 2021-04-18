@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace BidTrainer
+namespace EngineWrapper
 {
     internal class Pinvoke
     {

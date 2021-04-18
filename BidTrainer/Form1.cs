@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Common;
+using EngineWrapper;
 
 namespace BidTrainer
 {
@@ -119,7 +120,7 @@ namespace BidTrainer
 
         private void StartBidding()
         {
-            auctionControl.auction.Clear();
+            auctionControl.auction.Clear(pbn.Boards[boardIndex].Dealer);
             biddingBox.Clear();
             bidManager.Init();
             toolStripStatusLabel1.Text = $"Board:{boardIndex + 1}";

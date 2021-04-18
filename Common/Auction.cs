@@ -11,7 +11,7 @@ namespace Common
     {
         public Player currentPlayer;
         private int currentBiddingRound;
-        public readonly Dictionary<int, Dictionary<Player, Bid>> bids = new Dictionary<int, Dictionary<Player, Bid>>();
+        public Dictionary<int, Dictionary<Player, Bid>> bids { get; set; } = new Dictionary<int, Dictionary<Player, Bid>>();
         public Bid currentContract = Bid.PassBid;
         public bool responderHasSignedOff = false;
         public int currentPosition = 1;
@@ -74,13 +74,22 @@ namespace Common
             }
         }
 
-        public void Clear()
+        public void Clear(Player dealer)
         {
             bids.Clear();
-            currentPlayer = Player.West;
+            currentPlayer = dealer;
             currentBiddingRound = 1;
             currentContract = Bid.PassBid;
             currentPosition = 1;
+
+            var player = Player.West;
+            while (player != dealer)
+            {
+                if (!bids.ContainsKey(1))
+                    bids[1] = new Dictionary<Player, Bid>();
+                bids[1][player] = Bid.AlignBid;
+                player++;
+            }
         }
 
         public string GetBidsAsString(Player player)

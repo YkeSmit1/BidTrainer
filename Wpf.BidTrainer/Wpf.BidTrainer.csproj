@@ -3,12 +3,23 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\four_card_majors.db3" Link="four_card_majors.db3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ObjectCloner" Version="2.2.2" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\EngineWrapper\EngineWrapper.csproj" />
+    <ProjectReference Include="..\Wpf.BidControls\Wpf.BidControls.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,12 +37,4 @@
     </None>
   </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<PropertyGroup>
-			<BidTrainerBuildDirectory>$(ProjectDir)bin\$(Configuration)\net5.0-windows</BidTrainerBuildDirectory>
-			<BidTrainerWpfBuildDirectory>$(ProjectDir)..\Wpf.BidTrainer\bin\$(Configuration)\net5.0-windows</BidTrainerWpfBuildDirectory>	
-	</PropertyGroup>
-		<Copy SourceFiles="$(BidTrainerBuildDirectory)\Engine.dll;$(BidTrainerBuildDirectory)\sqlite3.dll" DestinationFolder="$(BidTrainerWpfBuildDirectory)" />
-	</Target>	
-  
 </Project>

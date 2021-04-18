@@ -1,6 +1,6 @@
 ﻿using Common;
 
-namespace BidTrainer
+namespace EngineWrapper
 {
     public class BidManager
     {
