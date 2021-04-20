@@ -8,7 +8,7 @@ using Common;
 
 namespace Wpf.BidControls.ViewModels
 {
-    public partial class HandViewModel : ObservableObject
+    public partial class HandViewModel
     {
         public ObservableCollection<Card> Cards { get; set; } = new();
 
@@ -29,7 +29,6 @@ namespace Wpf.BidControls.ViewModels
                     index++;
                 }
             }
-            OnPropertyChanged(nameof(Cards));
         }
     }
 }

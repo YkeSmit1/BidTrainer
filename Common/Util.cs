@@ -182,9 +182,8 @@ namespace Common
 
         public static bool IsSameTeam(Player player1, Player player2)
         {
-            return Math.Abs(player1 - player2) == 2 || 
-                (player1 == player2) || 
-                (player2 == Player.UnKnown || player1 == Player.UnKnown);
+            return Math.Abs(player1 - player2) == 2 || (player1 == player2) &&
+                (player2 != Player.UnKnown || player1 != Player.UnKnown);
         }
 
         public static (Suit, int) GetLongestSuit(string northHand, string southHand)

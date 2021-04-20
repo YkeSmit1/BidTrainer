@@ -34,6 +34,7 @@ namespace Wpf.BidTrainer
             InitializeComponent();
 
             LoadSampleBoards();
+            MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
             BiddingBoxView.BiddingBoxViewModel.DoBid = new DoBidCommand(ClickBiddingBoxButton);
             AuctionView.AuctionViewModel.Auction = auction;
             StartNextBoard();

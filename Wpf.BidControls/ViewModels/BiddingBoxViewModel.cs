@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,8 +18,8 @@ namespace Wpf.BidControls.ViewModels
             public bool IsEnabled { get; set; } = true;
         }
 
-        public List<List<BidEnable>> SuitBids { get; set; } = new();
-        public List<BidEnable> NonSuitBids { get; set; } = new();
+        public ObservableCollection<ObservableCollection<BidEnable>> SuitBids { get; set; } = new();
+        public ObservableCollection<BidEnable> NonSuitBids { get; set; } = new();
         private BidType currentBidType = BidType.pass;
         private Player currentDeclarer = Player.UnKnown;
 
@@ -27,46 +28,45 @@ namespace Wpf.BidControls.ViewModels
 
         public BiddingBoxViewModel()
         {
+            SuitBids = new ObservableCollection<ObservableCollection<BidEnable>>(Enumerable.Range(1, 7)
+                .Select(level => new ObservableCollection<BidEnable>(Enum.GetValues(typeof(Suit)).Cast<Suit>()
+                .Select(suit => new BidEnable { Bid = new Bid(level, suit), IsEnabled = true }))));
+            NonSuitBids = new ObservableCollection<BidEnable> {
+                new BidEnable { Bid = Bid.PassBid, IsEnabled = true },
+                new BidEnable { Bid = Bid.Dbl, IsEnabled = true },
+                new BidEnable { Bid = Bid.Rdbl, IsEnabled = true } };
             ClearBiddingBox();
         }
 
         public void ClearBiddingBox()
         {
-            SuitBids.Clear();
-            SuitBids.AddRange(Enumerable.Range(1, 7)
-                .Select(level => new List<BidEnable>(Enum.GetValues(typeof(Suit)).Cast<Suit>()
-                .Select(suit => new BidEnable { Bid = new Bid(level, suit), IsEnabled = true }))));
-            NonSuitBids.Clear();
-            NonSuitBids.AddRange(new List<BidEnable> {
-                new BidEnable { Bid = Bid.PassBid, IsEnabled = true },
-                new BidEnable { Bid = Bid.Dbl, IsEnabled = true },
-                new BidEnable { Bid = Bid.Rdbl, IsEnabled = true } });
+            SuitBids.SelectMany(bid => bid).ToList().ForEach(x => x.IsEnabled = true);
+            NonSuitBids.ToList().ForEach(x => x.IsEnabled = true);
+            currentBidType = BidType.pass;
+            currentDeclarer = Player.UnKnown;
+
+            SuitBids = ObjectCloner.ObjectCloner.DeepClone(SuitBids);
+            OnPropertyChanged(nameof(SuitBids));
+            NonSuitBids = ObjectCloner.ObjectCloner.DeepClone(NonSuitBids);
+            OnPropertyChanged(nameof(NonSuitBids));
         }
 
         public void UpdateButtons(Bid Newbid, Player auctionCurrentPlayer)
         {
-            var lSuitBids = ObjectCloner.ObjectCloner.DeepClone(SuitBids);
-            var lNonSuitBids = ObjectCloner.ObjectCloner.DeepClone(NonSuitBids);
-            currentBidType = Newbid.bidType;
+            var lSuitBids = SuitBids;
+            var lNonSuitBids = NonSuitBids;
 
             switch (Newbid.bidType)
             {
                 case BidType.bid:
-                    EnableButtons(new[] { Bid.Dbl });
-                    DisableButtons(new[] { Bid.Rdbl });
-                    foreach (var bidsPerRank in lSuitBids)
-                        foreach (var bids in bidsPerRank)
-                        {
-                            Bid localBid = bids.Bid;
-                            if (localBid.bidType == BidType.bid && localBid <= Newbid)
-                            {
-                                bids.IsEnabled = false;
-                            }
-                        }
-                    if (currentDeclarer == Player.UnKnown)
-                    {
+                    SetButtons(true, Bid.Dbl);
+                    SetButtons(false, Bid.Rdbl);
+                    foreach (var bids in lSuitBids.SelectMany(bidsPerRank => bidsPerRank.Where(bids => bids.Bid.bidType == BidType.bid && bids.Bid <= Newbid)))
+                        bids.IsEnabled = false;
+
+                    if (!Util.IsSameTeam(auctionCurrentPlayer, currentDeclarer))
                         currentDeclarer = auctionCurrentPlayer;
-                    }
+
                     break;
                 case BidType.pass:
                     if (Util.IsSameTeam(auctionCurrentPlayer, currentDeclarer))
@@ -74,11 +74,11 @@ namespace Wpf.BidControls.ViewModels
                         switch (currentBidType)
                         {
                             case BidType.bid:
-                                EnableButtons(new[] { Bid.Dbl });
-                                DisableButtons(new[] { Bid.Rdbl });
+                                SetButtons(true, Bid.Dbl);
+                                SetButtons(false, Bid.Rdbl);
                                 break;
                             case BidType.dbl:
-                                DisableButtons(new[] { Bid.Dbl, Bid.Rdbl });
+                                SetButtons(false, Bid.Dbl, Bid.Rdbl);
                                 break;
                         }
                     }
@@ -87,49 +87,36 @@ namespace Wpf.BidControls.ViewModels
                         switch (currentBidType)
                         {
                             case BidType.bid:
-                                DisableButtons(new[] { Bid.Dbl, Bid.Rdbl });
+                                SetButtons(false, Bid.Dbl, Bid.Rdbl);
                                 break;
                             case BidType.dbl:
-                                EnableButtons(new[] { Bid.Rdbl });
-                                DisableButtons(new[] { Bid.Dbl });
+                                SetButtons(true, Bid.Rdbl);
+                                SetButtons(false, Bid.Dbl);
                                 break;
                         }
-
                     }
                     break;
                 case BidType.dbl:
-                    EnableButtons(new[] { Bid.Rdbl });
-                    DisableButtons(new[] { Bid.Dbl });
+                    SetButtons(true, Bid.Rdbl);
+                    SetButtons(false, Bid.Dbl);
                     break;
                 case BidType.rdbl:
-                    DisableButtons(new[] { Bid.Dbl, Bid.Rdbl });
+                    SetButtons(false, Bid.Dbl, Bid.Rdbl);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(Newbid.bidType.ToString());
             }
+            currentBidType = Newbid.bidType;
+
             SuitBids = ObjectCloner.ObjectCloner.DeepClone(lSuitBids);
             OnPropertyChanged(nameof(SuitBids));
             NonSuitBids = ObjectCloner.ObjectCloner.DeepClone(lNonSuitBids);
             OnPropertyChanged(nameof(NonSuitBids));
 
-            void EnableButtons(IEnumerable<Bid> bids)
+            void SetButtons(bool enable, params Bid[] bids)
             {
                 foreach (var bid in bids)
-                {
-                    FindButton(bid).IsEnabled = true;
-                }
-            }
-
-            void DisableButtons(IEnumerable<Bid> bids)
-            {
-                foreach (var bid in bids)
-                {
-                    FindButton(bid).IsEnabled = false;
-                }
-            }
-            BidEnable FindButton(Bid bid)
-            {
-                return lNonSuitBids.Find(x => x.Bid == bid);
+                    lNonSuitBids.First(x => x.Bid == bid).IsEnabled = enable;
             }
         }
     }
