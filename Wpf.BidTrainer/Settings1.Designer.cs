@@ -34,5 +34,29 @@ namespace Wpf.BidTrainer {
                 this["AlternateSuits"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int CurrentLesson {
+            get {
+                return ((int)(this["CurrentLesson"]));
+            }
+            set {
+                this["CurrentLesson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int CurrentBoardIndex {
+            get {
+                return ((int)(this["CurrentBoardIndex"]));
+            }
+            set {
+                this["CurrentBoardIndex"] = value;
+            }
+        }
     }
 }

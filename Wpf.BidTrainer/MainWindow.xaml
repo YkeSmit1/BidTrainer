@@ -30,6 +30,10 @@
             <MenuItem Header="_Options">
                 <MenuItem Name="MenuUseAlternateSuits" Header="_Use alternate suits" Click="MenuUseAlternateSuits_Click"/>
             </MenuItem>
+            <MenuItem  Header="_Navigate">
+                <MenuItem Name="GoToLesson" Header="_Go to lesson" Click="GoToLesson_Click"/>
+            </MenuItem>
+            
         </Menu>
         <!--Cards-->
         <Grid Grid.Row="2">
@@ -50,7 +54,7 @@
             <userControls:BiddingBoxView x:Name="BiddingBoxView" Grid.Column="1"/>
             <userControls:AuctionView x:Name="AuctionView" Grid.Column="2" Background="White"/>
             <StackPanel Grid.Column="3">
-                <Button Width="75" Height="23" Content="Hint" Click="Button_Click"/>
+                <Button Width="75" Height="23" Content="Hint" Click="ButtonHintClick"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="5" Margin="0,0,0,139">

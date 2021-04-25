@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Reflection;
+using System.IO;
 using Microsoft.Win32;
 using EngineWrapper;
 using Common;
@@ -23,11 +25,13 @@ namespace Wpf.BidTrainer
     public partial class MainWindow : Window
     {
         private readonly BidManager bidManager = new();
-        private readonly Pbn pbn = new();
-        private int boardIndex = 0;
-        private Dictionary<Player, string> Deal => pbn.Boards[boardIndex].Deal;
-        private Player Dealer => pbn.Boards[boardIndex].Dealer;
         private readonly Auction auction = new();
+        private readonly Pbn pbn = new();
+
+        private static int CurrentBoardIndex => Settings1.Default.CurrentBoardIndex;
+        private Dictionary<Player, string> Deal => pbn.Boards[CurrentBoardIndex].Deal;
+        private Player Dealer => pbn.Boards[CurrentBoardIndex].Dealer;
+        private Lesson lesson;
 
         public MainWindow()
         {
@@ -37,6 +41,18 @@ namespace Wpf.BidTrainer
             MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
             BiddingBoxView.BiddingBoxViewModel.DoBid = new DoBidCommand(ClickBiddingBoxButton);
             AuctionView.AuctionViewModel.Auction = auction;
+
+            StartLesson();
+        }
+
+        public void StartLesson()
+        {
+            var startPage = new StartPage();
+            startPage.ShowDialog();
+            Settings1.Default.CurrentBoardIndex = startPage.IsContinueWhereLeftOff ? Settings1.Default.CurrentBoardIndex : 0;
+            lesson = startPage.Lesson;
+            pbn.Load(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+
             StartNextBoard();
         }
 
@@ -66,7 +82,7 @@ namespace Wpf.BidTrainer
         private void StartNextBoard()
         {
             panelNorth.Visibility = Visibility.Hidden;
-            if (boardIndex <= pbn.Boards.Count - 1)
+            if (CurrentBoardIndex <= pbn.Boards.Count - 1)
                 StartBidding();
         }
 
@@ -77,7 +93,7 @@ namespace Wpf.BidTrainer
             auction.Clear(Dealer);
             AuctionView.AuctionViewModel.UpdateAuction(auction);
             bidManager.Init();
-            StatusBar.Content = $"Board:{boardIndex + 1}";
+            StatusBar.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
             auction.currentPlayer = Dealer;
             BidTillSouth();
         }
@@ -104,7 +120,7 @@ namespace Wpf.BidTrainer
             {
                 panelNorth.Visibility = Visibility.Visible;
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
-                boardIndex++;
+                Settings1.Default.CurrentBoardIndex++;
                 StartNextBoard();
             }
         }
@@ -131,7 +147,7 @@ namespace Wpf.BidTrainer
                 try
                 {
                     pbn.Load(openFileDialog.FileName);
-                    boardIndex = 0;
+                    Settings1.Default.CurrentBoardIndex = 0;
                     StartBidding();
                 }
                 catch (Exception ex)
@@ -169,9 +185,14 @@ namespace Wpf.BidTrainer
             ShowBothHands();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ButtonHintClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Help;
+        }
+
+        private void GoToLesson_Click(object sender, RoutedEventArgs e)
+        {
+            StartLesson();
         }
     }
 }

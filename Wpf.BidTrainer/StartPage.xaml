@@ -1,0 +1,28 @@
+﻿<Window x:Class="Wpf.BidTrainer.StartPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Wpf.BidTrainer"
+        mc:Ignorable="d"
+        Title="Choose lesson" Height="190" Width="500">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Yellow"/>
+            <Setter Property="Foreground" Value="Blue"/>
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
+    </Window.Resources>
+    <UniformGrid Rows="2">
+        <ItemsControl ItemsSource="{Binding Lessons}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Content}"
+                            Command="{Binding StartLessonCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" 
+                            CommandParameter="{Binding LessonNr}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Content="Continue where I left off" Click="Button_Continue_Click"/>
+    </UniformGrid>
+</Window>
