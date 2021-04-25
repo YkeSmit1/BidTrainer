@@ -19,28 +19,38 @@ using Microsoft.Win32;
 using EngineWrapper;
 using Common;
 using Wpf.BidControls.Commands;
+using Newtonsoft.Json;
 
 namespace Wpf.BidTrainer
 {
     public partial class MainWindow : Window
     {
+        // Bidding
         private readonly BidManager bidManager = new();
         private readonly Auction auction = new();
         private readonly Pbn pbn = new();
 
+        // Lesson
         private static int CurrentBoardIndex => Settings1.Default.CurrentBoardIndex;
         private Dictionary<Player, string> Deal => pbn.Boards[CurrentBoardIndex].Deal;
         private Player Dealer => pbn.Boards[CurrentBoardIndex].Dealer;
         private Lesson lesson;
+        private List<Lesson> lessons;
+
+        // Results
+        private Result currentResult;
+        private DateTime startTimeBoard;
+        private readonly Results results = new();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            LoadSampleBoards();
             MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
             BiddingBoxView.BiddingBoxViewModel.DoBid = new DoBidCommand(ClickBiddingBoxButton);
             AuctionView.AuctionViewModel.Auction = auction;
+            if (File.Exists("results.json"))
+                results = JsonConvert.DeserializeObject<Results>(File.ReadAllText("results.json"));
 
             StartLesson();
         }
@@ -49,6 +59,7 @@ namespace Wpf.BidTrainer
         {
             var startPage = new StartPage();
             startPage.ShowDialog();
+            lessons = startPage.Lessons;
             Settings1.Default.CurrentBoardIndex = startPage.IsContinueWhereLeftOff ? Settings1.Default.CurrentBoardIndex : 0;
             lesson = startPage.Lesson;
             pbn.Load(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
@@ -73,7 +84,10 @@ namespace Wpf.BidTrainer
                 AuctionView.AuctionViewModel.UpdateAuction(auction);
 
                 if (bid != engineBid)
+                {
                     MessageBox.Show($"The correct bid is {engineBid}. Description: {engineBid.description}.", "Incorrect bid");
+                    currentResult.AnsweredCorrectly = false;
+                }
 
                 BidTillSouth();
             }
@@ -82,8 +96,22 @@ namespace Wpf.BidTrainer
         private void StartNextBoard()
         {
             panelNorth.Visibility = Visibility.Hidden;
-            if (CurrentBoardIndex <= pbn.Boards.Count - 1)
-                StartBidding();
+            if (CurrentBoardIndex > pbn.Boards.Count - 1)
+            {
+                var newLessons = lessons.Where(x => x.LessonNr == lesson.LessonNr + 1);
+                if (newLessons.Any())
+                {
+                    lesson = newLessons.Single();
+                    Settings1.Default.CurrentBoardIndex = 0;
+                }
+                else
+                {
+                    BiddingBoxView.IsEnabled = false;
+                    ShowReport();
+                    return;
+                }
+            }
+            StartBidding();
         }
 
         private void StartBidding()
@@ -95,6 +123,8 @@ namespace Wpf.BidTrainer
             bidManager.Init();
             StatusBar.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
             auction.currentPlayer = Dealer;
+            startTimeBoard = DateTime.Now;
+            currentResult = new Result();
             BidTillSouth();
         }
 
@@ -119,24 +149,12 @@ namespace Wpf.BidTrainer
             if (endOfBidding)
             {
                 panelNorth.Visibility = Visibility.Visible;
+                currentResult.TimeElapsed = DateTime.Now - startTimeBoard;
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
+                results.AddResult(lesson.LessonNr, CurrentBoardIndex, currentResult);
                 Settings1.Default.CurrentBoardIndex++;
                 StartNextBoard();
             }
-        }
-
-        private void LoadSampleBoards()
-        {
-            pbn.Boards.AddRange(new[] { new BoardDto
-            {
-                Deal = new Dictionary<Player, string> {{ Player.West, "864,Q743,Q3,AQ95" },{ Player.North, "AJ32,J9,AJ65,K84" },
-                    { Player.East, "KT5,652,KT4,JT63" },{ Player.South, "Q97,AKT8,9872,72" } }
-            },
-            new BoardDto
-            {
-                Deal = new Dictionary<Player, string> {{ Player.West, "864,Q743,Q3,AQ95" }, { Player.North,"AKJ3,J9,AJ65,K84" },
-                    { Player.East, "T52,652,KT4,JT72" }, { Player.South,"Q97,AKT8,9872,63" } }
-            }});
         }
 
         private void MenuOpenPbn_Click(object sender, RoutedEventArgs e)
@@ -175,6 +193,7 @@ namespace Wpf.BidTrainer
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            File.WriteAllText("results.json", JsonConvert.SerializeObject(results, Formatting.Indented));
             Settings1.Default.AlternateSuits = MenuUseAlternateSuits.IsChecked;
             Settings1.Default.Save();
         }
@@ -188,11 +207,22 @@ namespace Wpf.BidTrainer
         private void ButtonHintClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Help;
+            currentResult.UsedHint = true;
         }
 
         private void GoToLesson_Click(object sender, RoutedEventArgs e)
         {
             StartLesson();
+        }
+
+        private void MenuShowReport_Click(object sender, RoutedEventArgs e)
+        {
+            ShowReport();
+        }
+
+        private void ShowReport()
+        {
+            MessageBox.Show(results.GetReport());
         }
     }
 }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Wpf.BidTrainer"
         xmlns:userControls="clr-namespace:Wpf.BidControls.Views;assembly=Wpf.BidControls"
         mc:Ignorable="d"
-        Title="Bidtrainer" Height="601" Width="746" Closed="Window_Closed">
+        Title="Bidtrainer" Height="601" Width="746" Closed="Window_Closed" WindowStartupLocation="CenterScreen">
     <Window.Resources>
     </Window.Resources>
     <Grid Background="Green">
@@ -22,8 +22,8 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
-                <MenuItem Name="MenuOpenPbn" Header="_Open Pbn" InputGestureText="Ctrl+O" Click="MenuOpenPbn_Click"/>
-                <MenuItem Name="MenuSavePbn" Header="_Save Pbn" InputGestureText="Ctrl+S" Click="MenuSavePbn_Click"/>
+                <MenuItem Name="MenuOpenPbn" Header="_Open Pbn" Click="MenuOpenPbn_Click"/>
+                <MenuItem Name="MenuSavePbn" Header="_Save Pbn" Click="MenuSavePbn_Click"/>
                 <Separator/>
                 <MenuItem Name="MenuChangeDatabase" Header="_Change rules database"/>
             </MenuItem>
@@ -31,7 +31,10 @@
                 <MenuItem Name="MenuUseAlternateSuits" Header="_Use alternate suits" Click="MenuUseAlternateSuits_Click"/>
             </MenuItem>
             <MenuItem  Header="_Navigate">
-                <MenuItem Name="GoToLesson" Header="_Go to lesson" Click="GoToLesson_Click"/>
+                <MenuItem Name="MenuGoToLesson" Header="_Go to lesson" Click="GoToLesson_Click"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Name="MenuShowReport" Header="_Show report" Click="MenuShowReport_Click"/>
             </MenuItem>
             
         </Menu>
