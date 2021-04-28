@@ -10,7 +10,8 @@ using System.Windows.Media;
 using Common;
 
 namespace Wpf.BidControls.Converters
-{    public class SuitToColorConverter : IValueConverter
+{
+    public class SuitToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

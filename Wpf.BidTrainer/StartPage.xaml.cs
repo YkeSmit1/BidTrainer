@@ -39,7 +39,7 @@ namespace Wpf.BidTrainer
         }
 
         private void Button_Continue_Click(object sender, RoutedEventArgs e)
-        {            
+        {
             Close();
             IsContinueWhereLeftOff = true;
         }

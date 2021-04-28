@@ -9,7 +9,7 @@ namespace Wpf.BidTrainer
 {
     public class StartLessonCommand : ICommand
     {
-        Action<int> action;
+        private readonly Action<int> action;
 
         public StartLessonCommand(Action<int> action)
         {

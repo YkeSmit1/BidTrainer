@@ -20,7 +20,7 @@ namespace Wpf.BidTrainer
     }
     public class Results
     {
-        class ResultsPerLesson
+        private class ResultsPerLesson
         {
             [JsonProperty]
             public readonly Dictionary<int, Result> results = new();
@@ -48,7 +48,7 @@ namespace Wpf.BidTrainer
         }
 
         [JsonProperty]
-        readonly Dictionary<int, ResultsPerLesson> allResults = new();
+        private readonly Dictionary<int, ResultsPerLesson> allResults = new();
         public void AddResult(int lesson, int board, Result result)
         {
             if (!allResults.ContainsKey(lesson))

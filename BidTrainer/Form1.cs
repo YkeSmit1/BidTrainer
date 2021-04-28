@@ -28,18 +28,24 @@ namespace BidTrainer
             toolStripMenuItemAlternateSuits.Checked = Settings1.Default.AlternateSuits;
             ShowBiddingBox();
             ShowAuction();
-            pbn.Boards.Add(new BoardDto { Deal = new Dictionary<Player, string> {
+            pbn.Boards.Add(new BoardDto
+            {
+                Deal = new Dictionary<Player, string> {
                 { Player.West, "864,Q743,Q3,AQ95" },
                 { Player.North, "AJ32,J9,AJ65,K84" },
                 { Player.East, "KT5,652,KT4,JT63" },
-                { Player.South, "Q97,AKT8,9872,72" } 
-            }});
-            pbn.Boards.Add(new BoardDto {Deal = new Dictionary<Player, string> {
+                { Player.South, "Q97,AKT8,9872,72" }
+            }
+            });
+            pbn.Boards.Add(new BoardDto
+            {
+                Deal = new Dictionary<Player, string> {
                 { Player.West, "864,Q743,Q3,AQ95" },
                 { Player.North,"AKJ3,J9,AJ65,K84" },
                 { Player.East, "T52,652,KT4,JT63" },
-                { Player.South,"Q97,AKT8,9872,72" } 
-            }});
+                { Player.South,"Q97,AKT8,9872,72" }
+            }
+            });
 
             ShowBothHands();
             StartBidding();
@@ -108,14 +114,14 @@ namespace BidTrainer
                     BidTillSouth(auctionControl.auction);
                 }
             }
-            biddingBox = new BiddingBox(handler) {Parent = this};
+            biddingBox = new BiddingBox(handler) { Parent = this };
             biddingBox.Show();
         }
 
         private void ShowAuction()
         {
-            auctionControl = new AuctionControl {Parent = this};
-                auctionControl.Show();
+            auctionControl = new AuctionControl { Parent = this };
+            auctionControl.Show();
         }
 
         private void StartBidding()
