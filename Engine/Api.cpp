@@ -5,9 +5,9 @@
 #include <iostream>
 #include <sstream>
 #include "Rule.h"
-#include <unordered_map>
 #include "SQLiteCppWrapper.h"
 #include <filesystem>
+#include "Utils.h"
 
 HandCharacteristic GetHandCharacteristic(const std::string& hand)
 {
@@ -25,23 +25,44 @@ ISQLiteWrapper* GetSqliteWrapper()
     return sqliteWrapper.get();
 }
 
-int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, int minSpades, int minHearts, int minDiamonds, int minClubs, Phase* newPhase, char* description)
+bool GetHasStopInOponentsSuit(std::string hand, Suit oponentsSuit)
+{
+    auto suit = 3 - int(oponentsSuit);
+    auto cardsInOponentSuit = Utils::Split<char>(hand, ',')[suit];
+    if (cardsInOponentSuit.length() == 0)
+        return false;
+
+    switch (cardsInOponentSuit[0])
+    {
+    case 'A': return true;
+    case 'K': return cardsInOponentSuit.length() >= 2;
+    case 'Q': return cardsInOponentSuit.length() >= 3;
+    case 'J': return cardsInOponentSuit.length() >= 4;
+    default:
+        return false;
+    }
+}
+
+int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description)
 {
     auto handCharacteristic = GetHandCharacteristic(hand);
-    auto fitSpades = handCharacteristic.Spades + minSpades >= 8;
-    auto fitHearts = handCharacteristic.Hearts + minHearts >= 8;
-    auto fitDiamonds = handCharacteristic.Diamonds + minDiamonds >= 8;
-    auto fitClubs = handCharacteristic.Clubs + minClubs >= 8;
+    auto minSuitsPartnerVec = std::vector<int>(minSuitsPartner, minSuitsPartner + 4);
+    auto fitSpades = handCharacteristic.suitLengths[0] + minSuitsPartner[(int)Suit::Spades] >= 8;
+    auto fitHearts = handCharacteristic.suitLengths[1] + minSuitsPartner[(int)Suit::Hearts] >= 8;
+    auto fitDiamonds = handCharacteristic.suitLengths[2] + minSuitsPartner[(int)Suit::Diamonds] >= 8;
+    auto fitClubs = handCharacteristic.suitLengths[3] + minSuitsPartner[(int)Suit::Clubs] >= 8;
+    auto fits = std::vector<bool>({ fitClubs, fitDiamonds, fitHearts, fitSpades });
 
-    std::vector<bool> fits = { fitSpades, fitHearts, fitDiamonds, fitClubs};
+    auto oponentsSuits = std::vector<int>(minSuitsOpener, minSuitsOpener + 4);
+    auto oponentsSuit = (Suit)std::distance(oponentsSuits.begin(), std::max_element(oponentsSuits.begin(), oponentsSuits.end()));
+    auto stopInOponentsSuit = GetHasStopInOponentsSuit(hand, oponentsSuit);
 
-    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, fits, phase, lastBidId, position);
+    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, fits, oponentsSuit, stopInOponentsSuit, phase, lastBidId, position);
     strncpy(description, descr.c_str(), descr.size());
     description[descr.size()] = '\0';
     *newPhase = lNewfase;
     return bidId;
 }
-
 
 int Setup(const char* database)
 {

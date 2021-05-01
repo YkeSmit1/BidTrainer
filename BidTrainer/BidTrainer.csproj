@@ -24,14 +24,5 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<PropertyGroup>
-			<BidTrainerBuildDirectory>$(ProjectDir)bin\$(Configuration)\net5.0-windows</BidTrainerBuildDirectory>
-			<BidTrainerWpfBuildDirectory>$(ProjectDir)..\Wpf.BidTrainer\bin\$(Configuration)\net5.0-windows</BidTrainerWpfBuildDirectory>	
-	</PropertyGroup>
-		<Copy SourceFiles="$(BidTrainerBuildDirectory)\Engine.dll;$(BidTrainerBuildDirectory)\sqlite3.dll" DestinationFolder="$(BidTrainerWpfBuildDirectory)" />
-	</Target>	
-  
+  </ItemGroup> 
 </Project>

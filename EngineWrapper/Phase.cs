@@ -8,6 +8,9 @@
         OneNT,
         Stayman,
         JacobyHearts,
-        JacobySpades
+        JacobySpades,
+        OverCall,
+        TakeOutDbl,
+        OneNTOvercall
     }
 }

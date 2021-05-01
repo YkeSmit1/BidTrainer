@@ -98,7 +98,7 @@ namespace Common
 
         public static Bid GetBid(int bidId)
         {
-            return bidId == 0 ? PassBid : new Bid((bidId - 1) / 5 + 1, (Suit)((bidId - 1) % 5));
+            return bidId == -1 ? Dbl : bidId == 0 ? PassBid : new Bid((bidId - 1) / 5 + 1, (Suit)((bidId - 1) % 5));
         }
 
         public static int GetBidId(Bid bid)
@@ -160,7 +160,8 @@ namespace Common
 
         public int[] GetMinSuitLength()
         {
-            return (minRecords == null || minRecords.Keys.Count == 0) ? new[] { 0, 0, 0, 0 } : new[] { minRecords["MinSpades"], minRecords["MinHearts"], minRecords["MinDiamonds"], minRecords["MinClubs"] };
+            return (minRecords == null || minRecords.Keys.Count == 0) ? new[] { 0, 0, 0, 0 } : 
+                new[] { minRecords["MinClubs"], minRecords["MinDiamonds"], minRecords["MinHearts"], minRecords["MinSpades"]};
         }
 
         // Operators

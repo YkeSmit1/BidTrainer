@@ -4,17 +4,31 @@ namespace EngineWrapper
 {
     public class BidManager
     {
-        public Phase phase = Phase.Opening;
+        private Phase phaseOpener = Phase.Opening;
+        private Phase phaseDefensive = Phase.Opening;
+
+        public Phase GetCurrentPhase(int position)
+        {
+            var isPhaseOpener = position % 2 == 1;
+            return isPhaseOpener ? phaseOpener : phaseDefensive;
+        }
 
         public Bid GetBid(Auction auction, string handsString)
         {
+            var isPhaseOpener = auction.currentPosition % 2 == 1;
+            var phase = GetCurrentPhase(auction.currentPosition);
+
             var (bidIdFromRule, nextPhase, description) = BidGenerator.GetBid(handsString, auction, phase);
-            var bid = CalculateBid(bidIdFromRule, description, auction.currentPosition);
-            phase = nextPhase;
+            var bid = CalculateBid(bidIdFromRule, description, auction.currentPosition, phase);
+
+            if (isPhaseOpener)
+                phaseOpener = nextPhase;
+            else
+                phaseDefensive = nextPhase;
             return bid;
         }
 
-        private Bid CalculateBid(int bidIdFromRule, string description, int position)
+        private static Bid CalculateBid(int bidIdFromRule, string description, int position, Phase phase)
         {
             if (bidIdFromRule == 0)
                 return Bid.PassBid;
@@ -30,7 +44,8 @@ namespace EngineWrapper
 
         public void Init()
         {
-            phase = Phase.Opening;
+            phaseOpener = Phase.Opening;
+            phaseDefensive = Phase.Opening;
         }
     }
 }

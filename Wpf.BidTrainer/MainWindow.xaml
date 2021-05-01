@@ -32,6 +32,7 @@
             </MenuItem>
             <MenuItem  Header="_Navigate">
                 <MenuItem Name="MenuGoToLesson" Header="_Go to lesson" Click="GoToLesson_Click"/>
+                <MenuItem Name="MenuBidAgain" Header="_Bid board again" Click="MenuBidAgain_Click"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Name="MenuShowReport" Header="_Show report" Click="MenuShowReport_Click"/>

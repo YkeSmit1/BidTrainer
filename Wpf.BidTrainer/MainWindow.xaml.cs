@@ -72,7 +72,8 @@ namespace Wpf.BidTrainer
             var bid = (Bid)parameter;
             if (Cursor == Cursors.Help)
             {
-                var (minRecords, maxRecords) = BidGenerator.GetRecords(bid, bidManager.phase, auction.currentPosition);
+                var (minRecords, maxRecords) = BidGenerator.GetRecords(bid,
+                    bidManager.GetCurrentPhase(auction.currentPosition), auction.currentPosition);
                 var information = Util.GetInformation(minRecords, maxRecords);
                 Cursor = Cursors.Arrow;
                 MessageBox.Show(information, "Information");
@@ -102,6 +103,7 @@ namespace Wpf.BidTrainer
                 if (newLessons.Any())
                 {
                     lesson = newLessons.Single();
+                    pbn.Load(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
                     Settings1.Default.CurrentBoardIndex = 0;
                 }
                 else
@@ -223,6 +225,11 @@ namespace Wpf.BidTrainer
         private void ShowReport()
         {
             MessageBox.Show(results.GetReport());
+        }
+
+        private void MenuBidAgain_Click(object sender, RoutedEventArgs e)
+        {
+            StartBidding();
         }
     }
 }
