@@ -3,9 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:converters="clr-namespace:Wpf.BidControls.Converters"
+             xmlns:converters="clr-namespace:Wpf.BidControls.Converters"             
+             xmlns:viewModels="clr-namespace:Wpf.BidControls.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <viewModels:BiddingBoxViewModel/>
+    </UserControl.DataContext>
     <UserControl.Resources>
         <converters:SuitToColorConverter x:Key="SuitToColorConverter"/>
         <converters:BidToSuitStringConverter x:Key="BidToSuitStringConverter"/>
@@ -41,7 +45,7 @@
     <Grid>
         <StackPanel Grid.Column="1">
             <ItemsControl ItemsSource="{Binding SuitBids}" ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
-            <ItemsControl ItemsSource="{Binding NonSuitBids, Mode=OneTime, UpdateSourceTrigger=PropertyChanged}" ItemTemplate="{DynamicResource NonSuitBidsTemplate}">
+            <ItemsControl ItemsSource="{Binding NonSuitBids}" ItemTemplate="{DynamicResource NonSuitBidsTemplate}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>

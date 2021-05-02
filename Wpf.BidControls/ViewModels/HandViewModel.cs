@@ -5,12 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common;
+using MvvmHelpers;
 
 namespace Wpf.BidControls.ViewModels
 {
-    public partial class HandViewModel
+    public class HandViewModel : ObservableObject
     {
         public ObservableCollection<Card> Cards { get; set; } = new();
+        public HandViewModel()
+        {
+            ShowHand("AQJ4,K32,843,QT9", true);
+        }
 
         public void ShowHand(string hand, bool alternateSuits)
         {

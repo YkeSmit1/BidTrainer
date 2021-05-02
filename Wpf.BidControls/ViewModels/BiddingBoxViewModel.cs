@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Common;
+using MvvmHelpers;
 using Wpf.BidControls.Commands;
 
 namespace Wpf.BidControls.ViewModels
@@ -18,7 +19,7 @@ namespace Wpf.BidControls.ViewModels
             public bool IsEnabled { get; set; } = true;
         }
 
-        public ObservableCollection<ObservableCollection<BidEnable>> SuitBids { get; set; } = new();
+        public ObservableCollection<Grouping<int, BidEnable>> SuitBids { get; set; } = new();
         public ObservableCollection<BidEnable> NonSuitBids { get; set; } = new();
         private BidType currentBidType = BidType.pass;
         private Player currentDeclarer = Player.UnKnown;
@@ -28,8 +29,8 @@ namespace Wpf.BidControls.ViewModels
 
         public BiddingBoxViewModel()
         {
-            SuitBids = new ObservableCollection<ObservableCollection<BidEnable>>(Enumerable.Range(1, 7)
-                .Select(level => new ObservableCollection<BidEnable>(Enum.GetValues(typeof(Suit)).Cast<Suit>()
+            SuitBids = new ObservableCollection<Grouping<int, BidEnable>>(Enumerable.Range(1, 7)
+                .Select(level => new Grouping<int, BidEnable>(level, Enum.GetValues(typeof(Suit)).Cast<Suit>()
                 .Select(suit => new BidEnable { Bid = new Bid(level, suit), IsEnabled = true }))));
             NonSuitBids = new ObservableCollection<BidEnable> {
                 new BidEnable { Bid = Bid.PassBid, IsEnabled = true },

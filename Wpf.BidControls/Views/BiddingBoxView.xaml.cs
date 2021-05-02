@@ -21,12 +21,9 @@ namespace Wpf.BidControls.Views
     /// </summary>
     public partial class BiddingBoxView : UserControl
     {
-        public BiddingBoxViewModel BiddingBoxViewModel { get; private set; } = new();
-
         public BiddingBoxView()
         {
             InitializeComponent();
-            DataContext = BiddingBoxViewModel;
         }
     }
 }

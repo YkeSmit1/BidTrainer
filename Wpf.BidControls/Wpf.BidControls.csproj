@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="ObjectCloner" Version="2.2.2" />
+    <PackageReference Include="Refractored.MvvmHelpers" Version="1.6.2" />
   </ItemGroup>
 
   <ItemGroup>

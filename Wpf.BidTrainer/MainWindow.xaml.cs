@@ -20,6 +20,7 @@ using EngineWrapper;
 using Common;
 using Wpf.BidControls.Commands;
 using Newtonsoft.Json;
+using Wpf.BidControls.ViewModels;
 
 namespace Wpf.BidTrainer
 {
@@ -42,13 +43,20 @@ namespace Wpf.BidTrainer
         private DateTime startTimeBoard;
         private readonly Results results = new();
 
+        // ViewModels
+        private BiddingBoxViewModel BiddingBoxViewModel => (BiddingBoxViewModel)BiddingBoxView.DataContext;
+        private AuctionViewModel AuctionViewModel => (AuctionViewModel)AuctionView.DataContext;
+        private HandViewModel HandViewModelNorth => (HandViewModel)panelNorth.DataContext;
+        private HandViewModel HandViewModelSouth => (HandViewModel)panelSouth.DataContext;
+
+
         public MainWindow()
         {
             InitializeComponent();
 
             MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
-            BiddingBoxView.BiddingBoxViewModel.DoBid = new DoBidCommand(ClickBiddingBoxButton);
-            AuctionView.AuctionViewModel.Auction = auction;
+            BiddingBoxViewModel.DoBid = new DoBidCommand(ClickBiddingBoxButton);
+            AuctionViewModel.Auction = auction;
             if (File.Exists("results.json"))
                 results = JsonConvert.DeserializeObject<Results>(File.ReadAllText("results.json"));
 
@@ -82,7 +90,8 @@ namespace Wpf.BidTrainer
             {
                 var engineBid = bidManager.GetBid(auction, Deal[Player.South]);
                 auction.AddBid(engineBid);
-                AuctionView.AuctionViewModel.UpdateAuction(auction);
+                AuctionViewModel.UpdateAuction(auction);
+                BiddingBoxViewModel.UpdateButtons(engineBid, auction.currentPlayer);
 
                 if (bid != engineBid)
                 {
@@ -119,9 +128,9 @@ namespace Wpf.BidTrainer
         private void StartBidding()
         {
             ShowBothHands();
-            BiddingBoxView.BiddingBoxViewModel.ClearBiddingBox();
+            BiddingBoxViewModel.ClearBiddingBox();
             auction.Clear(Dealer);
-            AuctionView.AuctionViewModel.UpdateAuction(auction);
+            AuctionViewModel.UpdateAuction(auction);
             bidManager.Init();
             StatusBar.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
             auction.currentPlayer = Dealer;
@@ -132,8 +141,8 @@ namespace Wpf.BidTrainer
 
         private void ShowBothHands()
         {
-            panelNorth.HandViewModel.ShowHand(Deal[Player.North], MenuUseAlternateSuits.IsChecked);
-            panelSouth.HandViewModel.ShowHand(Deal[Player.South], MenuUseAlternateSuits.IsChecked);
+            HandViewModelNorth.ShowHand(Deal[Player.North], MenuUseAlternateSuits.IsChecked);
+            HandViewModelSouth.ShowHand(Deal[Player.South], MenuUseAlternateSuits.IsChecked);
         }
 
         private void BidTillSouth()
@@ -142,10 +151,10 @@ namespace Wpf.BidTrainer
             {
                 var bid = bidManager.GetBid(auction, Deal[auction.currentPlayer]);
                 auction.AddBid(bid);
-                BiddingBoxView.BiddingBoxViewModel.UpdateButtons(bid, auction.currentPlayer);
+                BiddingBoxViewModel.UpdateButtons(bid, auction.currentPlayer);
             }
 
-            AuctionView.AuctionViewModel.UpdateAuction(auction);
+            AuctionViewModel.UpdateAuction(auction);
             var endOfBidding = auction.IsEndOfBidding();
             BiddingBoxView.IsEnabled = !endOfBidding;
             if (endOfBidding)

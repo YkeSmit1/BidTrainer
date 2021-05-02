@@ -3,33 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:Wpf.BidControls.ViewModels"
              xmlns:converters="clr-namespace:Wpf.BidControls.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <viewModels:AuctionViewModel/>
+    </UserControl.DataContext>
     <UserControl.Resources>
         <converters:SuitToColorConverter x:Key="SuitToColorConverter"/>
         <converters:BidToSuitStringConverter x:Key="BidToSuitStringConverter"/>
         <converters:BidToRankStringConverter x:Key="BidToRankStringTextConverter"/>
-        <DataTemplate x:Key="DataTemplate_Auction_Level2">
-            <StackPanel Orientation="Horizontal" Width="57">
-                <TextBlock Text="{Binding Value, Converter={StaticResource BidToRankStringTextConverter}}"/>
-                <TextBlock Text="{Binding Value, Converter={StaticResource BidToSuitStringConverter}}" 
-                Foreground="{Binding Value.suit, Converter={StaticResource SuitToColorConverter}}"/>
-            </StackPanel>
-
-
-        </DataTemplate>
-
-        <DataTemplate x:Key="DataTemplate_Auction_Level1">
-            <ItemsControl ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate_Auction_Level2}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-
-        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <StackPanel Grid.Column="2">
@@ -52,14 +36,32 @@
                             <TextBlock Grid.Column="2" Text="East"/>
                             <TextBlock Grid.Column="3" Text="South"/>
                         </Grid>
-                        <ItemsControl Grid.Row="1" 
-                                              ItemsSource="{Binding Auction.bids.Values, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
-                                              ItemTemplate="{StaticResource DataTemplate_Auction_Level1}"/>
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding Auction.bids.Values}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="57">
+                                                    <TextBlock Text="{Binding Value, Converter={StaticResource BidToRankStringTextConverter}}"/>
+                                                    <TextBlock Text="{Binding Value, Converter={StaticResource BidToSuitStringConverter}}" 
+                                                               Foreground="{Binding Value.suit, Converter={StaticResource SuitToColorConverter}}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
 
+                                        </ItemsControl.ItemTemplate>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </Grid>
                 </StackPanel>
             </Grid>
-
         </StackPanel>
     </Grid>
 </UserControl>

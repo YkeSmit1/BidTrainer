@@ -21,12 +21,9 @@ namespace Wpf.BidControls.Views
     /// </summary>
     public partial class HandView : UserControl
     {
-        public HandViewModel HandViewModel { get; private set; } = new();
-
         public HandView()
         {
             InitializeComponent();
-            DataContext = HandViewModel;
         }
     }
 }
