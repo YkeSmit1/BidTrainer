@@ -44,3 +44,8 @@ jobs:
       with:
         name: distribute
         path: .\Wpf.BidTrainer\bin\Release\net5.0-windows\
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "distribute.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}        
