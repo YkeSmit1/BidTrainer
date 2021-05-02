@@ -1,0 +1,53 @@
+﻿<Window x:Class="Wpf.BidTrainer.ReportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Wpf.BidTrainer"
+        xmlns:viewModels="clr-namespace:Wpf.BidTrainer.ViewModels"
+        xmlns:converters="clr-namespace:Wpf.BidTrainer.Converters"
+        mc:Ignorable="d"
+        Title="Results" Height="710" Width="400" WindowStartupLocation="CenterScreen" Background="Lavender">
+    <Window.Resources>
+        <converters:BoolToImageConverter x:Key="BoolToImageConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <viewModels:ReportViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <StackPanel>
+        <TextBlock Text="Overview" FontSize="18" Margin="5"/>
+        <TextBlock Text="{Binding Results.Title}" Padding="10"/>
+            <Separator />
+            <ItemsControl ItemsSource="{Binding Results.AllResults}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <TextBlock Text="Lesson: " FontSize="18"/>
+                            <TextBlock Text="{Binding Key}" FontSize="18"/>
+                        </StackPanel>
+                        <TextBlock Padding="10" Text="{Binding Value.Title}"/>
+                        <ItemsControl ItemsSource="{Binding Value.Results}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="10">
+                                        <TextBlock Text="{Binding Key}" HorizontalAlignment="Center"/>
+                                        <Image Source="{Binding Value.AnsweredCorrectly, Converter={StaticResource BoolToImageConverter} }" Width="25"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Separator/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        </StackPanel>
+    </Grid>
+</Window>

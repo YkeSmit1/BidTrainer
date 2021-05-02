@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Common;
 using MvvmHelpers;
-using Wpf.BidControls.Commands;
 
 namespace Wpf.BidControls.ViewModels
 {
@@ -24,7 +23,7 @@ namespace Wpf.BidControls.ViewModels
         private BidType currentBidType = BidType.pass;
         private Player currentDeclarer = Player.UnKnown;
 
-        public DoBidCommand DoBid { get; set; }
+        public ICommand DoBid { get; set; }
         public bool IsEnabled { get; set; }
 
         public BiddingBoxViewModel()
@@ -34,15 +33,15 @@ namespace Wpf.BidControls.ViewModels
                 .Select(suit => new BidEnable { Bid = new Bid(level, suit), IsEnabled = true }))));
             NonSuitBids = new ObservableCollection<BidEnable> {
                 new BidEnable { Bid = Bid.PassBid, IsEnabled = true },
-                new BidEnable { Bid = Bid.Dbl, IsEnabled = true },
-                new BidEnable { Bid = Bid.Rdbl, IsEnabled = true } };
+                new BidEnable { Bid = Bid.Dbl, IsEnabled = false },
+                new BidEnable { Bid = Bid.Rdbl, IsEnabled = false } };
             ClearBiddingBox();
         }
 
         public void ClearBiddingBox()
         {
             SuitBids.SelectMany(bid => bid).ToList().ForEach(x => x.IsEnabled = true);
-            NonSuitBids.ToList().ForEach(x => x.IsEnabled = true);
+            NonSuitBids.ToList().ForEach(x => x.IsEnabled = (x.Bid.bidType == BidType.pass) );
             currentBidType = BidType.pass;
             currentDeclarer = Player.UnKnown;
 
@@ -87,6 +86,7 @@ namespace Wpf.BidControls.ViewModels
                     {
                         switch (currentBidType)
                         {
+                            case BidType.pass:
                             case BidType.bid:
                                 SetButtons(false, Bid.Dbl, Bid.Rdbl);
                                 break;

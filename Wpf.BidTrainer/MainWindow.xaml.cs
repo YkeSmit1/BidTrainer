@@ -18,9 +18,10 @@ using System.IO;
 using Microsoft.Win32;
 using EngineWrapper;
 using Common;
-using Wpf.BidControls.Commands;
 using Newtonsoft.Json;
 using Wpf.BidControls.ViewModels;
+using Wpf.BidTrainer.ViewModels;
+using MvvmHelpers.Commands;
 
 namespace Wpf.BidTrainer
 {
@@ -49,13 +50,12 @@ namespace Wpf.BidTrainer
         private HandViewModel HandViewModelNorth => (HandViewModel)panelNorth.DataContext;
         private HandViewModel HandViewModelSouth => (HandViewModel)panelSouth.DataContext;
 
-
         public MainWindow()
         {
             InitializeComponent();
 
             MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
-            BiddingBoxViewModel.DoBid = new DoBidCommand(ClickBiddingBoxButton);
+            BiddingBoxViewModel.DoBid = new Command(ClickBiddingBoxButton);
             AuctionViewModel.Auction = auction;
             if (File.Exists("results.json"))
                 results = JsonConvert.DeserializeObject<Results>(File.ReadAllText("results.json"));
@@ -71,6 +71,8 @@ namespace Wpf.BidTrainer
             Settings1.Default.CurrentBoardIndex = startPage.IsContinueWhereLeftOff ? Settings1.Default.CurrentBoardIndex : 0;
             lesson = startPage.Lesson;
             pbn.Load(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+            if (!startPage.IsContinueWhereLeftOff)
+                results.AllResults.Remove(lesson.LessonNr);
 
             StartNextBoard();
         }
@@ -89,9 +91,9 @@ namespace Wpf.BidTrainer
             else
             {
                 var engineBid = bidManager.GetBid(auction, Deal[Player.South]);
+                BiddingBoxViewModel.UpdateButtons(engineBid, auction.currentPlayer);
                 auction.AddBid(engineBid);
                 AuctionViewModel.UpdateAuction(auction);
-                BiddingBoxViewModel.UpdateButtons(engineBid, auction.currentPlayer);
 
                 if (bid != engineBid)
                 {
@@ -233,7 +235,8 @@ namespace Wpf.BidTrainer
 
         private void ShowReport()
         {
-            MessageBox.Show(results.GetReport());
+            var reportWindow = new ReportWindow(results);
+            reportWindow.ShowDialog();
         }
 
         private void MenuBidAgain_Click(object sender, RoutedEventArgs e)

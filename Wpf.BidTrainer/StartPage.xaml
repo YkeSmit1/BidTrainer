@@ -8,7 +8,7 @@
         Title="Choose lesson" Height="190" Width="500" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="Button">
-            <Setter Property="Background" Value="Yellow"/>
+            <Setter Property="Background" Value="BlanchedAlmond"/>
             <Setter Property="Foreground" Value="Blue"/>
             <Setter Property="FontSize" Value="16"/>
         </Style>

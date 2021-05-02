@@ -24,6 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\correct.png" />
+    <Resource Include="Resources\incorrect.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Settings1.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
