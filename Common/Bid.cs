@@ -161,7 +161,7 @@ namespace Common
         public int[] GetMinSuitLength()
         {
             return (minRecords == null || minRecords.Keys.Count == 0) ? new[] { 0, 0, 0, 0 } : 
-                new[] { minRecords["MinClubs"], minRecords["MinDiamonds"], minRecords["MinHearts"], minRecords["MinSpades"]};
+                new[] { minRecords["MinSpades"], minRecords["MinHearts"], minRecords["MinDiamonds"], minRecords["MinClubs"] };
         }
 
         // Operators

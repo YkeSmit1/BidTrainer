@@ -25,10 +25,9 @@ ISQLiteWrapper* GetSqliteWrapper()
     return sqliteWrapper.get();
 }
 
-bool GetHasStopInOponentsSuit(std::string hand, Suit oponentsSuit)
+bool GetHasStopInOponentsSuit(std::string hand, int oponentsSuit)
 {
-    auto suit = 3 - int(oponentsSuit);
-    auto cardsInOponentSuit = Utils::Split<char>(hand, ',')[suit];
+    auto cardsInOponentSuit = Utils::Split<char>(hand, ',')[oponentsSuit];
     if (cardsInOponentSuit.length() == 0)
         return false;
 
@@ -46,15 +45,13 @@ bool GetHasStopInOponentsSuit(std::string hand, Suit oponentsSuit)
 int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description)
 {
     auto handCharacteristic = GetHandCharacteristic(hand);
+    std::vector<bool> fits;
     auto minSuitsPartnerVec = std::vector<int>(minSuitsPartner, minSuitsPartner + 4);
-    auto fitSpades = handCharacteristic.suitLengths[0] + minSuitsPartner[(int)Suit::Spades] >= 8;
-    auto fitHearts = handCharacteristic.suitLengths[1] + minSuitsPartner[(int)Suit::Hearts] >= 8;
-    auto fitDiamonds = handCharacteristic.suitLengths[2] + minSuitsPartner[(int)Suit::Diamonds] >= 8;
-    auto fitClubs = handCharacteristic.suitLengths[3] + minSuitsPartner[(int)Suit::Clubs] >= 8;
-    auto fits = std::vector<bool>({ fitClubs, fitDiamonds, fitHearts, fitSpades });
+    std::transform(handCharacteristic.suitLengths.begin(), handCharacteristic.suitLengths.end(), minSuitsPartnerVec.begin(), std::back_inserter(fits),
+        [](const auto& x, const auto& y) {return x + y >= 8; });
 
     auto oponentsSuits = std::vector<int>(minSuitsOpener, minSuitsOpener + 4);
-    auto oponentsSuit = (Suit)std::distance(oponentsSuits.begin(), std::max_element(oponentsSuits.begin(), oponentsSuits.end()));
+    auto oponentsSuit = std::distance(oponentsSuits.begin(), std::max_element(oponentsSuits.begin(), oponentsSuits.end()));
     auto stopInOponentsSuit = GetHasStopInOponentsSuit(hand, oponentsSuit);
 
     auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, fits, oponentsSuit, stopInOponentsSuit, phase, lastBidId, position);
