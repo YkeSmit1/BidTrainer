@@ -35,7 +35,8 @@ namespace Wpf.BidTrainer
             Lessons = JsonConvert.DeserializeObject<List<Lesson>>(File.ReadAllText("Lessons.json"));
             DataContext = this;
             StartLessonCommand = new StartLessonCommand(ChooseLesson);
-            Lesson = Lessons.Single(x => x.LessonNr == Settings1.Default.CurrentLesson);
+            var currentLesson = Lessons.Where(x => x.LessonNr == Settings1.Default.CurrentLesson);
+            Lesson = currentLesson.Any() ? currentLesson.First() : Lessons.First();
         }
 
         private void Button_Continue_Click(object sender, RoutedEventArgs e)

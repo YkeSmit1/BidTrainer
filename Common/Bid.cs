@@ -103,7 +103,7 @@ namespace Common
 
         public static int GetBidId(Bid bid)
         {
-            return ((bid.rank - 1) * 5) + (int)bid.suit + 1;
+            return bid == Dbl ? -1 : bid == PassBid ? 0 : ((bid.rank - 1) * 5) + (int)bid.suit + 1;
         }
 
         public static Bid NextBid(Bid bid)
@@ -156,12 +156,6 @@ namespace Common
                 ExpectedContract.GrandSlam => new Bid(7, item1),
                 _ => throw new ArgumentException(nameof(expectedContract)),
             };
-        }
-
-        public int[] GetMinSuitLength()
-        {
-            return (minRecords == null || minRecords.Keys.Count == 0) ? new[] { 0, 0, 0, 0 } : 
-                new[] { minRecords["MinSpades"], minRecords["MinHearts"], minRecords["MinDiamonds"], minRecords["MinClubs"] };
         }
 
         // Operators

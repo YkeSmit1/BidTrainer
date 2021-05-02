@@ -243,5 +243,14 @@ namespace Wpf.BidTrainer
         {
             StartBidding();
         }
+
+        private void MenuGoBack_Click(object sender, RoutedEventArgs e)
+        {
+            if (Settings1.Default.CurrentBoardIndex > 0)
+            {
+                Settings1.Default.CurrentBoardIndex--;
+                StartNextBoard();
+            }
+        }
     }
 }
