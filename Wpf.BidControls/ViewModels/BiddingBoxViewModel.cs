@@ -107,7 +107,8 @@ namespace Wpf.BidControls.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException(Newbid.bidType.ToString());
             }
-            currentBidType = Newbid.bidType;
+            if (Newbid.bidType != BidType.pass)
+                currentBidType = Newbid.bidType;
 
             SuitBids = ObjectCloner.ObjectCloner.DeepClone(lSuitBids);
             OnPropertyChanged(nameof(SuitBids));

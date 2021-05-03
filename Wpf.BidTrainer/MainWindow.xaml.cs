@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Reflection;
 using System.IO;
 using Microsoft.Win32;
@@ -68,9 +67,10 @@ namespace Wpf.BidTrainer
             var startPage = new StartPage();
             startPage.ShowDialog();
             lessons = startPage.Lessons;
-            Settings1.Default.CurrentBoardIndex = startPage.IsContinueWhereLeftOff ? Settings1.Default.CurrentBoardIndex : 0;
+            if (!startPage.IsContinueWhereLeftOff)
+                Settings1.Default.CurrentBoardIndex = 0;
             lesson = startPage.Lesson;
-            pbn.Load(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+            pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
             if (!startPage.IsContinueWhereLeftOff)
                 results.AllResults.Remove(lesson.LessonNr);
 
@@ -82,18 +82,14 @@ namespace Wpf.BidTrainer
             var bid = (Bid)parameter;
             if (Cursor == Cursors.Help)
             {
-                var (minRecords, maxRecords) = BidGenerator.GetRecords(bid,
-                    bidManager.GetCurrentPhase(auction.currentPosition), auction.currentPosition);
-                var information = Util.GetInformation(minRecords, maxRecords);
+                currentResult.UsedHint = true;
                 Cursor = Cursors.Arrow;
-                MessageBox.Show(information, "Information");
+                MessageBox.Show(bidManager.GetInformation(bid, auction.currentPosition), "Information");
             }
             else
             {
                 var engineBid = bidManager.GetBid(auction, Deal[Player.South]);
-                BiddingBoxViewModel.UpdateButtons(engineBid, auction.currentPlayer);
-                auction.AddBid(engineBid);
-                AuctionViewModel.UpdateAuction(auction);
+                UpdateBidControls(engineBid);
 
                 if (bid != engineBid)
                 {
@@ -105,16 +101,24 @@ namespace Wpf.BidTrainer
             }
         }
 
+        private void UpdateBidControls(Bid bid)
+        {
+            BiddingBoxViewModel.UpdateButtons(bid, auction.currentPlayer);
+            auction.AddBid(bid);
+            AuctionViewModel.UpdateAuction(auction);
+        }
+
         private void StartNextBoard()
         {
             panelNorth.Visibility = Visibility.Hidden;
+            BiddingBoxView.IsEnabled = true;
             if (CurrentBoardIndex > pbn.Boards.Count - 1)
             {
                 var newLessons = lessons.Where(x => x.LessonNr == lesson.LessonNr + 1);
                 if (newLessons.Any())
                 {
                     lesson = newLessons.Single();
-                    pbn.Load(System.IO.Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+                    pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
                     Settings1.Default.CurrentBoardIndex = 0;
                 }
                 else
@@ -135,7 +139,6 @@ namespace Wpf.BidTrainer
             AuctionViewModel.UpdateAuction(auction);
             bidManager.Init();
             StatusBar.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
-            auction.currentPlayer = Dealer;
             startTimeBoard = DateTime.Now;
             currentResult = new Result();
             BidTillSouth();
@@ -152,15 +155,12 @@ namespace Wpf.BidTrainer
             while (auction.currentPlayer != Player.South && !auction.IsEndOfBidding())
             {
                 var bid = bidManager.GetBid(auction, Deal[auction.currentPlayer]);
-                auction.AddBid(bid);
-                BiddingBoxViewModel.UpdateButtons(bid, auction.currentPlayer);
+                UpdateBidControls(bid);
             }
 
-            AuctionViewModel.UpdateAuction(auction);
-            var endOfBidding = auction.IsEndOfBidding();
-            BiddingBoxView.IsEnabled = !endOfBidding;
-            if (endOfBidding)
+            if (auction.IsEndOfBidding())
             {
+                BiddingBoxView.IsEnabled = false;
                 panelNorth.Visibility = Visibility.Visible;
                 currentResult.TimeElapsed = DateTime.Now - startTimeBoard;
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
@@ -220,7 +220,6 @@ namespace Wpf.BidTrainer
         private void ButtonHintClick(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Help;
-            currentResult.UsedHint = true;
         }
 
         private void GoToLesson_Click(object sender, RoutedEventArgs e)
@@ -235,8 +234,7 @@ namespace Wpf.BidTrainer
 
         private void ShowReport()
         {
-            var reportWindow = new ReportWindow(results);
-            reportWindow.ShowDialog();
+            new ReportWindow(results).ShowDialog();
         }
 
         private void MenuBidAgain_Click(object sender, RoutedEventArgs e)

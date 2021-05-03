@@ -42,6 +42,12 @@ namespace EngineWrapper
             return currentBid;
         }
 
+        public string GetInformation(Bid bid, int position)
+        {
+            var (minRecords, maxRecords) = BidGenerator.GetRecords(bid, GetCurrentPhase(position), position);
+            return Util.GetInformation(minRecords, maxRecords);
+        }
+
         public void Init()
         {
             phaseOpener = Phase.Opening;
