@@ -3,6 +3,8 @@ name: .NET Core
 on:
   push:
     branches: [ master ]
+    tags: 
+      - 'v*'
   pull_request:
     branches: [ master ]
 
@@ -42,5 +44,5 @@ jobs:
     #  run: dotnet test --no-restore --configuration Release --verbosity normal .\BidTrainerTests\BidTrainerTests.csproj
     - uses: actions/upload-artifact@v2
       with:
-        name: distribute
-        path: .\Wpf.BidTrainer\bin\Release\net5.0-windows\
+        name: distribute.zip
+        path: .\Wpf.BidTrainer\bin\Release\net5.0-windows\  
