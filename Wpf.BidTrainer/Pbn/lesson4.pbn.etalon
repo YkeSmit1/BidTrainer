@@ -25,7 +25,8 @@ Pass	Pass
 [Deal "S:AK975.A6.94.K872 Q6.KQ92.AQJ8.T96 JT.JT843.752.QJ3 8432.75.KT63.A54"]
 [Auction "S"]
 			1S
-X	Pass	Pass	Pass
+X	Pass	2D	Pass
+Pass	Pass
 
 [Event ""]
 [Board "4"]
@@ -72,5 +73,6 @@ Pass
 [Deal "W:T73.Q942.QJ642.T KQ.J.AKT97.KJ753 A842.A765.8.AQ96 J965.KT83.53.842"]
 [Auction "W"]
 Pass	1D	X	Pass
-1H	Pass	Pass	Pass
+1H	2C	Pass	Pass
+Pass
 

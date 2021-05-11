@@ -16,7 +16,7 @@ namespace EngineWrapper
             var bidsPartner = auction.GetBids(Util.GetPartner(auction.currentPlayer));
             var minLengthPartner = GetMinSuitLength(bidsPartner);
 
-            var bidsOpener = auction.GetBids(Util.GetRHO(auction.currentPlayer));
+            var bidsOpener = auction.GetBids(auction.GetDeclarer(auction.currentContract.suit));
             var minLengthOpener = GetMinSuitLength(bidsOpener);
 
             var bidId = Pinvoke.GetBidFromRule(phase, handsString, Bid.GetBidId(auction.currentContract), auction.currentPosition,

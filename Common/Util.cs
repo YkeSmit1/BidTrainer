@@ -423,28 +423,5 @@ namespace Common
                 _ => throw new ArgumentException(nameof(player)),
             };
         }
-
-        public static Player GetLHO(Player player)
-        {
-            return player switch
-            {
-                Player.West => Player.North,
-                Player.North => Player.East,
-                Player.East => Player.South,
-                Player.South => Player.West,
-                _ => throw new ArgumentException(nameof(player)),
-            };
-        }
-        public static Player GetRHO(Player player)
-        {
-            return player switch
-            {
-                Player.West => Player.South,
-                Player.North => Player.West,
-                Player.East => Player.North,
-                Player.South => Player.East,
-                _ => throw new ArgumentException(nameof(player)),
-            };
-        }
     }
 }

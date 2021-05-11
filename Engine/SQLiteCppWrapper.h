@@ -13,6 +13,7 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND ? BETWEEN MinClubs AND MaxClubs
         AND ? BETWEEN MinHcp AND MaxHcp
         AND (IsBalanced IS NULL or IsBalanced = ?)
+        AND (IsTwoSuiter IS NULL or IsTwoSuiter = ?)
         AND (IsReverse IS NULL or IsReverse = ?)
         AND (FitSpades IS NULL or FitSpades = ?)
         AND (FitHearts IS NULL or FitHearts = ?)

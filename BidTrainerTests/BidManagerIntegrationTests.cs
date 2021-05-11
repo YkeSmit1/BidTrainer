@@ -21,7 +21,7 @@ namespace BidTrainer.Tests
                 foreach (var board in pbn.Boards)
                     board.Auction = bidManager.GetAuction(board.Deal, board.Dealer);
 
-                var filePath = pbnFile + DateTime.Now.ToShortDateString();
+                var filePath = pbnFile + "." + DateTime.Now.ToShortDateString();
                 pbn.Save(filePath);
                 Assert.Equal(File.ReadAllText(pbnFile + ".etalon"), File.ReadAllText(filePath));
             }

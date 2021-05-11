@@ -23,19 +23,26 @@ void HandCharacteristic::Initialize(const std::string& hand)
     distribution = std::to_string(suits[0].length()) + std::to_string(suits[1].length()) + 
         std::to_string(suits[2].length())  + std::to_string(suits[3].length());
     isBalanced = distribution == "4333" || distribution == "4432" || distribution == "5332";
-    isThreeSuiter = CalcuateIsThreeSuiter(suitLengths);
-    isReverse = !isBalanced && !isThreeSuiter && CalcuateIsReverse(suitLengths);
+    isTwoSuiter = CalculateIsTwoSuiter(suitLengths);
+    isThreeSuiter = CalculateIsThreeSuiter(suitLengths);
+    isReverse = !isBalanced && !isThreeSuiter && CalculateIsReverse(suitLengths);
     Hcp = CalculateHcp(hand);
 }
 
-bool HandCharacteristic::CalcuateIsReverse(const std::vector<int>& suitLengths)
+bool HandCharacteristic::CalculateIsReverse(const std::vector<int>& suitLengths)
 {
     std::vector<int> longSuits;
     std::copy_if(suitLengths.begin(), suitLengths.end(), std::inserter(longSuits, longSuits.begin()), [] (const auto &x) {return x > 3;});
-    return longSuits.size() > 1 && longSuits.at(1) == 4;
+    return longSuits.size() > 1 && longSuits.at(0) == 4;
 }
 
-bool HandCharacteristic::CalcuateIsThreeSuiter(const std::vector<int>& suitLength)
+bool HandCharacteristic::CalculateIsTwoSuiter(const std::vector<int>& suitLengths)
+{
+    return (std::count_if(suitLengths.begin(), suitLengths.end(), [](const auto& x) {return x > 4; }) > 0) &&
+        ((std::count_if(suitLengths.begin(), suitLengths.end(), [](const auto& x) {return x > 3; }) > 1));
+}
+
+bool HandCharacteristic::CalculateIsThreeSuiter(const std::vector<int>& suitLength)
 {
     return std::count_if(suitLength.begin(), suitLength.end(), [] (const auto &x) {return x > 3;}) == 3;
 }

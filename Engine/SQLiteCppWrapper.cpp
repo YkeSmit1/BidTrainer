@@ -43,16 +43,17 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
 
         queryShape->bind(6, hand.Hcp);
         queryShape->bind(7, hand.isBalanced);
-        queryShape->bind(8, hand.isReverse);
+        queryShape->bind(8, hand.isTwoSuiter);
+        queryShape->bind(9, hand.isReverse);
 
-        queryShape->bind(9, fits[0]);
-        queryShape->bind(10, fits[1]);
-        queryShape->bind(11, fits[2]);
-        queryShape->bind(12, fits[3]);
-        queryShape->bind(13, (int)oponentsSuit);
-        queryShape->bind(14, stopInOponentsSuit);
-        queryShape->bind(15, position);
-        queryShape->bind(16, (int)phase);
+        queryShape->bind(10, fits[0]);
+        queryShape->bind(11, fits[1]);
+        queryShape->bind(12, fits[2]);
+        queryShape->bind(13, fits[3]);
+        queryShape->bind(14, (int)oponentsSuit);
+        queryShape->bind(15, stopInOponentsSuit);
+        queryShape->bind(16, position);
+        queryShape->bind(17, (int)phase);
 
         if (!queryShape->executeStep())
             return std::make_tuple(0, phase, "");

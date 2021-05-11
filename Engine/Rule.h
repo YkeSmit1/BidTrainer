@@ -14,11 +14,13 @@ struct HandCharacteristic
 	bool isBalanced = false;
 	bool isReverse = false;
 	bool isThreeSuiter = false;
+	bool isTwoSuiter = false;
 
 	int Hcp = 0;
 
-	static bool CalcuateIsReverse(const std::vector<int>& suitLengths);
-	static bool CalcuateIsThreeSuiter(const std::vector<int>& suitLengths);
+	static bool CalculateIsReverse(const std::vector<int>& suitLengths);
+	static bool CalculateIsTwoSuiter(const std::vector<int>& suitLengths);
+	static bool CalculateIsThreeSuiter(const std::vector<int>& suitLengths);
 	static int CalculateHcp(const std::string& hand);
 	static int NumberOfCards(const std::string& hand, char card);
 	void Initialize(const std::string& hand);
