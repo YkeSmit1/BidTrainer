@@ -51,7 +51,7 @@ int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, i
         [](const auto& x, const auto& y) {return x + y >= 8; });
 
     auto oponentsSuits = std::vector<int>(minSuitsOpener, minSuitsOpener + 4);
-    auto oponentsSuit = std::distance(oponentsSuits.begin(), std::max_element(oponentsSuits.begin(), oponentsSuits.end()));
+    auto oponentsSuit = (int)std::distance(oponentsSuits.begin(), std::max_element(oponentsSuits.begin(), oponentsSuits.end()));
     auto stopInOponentsSuit = GetHasStopInOponentsSuit(hand, oponentsSuit);
 
     auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, fits, oponentsSuit, stopInOponentsSuit, phase, lastBidId, position);

@@ -1,4 +1,5 @@
 ﻿using Common;
+using System.Collections.Generic;
 
 namespace EngineWrapper
 {
@@ -53,5 +54,19 @@ namespace EngineWrapper
             phaseOpener = Phase.Opening;
             phaseDefensive = Phase.Opening;
         }
+
+        public Auction GetAuction(Dictionary<Player, string> deal, Player dealer)
+        {
+            Init();
+            var auction = new Auction();
+            auction.Clear(dealer);
+            while (!auction.IsEndOfBidding())
+            {
+                var bid = GetBid(auction, deal[auction.currentPlayer]);
+                auction.AddBid(bid);
+            }
+            return auction;
+        }
+
     }
 }

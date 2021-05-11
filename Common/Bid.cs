@@ -81,6 +81,7 @@ namespace Common
                 BidType.pass => "Pass",
                 BidType.dbl => "X",
                 BidType.rdbl => "XX",
+                BidType.align => "",
                 _ => throw new ArgumentOutOfRangeException(nameof(bidType)),
             };
         }

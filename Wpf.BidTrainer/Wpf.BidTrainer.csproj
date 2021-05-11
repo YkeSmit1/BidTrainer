@@ -55,4 +55,13 @@
     </None>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <BidTrainerBuildDirectory>$(ProjectDir)bin\$(Configuration)\$(TargetFramework)</BidTrainerBuildDirectory>
+      <BidTrainerIntegrationTestBuildDirectory>$(ProjectDir)..\BidTrainerTests\bin\$(Configuration)\$(TargetFramework)</BidTrainerIntegrationTestBuildDirectory>
+    </PropertyGroup>
+    <Copy SourceFiles="$(BidTrainerBuildDirectory)\Engine.dll;$(BidTrainerBuildDirectory)\sqlite3.dll" DestinationFolder="$(BidTrainerIntegrationTestBuildDirectory)" />
+  </Target>
+
+
 </Project>
