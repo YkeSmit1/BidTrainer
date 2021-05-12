@@ -170,7 +170,7 @@ namespace Common
 
         public bool IsEndOfBidding()
         {
-            var allBids = bids.SelectMany(x => x.Value).Select(y => y.Value);
+            var allBids = bids.SelectMany(x => x.Value).Select(y => y.Value).Where(z => z.bidType != BidType.align);
             return (allBids.Count() == 4 && allBids.All(bid => bid == Bid.PassBid)) ||
                 allBids.Count() > 3 && allBids.TakeLast(3).Count() == 3 && allBids.TakeLast(3).All(bid => bid == Bid.PassBid);
         }
