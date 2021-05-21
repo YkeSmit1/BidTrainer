@@ -15,19 +15,19 @@
         <converters:BidToSuitStringConverter x:Key="BidToSuitStringConverter"/>
         <converters:BidToRankStringConverter x:Key="BidToRankStringConverter"/>
         <DataTemplate x:Key="NonSuitBidsTemplate">
-            <Button Content="{Binding Bid}" Height="23" Width="40" Margin="1,1,1,1" Background="White" IsEnabled="{Binding IsEnabled}" 
+            <Button Content="{Binding}" Height="23" Width="40" Margin="1,1,1,1" Background="White"
                     Command="{Binding Path=DataContext.DoBid, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}} }" 
-                    CommandParameter="{Binding Bid}"/>
+                    CommandParameter="{Binding}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="DataTemplate_Level2">
-            <Button Height="23" Width="40" Margin="1,1,1,1" Background="White" IsEnabled="{Binding IsEnabled}"
+            <Button Height="23" Width="40" Margin="1,1,1,1" Background="White"
                     Command="{Binding Path=DataContext.DoBid, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, AncestorLevel=2} }" 
-                    CommandParameter="{Binding Bid}">
+                    CommandParameter="{Binding}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Bid, Converter={StaticResource BidToRankStringConverter}}"/>
-                    <TextBlock Text="{Binding Bid, Converter={StaticResource BidToSuitStringConverter}}" 
-                        Foreground="{Binding Bid.suit, Converter={StaticResource SuitToColorConverter}}"/>
+                    <TextBlock Text="{Binding Converter={StaticResource BidToRankStringConverter}}"/>
+                    <TextBlock Text="{Binding Converter={StaticResource BidToSuitStringConverter}}" 
+                        Foreground="{Binding suit, Converter={StaticResource SuitToColorConverter}}"/>
                 </StackPanel>   
             </Button>
         </DataTemplate>

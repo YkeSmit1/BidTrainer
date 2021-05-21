@@ -14,7 +14,9 @@ enum class Phase
     OneNTOvercall
 };
 
-extern "C" __declspec(dllexport) int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, 
-    int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description);
-extern "C" __declspec(dllexport) void GetRulesByBid(Phase phase, int bidId, int position, char* information);
-extern "C" __declspec(dllexport) int Setup(const char* database);
+extern "C" {
+    __declspec(dllexport) int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position,
+        int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description);
+    __declspec(dllexport) void GetRulesByBid(Phase phase, int bidId, int position, char* information);
+    __declspec(dllexport) int Setup(const char* database);
+}

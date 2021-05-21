@@ -54,7 +54,7 @@ namespace Wpf.BidTrainer
             InitializeComponent();
 
             MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
-            BiddingBoxViewModel.DoBid = new Command(ClickBiddingBoxButton);
+            BiddingBoxViewModel.DoBid = new Command(ClickBiddingBoxButton, ButtonCanExecute);
             AuctionViewModel.Auction = auction;
             if (File.Exists("results.json"))
                 results = JsonConvert.DeserializeObject<Results>(File.ReadAllText("results.json"));
@@ -101,11 +101,17 @@ namespace Wpf.BidTrainer
             }
         }
 
+        private bool ButtonCanExecute(object param)
+        {
+            var bid = (Bid)param;
+            return auction.BidIsPossible(bid);
+        }
+
         private void UpdateBidControls(Bid bid)
         {
-            BiddingBoxViewModel.UpdateButtons(bid, auction.currentPlayer);
             auction.AddBid(bid);
             AuctionViewModel.UpdateAuction(auction);
+            BiddingBoxViewModel.DoBid.RaiseCanExecuteChanged();
         }
 
         private void StartNextBoard()
@@ -134,8 +140,8 @@ namespace Wpf.BidTrainer
         private void StartBidding()
         {
             ShowBothHands();
-            BiddingBoxViewModel.ClearBiddingBox();
             auction.Clear(Dealer);
+            BiddingBoxViewModel.DoBid.RaiseCanExecuteChanged();
             AuctionViewModel.UpdateAuction(auction);
             bidManager.Init();
             StatusBar.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";

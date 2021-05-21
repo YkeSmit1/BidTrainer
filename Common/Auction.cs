@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ namespace Common
         public Bid currentContract = Bid.PassBid;
         public bool responderHasSignedOff = false;
         public int currentPosition = 1;
+        public BidType currentBidType = BidType.pass;
 
         private string DebuggerDisplay
         {
@@ -54,9 +56,7 @@ namespace Common
                 currentPosition++;
 
             if (!bids.ContainsKey(currentBiddingRound))
-            {
                 bids[currentBiddingRound] = new Dictionary<Player, Bid>();
-            }
             bids[currentBiddingRound][currentPlayer] = bid;
 
             if (currentPlayer == Player.South)
@@ -65,13 +65,12 @@ namespace Common
                 ++currentBiddingRound;
             }
             else
-            {
                 ++currentPlayer;
-            }
+
             if (bid.bidType == BidType.bid)
-            {
                 currentContract = bid;
-            }
+            if (bid.bidType != BidType.pass)
+                currentBidType = bid.bidType;
         }
 
         public void Clear(Player dealer)
@@ -174,5 +173,20 @@ namespace Common
             return (allBids.Count() == 4 && allBids.All(bid => bid == Bid.PassBid)) ||
                 allBids.Count() > 3 && allBids.TakeLast(3).Count() == 3 && allBids.TakeLast(3).All(bid => bid == Bid.PassBid);
         }
+
+        public bool BidIsPossible(Bid bid)
+        {
+            return bid.bidType switch
+            {
+                BidType.pass => true,
+                BidType.bid => currentContract.bidType != BidType.bid || currentContract < bid,
+                BidType.dbl => currentBidType == BidType.bid &&
+                    !Util.IsSameTeam(currentPlayer, GetDeclarer(currentContract.suit)),
+                BidType.rdbl => currentBidType == BidType.dbl &&
+                    Util.IsSameTeam(currentPlayer, GetDeclarer(currentContract.suit)),
+                _ => throw new InvalidEnumArgumentException(nameof(bid.bidType), (int)bid.bidType, null),
+            };
+        }
+
     }
 }
