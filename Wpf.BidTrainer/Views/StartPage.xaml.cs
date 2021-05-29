@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MvvmHelpers.Commands;
 using Newtonsoft.Json;
 
 namespace Wpf.BidTrainer
@@ -24,7 +25,7 @@ namespace Wpf.BidTrainer
     {
         public List<Lesson> Lessons { get; set; }
 
-        public StartLessonCommand StartLessonCommand { get; set; }
+        public Command StartLessonCommand { get; set; }
 
         public Lesson Lesson { get; set; }
         public bool IsContinueWhereLeftOff = false;
@@ -34,7 +35,7 @@ namespace Wpf.BidTrainer
             InitializeComponent();
             Lessons = JsonConvert.DeserializeObject<List<Lesson>>(File.ReadAllText("Lessons.json"));
             DataContext = this;
-            StartLessonCommand = new StartLessonCommand(ChooseLesson);
+            StartLessonCommand = new Command<int>(ChooseLesson);
             var currentLesson = Lessons.Where(x => x.LessonNr == Settings1.Default.CurrentLesson);
             Lesson = currentLesson.Any() ? currentLesson.First() : Lessons.First();
         }

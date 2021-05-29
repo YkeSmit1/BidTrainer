@@ -1,0 +1,29 @@
+﻿<Window x:Class="Wpf.BidTrainer.Views.LeaderboardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Wpf.BidTrainer.Views" 
+        xmlns:viewModels="clr-namespace:Wpf.BidTrainer.ViewModels"
+        mc:Ignorable="d"
+        Title="Leaderboard" Height="250" Width="350" WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <viewModels:LeaderboardViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="RightAlign">
+            <Setter Property="TextBlock.TextAlignment" Value="Right"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <DataGrid ItemsSource="{Binding Accounts}" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" 
+                  AlternatingRowBackground="Azure" GridLinesVisibility="None">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding username}"/>
+                <DataGridTextColumn Header="Boards played" Binding="{Binding numberOfBoardsPlayed}" CellStyle="{StaticResource RightAlign}"/>
+                <DataGridTextColumn Header="Correct boards" Binding="{Binding numberOfCorrectBoards}" CellStyle="{StaticResource RightAlign}"/>
+                <DataGridTextColumn Header="Time spent" Binding="{Binding timeElapsed, StringFormat=h\\:mm\\:ss}" CellStyle="{StaticResource RightAlign}"/>
+            </DataGrid.Columns>
+        </DataGrid>        
+    </Grid>
+</Window>

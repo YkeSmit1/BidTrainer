@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using Wpf.BidControls.ViewModels;
 using Wpf.BidTrainer.ViewModels;
 using MvvmHelpers.Commands;
+using Wpf.BidTrainer.Views;
 
 namespace Wpf.BidTrainer
 {
@@ -53,7 +54,7 @@ namespace Wpf.BidTrainer
         {
             InitializeComponent();
 
-            MenuUseAlternateSuits.IsChecked = Settings1.Default.AlternateSuits;
+            StatusBarUsername.Content = $"Username: {Settings1.Default.Username}";
             BiddingBoxViewModel.DoBid = new Command(ClickBiddingBoxButton, ButtonCanExecute);
             AuctionViewModel.Auction = auction;
             if (File.Exists("results.json"))
@@ -144,7 +145,7 @@ namespace Wpf.BidTrainer
             BiddingBoxViewModel.DoBid.RaiseCanExecuteChanged();
             AuctionViewModel.UpdateAuction(auction);
             bidManager.Init();
-            StatusBar.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
+            StatusBarLesson.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
             startTimeBoard = DateTime.Now;
             currentResult = new Result();
             BidTillSouth();
@@ -152,8 +153,8 @@ namespace Wpf.BidTrainer
 
         private void ShowBothHands()
         {
-            HandViewModelNorth.ShowHand(Deal[Player.North], MenuUseAlternateSuits.IsChecked);
-            HandViewModelSouth.ShowHand(Deal[Player.South], MenuUseAlternateSuits.IsChecked);
+            HandViewModelNorth.ShowHand(Deal[Player.North], Settings1.Default.AlternateSuits);
+            HandViewModelSouth.ShowHand(Deal[Player.South], Settings1.Default.AlternateSuits);
         }
 
         private void BidTillSouth()
@@ -171,8 +172,42 @@ namespace Wpf.BidTrainer
                 currentResult.TimeElapsed = DateTime.Now - startTimeBoard;
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
                 results.AddResult(lesson.LessonNr, CurrentBoardIndex, currentResult);
+                UploadResults();
                 Settings1.Default.CurrentBoardIndex++;
                 StartNextBoard();
+            }
+        }
+
+        private void UploadResults()
+        {
+            var username = Settings1.Default.Username;
+            if (username != "")
+            {
+                var res = results.AllResults.Values.SelectMany(x => x.Results.Values);
+                Task.Run(() => UpdateOrCreateAccount(username, res.Count(), res.Count(x => x.AnsweredCorrectly), res.Sum(x => x.TimeElapsed.Ticks)));
+            }
+
+            static async Task UpdateOrCreateAccount(string username, int boardPlayed, int correctBoards, long timeElapsed)
+            {
+                var account = new Account
+                {
+                    username = username,
+                    numberOfBoardsPlayed = boardPlayed,
+                    numberOfCorrectBoards = correctBoards,
+                    timeElapsed = new TimeSpan(timeElapsed)
+                };
+
+                var user = await CosmosDBHelper.GetAccount(username);
+                if (user == null)
+                {
+                    account.id = Guid.NewGuid().ToString();
+                    await CosmosDBHelper.InsertAccount(account);
+                }
+                else
+                {
+                    account.id = user.Value.id;
+                    await CosmosDBHelper.UpdateAccount(account);
+                }
             }
         }
 
@@ -213,14 +248,7 @@ namespace Wpf.BidTrainer
         private void Window_Closed(object sender, EventArgs e)
         {
             File.WriteAllText("results.json", JsonConvert.SerializeObject(results, Formatting.Indented));
-            Settings1.Default.AlternateSuits = MenuUseAlternateSuits.IsChecked;
             Settings1.Default.Save();
-        }
-
-        private void MenuUseAlternateSuits_Click(object sender, RoutedEventArgs e)
-        {
-            MenuUseAlternateSuits.IsChecked = !MenuUseAlternateSuits.IsChecked;
-            ShowBothHands();
         }
 
         private void ButtonHintClick(object sender, RoutedEventArgs e)
@@ -254,6 +282,30 @@ namespace Wpf.BidTrainer
             {
                 Settings1.Default.CurrentBoardIndex--;
                 StartNextBoard();
+            }
+        }
+
+        private async void MenuShowLeaderboard_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var accounts = await CosmosDBHelper.GetAllAccounts();
+                new LeaderboardWindow(accounts.OrderBy(x => x.numberOfCorrectBoards / x.numberOfBoardsPlayed)).ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void MenuOptions_Click(object sender, RoutedEventArgs e)
+        {
+            if (new SettingsWindow().ShowDialog().Value)
+            {
+                if ((string)StatusBarUsername.Content != Settings1.Default.Username)
+                    results.AllResults.Clear();
+                ShowBothHands();
+                StatusBarUsername.Content = $"Username: {Settings1.Default.Username}";
             }
         }
     }

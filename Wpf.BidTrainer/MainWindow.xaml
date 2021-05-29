@@ -11,14 +11,14 @@
     </Window.Resources>
     <Grid Background="Green">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="120"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
@@ -27,9 +27,6 @@
                 <Separator/>
                 <MenuItem Name="MenuChangeDatabase" Header="_Change rules database"/>
             </MenuItem>
-            <MenuItem Header="_Options">
-                <MenuItem Name="MenuUseAlternateSuits" Header="_Use alternate suits" Click="MenuUseAlternateSuits_Click"/>
-            </MenuItem>
             <MenuItem  Header="_Navigate">
                 <MenuItem Name="MenuGoToLesson" Header="_Go to lesson" Click="GoToLesson_Click"/>
                 <MenuItem Name="MenuBidAgain" Header="_Bid board again" Click="MenuBidAgain_Click"/>
@@ -37,8 +34,10 @@
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Name="MenuShowReport" Header="_Show report" Click="MenuShowReport_Click"/>
+                <MenuItem Name="MenuShowLeaderboard" Header="_Leaderboard" Click="MenuShowLeaderboard_Click"/>
+                <MenuItem Name="MenuOptions" Header="_Options" Click="MenuOptions_Click"/>
             </MenuItem>
-            
+
         </Menu>
         <!--Cards-->
         <Grid Grid.Row="2">
@@ -62,7 +61,7 @@
                 <Button Width="75" Height="23" Content="Hint" Click="ButtonHintClick"/>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="5" Margin="0,0,0,139">
+        <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition/>
@@ -70,7 +69,9 @@
             <userControls:HandView x:Name="panelSouth" Grid.Column="1"/>
         </Grid>
         <StatusBar Grid.Row="7">
-            <StatusBarItem x:Name="StatusBar" Content="Status"/>
+            <StatusBarItem x:Name="StatusBarUsername"  Content="Username"/>
+            <Separator/>
+            <StatusBarItem x:Name="StatusBarLesson" Content="Status"/>
         </StatusBar>
     </Grid>
 </Window>
