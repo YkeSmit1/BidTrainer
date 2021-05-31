@@ -131,17 +131,17 @@ namespace BidTrainer
             biddingBox.Clear();
             bidManager.Init();
             toolStripStatusLabel1.Text = $"Board:{boardIndex + 1}";
-            auctionControl.auction.currentPlayer = pbn.Boards[boardIndex].Dealer;
+            auctionControl.auction.CurrentPlayer = pbn.Boards[boardIndex].Dealer;
             BidTillSouth(auctionControl.auction);
         }
 
         private void BidTillSouth(Auction auction)
         {
-            while (auction.currentPlayer != Player.South && !auction.IsEndOfBidding())
+            while (auction.CurrentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, Deal[auction.currentPlayer]);
+                var bid = bidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
                 auction.AddBid(bid);
-                biddingBox.UpdateButtons(bid, auction.currentPlayer);
+                biddingBox.UpdateButtons(bid, auction.CurrentPlayer);
             }
 
             auctionControl.ReDraw();

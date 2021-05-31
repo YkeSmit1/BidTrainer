@@ -13,7 +13,7 @@ namespace EngineWrapper
         public static (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase)
         {
             var description = new StringBuilder(128);
-            var bidsPartner = auction.GetBids(Util.GetPartner(auction.currentPlayer));
+            var bidsPartner = auction.GetBids(Util.GetPartner(auction.CurrentPlayer));
             var minLengthPartner = GetMinSuitLength(bidsPartner);
 
             var bidsOpener = auction.GetBids(auction.GetDeclarer(auction.currentContract.suit));

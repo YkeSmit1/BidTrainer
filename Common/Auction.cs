@@ -10,8 +10,9 @@ namespace Common
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Auction
     {
-        public Player currentPlayer;
-        private int currentBiddingRound;
+        public Player CurrentPlayer { get; set; }
+        public int CurrentBiddingRound { get; set; }
+
         public Dictionary<int, Dictionary<Player, Bid>> bids { get; set; } = new Dictionary<int, Dictionary<Player, Bid>>();
         public Bid currentContract = Bid.PassBid;
         public bool responderHasSignedOff = false;
@@ -55,17 +56,17 @@ namespace Common
             if (bid != Bid.PassBid || currentContract != Bid.PassBid)
                 currentPosition++;
 
-            if (!bids.ContainsKey(currentBiddingRound))
-                bids[currentBiddingRound] = new Dictionary<Player, Bid>();
-            bids[currentBiddingRound][currentPlayer] = bid;
+            if (!bids.ContainsKey(CurrentBiddingRound))
+                bids[CurrentBiddingRound] = new Dictionary<Player, Bid>();
+            bids[CurrentBiddingRound][CurrentPlayer] = bid;
 
-            if (currentPlayer == Player.South)
+            if (CurrentPlayer == Player.South)
             {
-                currentPlayer = Player.West;
-                ++currentBiddingRound;
+                CurrentPlayer = Player.West;
+                ++CurrentBiddingRound;
             }
             else
-                ++currentPlayer;
+                ++CurrentPlayer;
 
             if (bid.bidType == BidType.bid)
                 currentContract = bid;
@@ -76,8 +77,8 @@ namespace Common
         public void Clear(Player dealer)
         {
             bids.Clear();
-            currentPlayer = dealer;
-            currentBiddingRound = 1;
+            CurrentPlayer = dealer;
+            CurrentBiddingRound = 1;
             currentContract = Bid.PassBid;
             currentPosition = 1;
 
@@ -181,9 +182,9 @@ namespace Common
                 BidType.pass => true,
                 BidType.bid => currentContract.bidType != BidType.bid || currentContract < bid,
                 BidType.dbl => currentBidType == BidType.bid &&
-                    !Util.IsSameTeam(currentPlayer, GetDeclarer(currentContract.suit)),
+                    !Util.IsSameTeam(CurrentPlayer, GetDeclarer(currentContract.suit)),
                 BidType.rdbl => currentBidType == BidType.dbl &&
-                    Util.IsSameTeam(currentPlayer, GetDeclarer(currentContract.suit)),
+                    Util.IsSameTeam(CurrentPlayer, GetDeclarer(currentContract.suit)),
                 _ => throw new InvalidEnumArgumentException(nameof(bid.bidType), (int)bid.bidType, null),
             };
         }

@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf.BidTrainer"
-        xmlns:userControls="clr-namespace:Wpf.BidControls.Views;assembly=Wpf.BidControls"
+        xmlns:userControls="clr-namespace:Wpf.BidControls.Views;assembly=Wpf.BidControls" 
+        xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
         mc:Ignorable="d"
         Title="Bidtrainer" Height="601" Width="746" Closed="Window_Closed" WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -12,11 +13,9 @@
     <Grid Background="Green">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
@@ -40,35 +39,30 @@
 
         </Menu>
         <!--Cards-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <userControls:HandView x:Name="panelNorth" Grid.Column="1"/>
-        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <userControls:HandView x:Name="panelNorth" Padding="217, 27"/>
+            <Label x:Name="labelNorth" Content="North" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Padding="0 72"/>
+        </StackPanel>
         <!--Biddingbox and auction-->
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
-            <userControls:BiddingBoxView x:Name="BiddingBoxView" Grid.Column="1"/>
-            <userControls:AuctionView x:Name="AuctionView" Grid.Column="2" Background="White"/>
-            <StackPanel Grid.Column="3">
-                <Button Width="75" Height="23" Content="Hint" Click="ButtonHintClick"/>
+            <StackPanel Grid.Column="1">
+                <toggleswitch:HorizontalToggleSwitch x:Name="toggleSwitchMode" IsChecked="True"
+                    CheckedContent="Bid" UncheckedContent="Hint" CheckedBackground="DarkBlue" UncheckedBackground="CornflowerBlue"/>
+                <userControls:BiddingBoxView x:Name="BiddingBoxView"/>
             </StackPanel>
+            <userControls:AuctionView x:Name="AuctionView" Grid.Column="2" Background="White"/>
         </Grid>
-        <Grid Grid.Row="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <userControls:HandView x:Name="panelSouth" Grid.Column="1"/>
-        </Grid>
-        <StatusBar Grid.Row="7">
+        <StackPanel Grid.Row="3" Orientation="Vertical">
+            <userControls:HandView x:Name="panelSouth" Padding="217, 27"/>
+            <Label Content="South" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Padding="0 72"/>
+        </StackPanel>
+        <StatusBar Grid.Row="5">
             <StatusBarItem x:Name="StatusBarUsername"  Content="Username"/>
             <Separator/>
             <StatusBarItem x:Name="StatusBarLesson" Content="Status"/>

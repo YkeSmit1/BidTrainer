@@ -62,7 +62,7 @@ namespace EngineWrapper
             auction.Clear(dealer);
             while (!auction.IsEndOfBidding())
             {
-                var bid = GetBid(auction, deal[auction.currentPlayer]);
+                var bid = GetBid(auction, deal[auction.CurrentPlayer]);
                 auction.AddBid(bid);
             }
             return auction;

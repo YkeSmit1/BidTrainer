@@ -11,7 +11,8 @@ namespace Wpf.BidTrainer.ViewModels
     {
         private Results results = new();
 
-        public Results Results { 
+        public Results Results
+        {
             get => results;
             set => SetProperty(ref results, value);
         }

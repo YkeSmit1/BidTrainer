@@ -5,13 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Reflection;
 using System.IO;
 using Microsoft.Win32;
@@ -19,7 +13,6 @@ using EngineWrapper;
 using Common;
 using Newtonsoft.Json;
 using Wpf.BidControls.ViewModels;
-using Wpf.BidTrainer.ViewModels;
 using MvvmHelpers.Commands;
 using Wpf.BidTrainer.Views;
 
@@ -81,7 +74,7 @@ namespace Wpf.BidTrainer
         private void ClickBiddingBoxButton(object parameter)
         {
             var bid = (Bid)parameter;
-            if (Cursor == Cursors.Help)
+            if (!toggleSwitchMode.IsChecked)
             {
                 currentResult.UsedHint = true;
                 Cursor = Cursors.Arrow;
@@ -118,6 +111,7 @@ namespace Wpf.BidTrainer
         private void StartNextBoard()
         {
             panelNorth.Visibility = Visibility.Hidden;
+            labelNorth.Visibility = Visibility.Hidden;
             BiddingBoxView.IsEnabled = true;
             if (CurrentBoardIndex > pbn.Boards.Count - 1)
             {
@@ -159,16 +153,19 @@ namespace Wpf.BidTrainer
 
         private void BidTillSouth()
         {
-            while (auction.currentPlayer != Player.South && !auction.IsEndOfBidding())
+            while (auction.CurrentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, Deal[auction.currentPlayer]);
+                var bid = bidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
                 UpdateBidControls(bid);
             }
 
             if (auction.IsEndOfBidding())
             {
+                auction.CurrentPlayer = Player.UnKnown;
+                AuctionViewModel.UpdateAuction(auction);
                 BiddingBoxView.IsEnabled = false;
                 panelNorth.Visibility = Visibility.Visible;
+                labelNorth.Visibility = Visibility.Visible;
                 currentResult.TimeElapsed = DateTime.Now - startTimeBoard;
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
                 results.AddResult(lesson.LessonNr, CurrentBoardIndex, currentResult);
@@ -251,11 +248,6 @@ namespace Wpf.BidTrainer
             Settings1.Default.Save();
         }
 
-        private void ButtonHintClick(object sender, RoutedEventArgs e)
-        {
-            Cursor = Cursors.Help;
-        }
-
         private void GoToLesson_Click(object sender, RoutedEventArgs e)
         {
             StartLesson();
@@ -290,7 +282,7 @@ namespace Wpf.BidTrainer
             try
             {
                 var accounts = await CosmosDBHelper.GetAllAccounts();
-                new LeaderboardWindow(accounts.OrderBy(x => x.numberOfCorrectBoards / x.numberOfBoardsPlayed)).ShowDialog();
+                new LeaderboardWindow(accounts.OrderByDescending(x => (double)x.numberOfCorrectBoards / x.numberOfBoardsPlayed)).ShowDialog();
             }
             catch (Exception ex)
             {

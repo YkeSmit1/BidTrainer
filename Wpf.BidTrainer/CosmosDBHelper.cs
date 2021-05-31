@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using System;
 using System.Collections.Generic;
@@ -11,15 +10,14 @@ namespace Wpf.BidTrainer
 {
     public class CosmosDBHelper
     {
-        private static readonly DocumentClient client = new DocumentClient(new Uri(Constants.EndpointUri), Constants.PrimaryKey);
+        private static readonly DocumentClient client = new(new Uri(Constants.EndpointUri), Constants.PrimaryKey);
         private static readonly Uri collectionLink = UriFactory.CreateDocumentCollectionUri(Constants.DatabaseName, Constants.CollectionName);
-        private static readonly FeedOptions feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
-        private static readonly IOrderedQueryable<Account> queryable = client.CreateDocumentQuery<Account>(collectionLink, feedOptions);
+        private static readonly FeedOptions feedOptions = new() { EnableCrossPartitionQuery = true };
 
         public static async Task<IEnumerable<Account>> GetAllAccounts()
         {
             var accounts = new List<Account>();
-            var query = queryable.AsDocumentQuery();
+            var query = client.CreateDocumentQuery<Account>(collectionLink, feedOptions).AsDocumentQuery();
             while (query.HasMoreResults)
             {
                 accounts.AddRange(await query.ExecuteNextAsync<Account>());
@@ -29,7 +27,8 @@ namespace Wpf.BidTrainer
 
         public static async Task<Account?> GetAccount(string username)
         {
-            var account = await queryable.Where(x => x.username == username).AsDocumentQuery().ExecuteNextAsync<Account>();
+            var account = await client.CreateDocumentQuery<Account>(collectionLink, feedOptions).
+                Where(x => x.username == username).AsDocumentQuery().ExecuteNextAsync<Account>();
             return account.FirstOrDefault();
         }
 

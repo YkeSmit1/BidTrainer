@@ -14,9 +14,16 @@
         <converters:SuitToColorConverter x:Key="SuitToColorConverter"/>
         <converters:BidToSuitStringConverter x:Key="BidToSuitStringConverter"/>
         <converters:BidToRankStringConverter x:Key="BidToRankStringTextConverter"/>
+        <converters:BiddingRoundToTopConverter x:Key="BiddingRoundToTopConverter"/>
+        <converters:PlayerToVisibilityConverter x:Key="PlayerToVisibilityConverter"/>
     </UserControl.Resources>
     <Grid>
         <StackPanel Grid.Column="2">
+            <Canvas Panel.ZIndex="10">
+                <Label x:Name="labelQuestionmark" Content="?" Canvas.Left="175" 
+                       Canvas.Top="{Binding Auction.CurrentBiddingRound, Converter={StaticResource BiddingRoundToTopConverter}}"
+                       Visibility="{Binding Auction.CurrentPlayer, Converter={StaticResource PlayerToVisibilityConverter}}"/>
+            </Canvas>
             <Grid Background="White">
                 <StackPanel>
                     <Grid>
@@ -31,10 +38,10 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="West" FontWeight="Bold"/>
-                            <TextBlock Grid.Column="1" Text="North" FontWeight="Bold"/>
-                            <TextBlock Grid.Column="2" Text="East" FontWeight="Bold"/>
-                            <TextBlock Grid.Column="3" Text="South" FontWeight="Bold"/>
+                            <TextBlock Grid.Column="0" Text="West" FontWeight="Bold" Padding="3"/>
+                            <TextBlock Grid.Column="1" Text="North" FontWeight="Bold" Padding="3"/>
+                            <TextBlock Grid.Column="2" Text="East" FontWeight="Bold" Padding="3"/>
+                            <TextBlock Grid.Column="3" Text="South" FontWeight="Bold" Padding="3"/>
                         </Grid>
                         <ItemsControl Grid.Row="1" ItemsSource="{Binding Auction.bids.Values}">
                             <ItemsControl.ItemTemplate>
@@ -43,7 +50,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal" Width="57">
-                                                    <TextBlock Text="{Binding Value, Converter={StaticResource BidToRankStringTextConverter}}"/>
+                                                    <TextBlock Text="{Binding Value, Converter={StaticResource BidToRankStringTextConverter}}" Padding="3, 0, 0, 0"/>
                                                     <TextBlock Text="{Binding Value, Converter={StaticResource BidToSuitStringConverter}}" 
                                                                Foreground="{Binding Value.suit, Converter={StaticResource SuitToColorConverter}}"/>
                                                 </StackPanel>

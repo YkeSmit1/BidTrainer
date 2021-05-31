@@ -12,9 +12,9 @@ namespace Wpf.BidTrainer.ViewModels
     {
         private ObservableCollection<Account> accounts;
 
-        public ObservableCollection<Account> Accounts 
-        {            
-            get => accounts; 
+        public ObservableCollection<Account> Accounts
+        {
+            get => accounts;
             set => SetProperty(ref accounts, value);
         }
     }
