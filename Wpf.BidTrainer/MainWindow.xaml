@@ -10,7 +10,7 @@
         Title="Bidtrainer" Height="601" Width="746" Closed="Window_Closed" WindowStartupLocation="CenterScreen">
     <Window.Resources>
     </Window.Resources>
-    <Grid Background="Green">
+    <Grid Background="MediumSeaGreen">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="150"/>
@@ -19,7 +19,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0">
+        <Menu Grid.Row="0" Background="SeaGreen">
             <MenuItem Header="_File">
                 <MenuItem Name="MenuOpenPbn" Header="_Open Pbn" Click="MenuOpenPbn_Click"/>
                 <MenuItem Name="MenuSavePbn" Header="_Save Pbn" Click="MenuSavePbn_Click"/>
@@ -53,16 +53,18 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="1">
                 <toggleswitch:HorizontalToggleSwitch x:Name="toggleSwitchMode" IsChecked="True"
-                    CheckedContent="Bid" UncheckedContent="Hint" CheckedBackground="DarkBlue" UncheckedBackground="CornflowerBlue"/>
-                <userControls:BiddingBoxView x:Name="BiddingBoxView"/>
+                    CheckedContent="Bid" UncheckedContent="Hint" CheckedBackground="SandyBrown" UncheckedBackground="RosyBrown"/>
+                    <userControls:BiddingBoxView x:Name="BiddingBoxView"/>
             </StackPanel>
-            <userControls:AuctionView x:Name="AuctionView" Grid.Column="2" Background="White"/>
+            <Border Grid.Column="2" BorderBrush="SeaGreen" BorderThickness="2">
+                <userControls:AuctionView x:Name="AuctionView" Background="White"/>
+            </Border>
         </Grid>
         <StackPanel Grid.Row="3" Orientation="Vertical">
             <userControls:HandView x:Name="panelSouth" Padding="217, 27"/>
             <Label Content="South" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Padding="0 72"/>
         </StackPanel>
-        <StatusBar Grid.Row="5">
+        <StatusBar Grid.Row="5" Background="SeaGreen">
             <StatusBarItem x:Name="StatusBarUsername"  Content="Username"/>
             <Separator/>
             <StatusBarItem x:Name="StatusBarLesson" Content="Status"/>
