@@ -3,20 +3,26 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Wpf.BidTrainer.Views" xmlns:viewmodels="clr-namespace:Wpf.BidTrainer.ViewModels" xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
+        xmlns:local="clr-namespace:Wpf.BidTrainer.Views" 
+        xmlns:viewmodels="clr-namespace:Wpf.BidTrainer.ViewModels" 
+        xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch" xmlns:converters="clr-namespace:Wpf.BidTrainer.Converters"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="200" Width="420" WindowStartupLocation="CenterScreen">
+        Title="SettingsWindow" Height="400" Width="450" WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <viewmodels:SettingsViewModel/>
-    </Window.DataContext>        
-        <Grid Margin="10">
+    </Window.DataContext>
+    <Window.Resources>
+        <converters:CardImageConverter x:Key="CardImageConverter"/>
+    </Window.Resources>
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="207"/>
+            <ColumnDefinition Width="127"/>
             <ColumnDefinition Width="593"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="200"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Username"/>
@@ -24,7 +30,27 @@
         <Label Grid.Row="1" Grid.Column="0" Content="Alternate suits"/>
         <toggleswitch:HorizontalToggleSwitch Grid.Row="1" Grid.Column="1" IsChecked="{Binding UseAlternateSuits}" Width="70" Height="25" 
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+        <Label Grid.Row="2" Grid.Column="0" Content="Cards"/>
+        <StackPanel Grid.Row="2" Grid.Column="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="100"/>
+                </Grid.RowDefinitions>
+                <RadioButton x:Name="radioDefault" GroupName="Cards" Grid.Row="0" Grid.Column="0" Content="default"
+                             IsChecked="{Binding CardImage, Converter={StaticResource CardImageConverter}, ConverterParameter='default'}"/>
+                <Image Grid.Row="0" Grid.Column="1" Source="/Wpf.BidControls;component/Views/cardfaces.png" Stretch="UniformToFill" Width="200" Height="100"/>
+                <RadioButton x:Name="radioBbo" GroupName="Cards" Grid.Row="1" Grid.Column="0" Content="bbo"
+                             IsChecked="{Binding CardImage, Converter={StaticResource CardImageConverter}, ConverterParameter='bbo'}"/>
+                <Image Grid.Row="1" Grid.Column="1" Source="/Wpf.BidControls;component/Views/cardfaces2.jpg" Stretch="UniformToFill" Width="200" Height="100"/>
+            </Grid>
+
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
             <Button x:Name="OkButton" Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
                     Margin="0, 0, 23, 12" Width="75" Height="23" IsDefault="True" Click="OkButton_Click"/>
             <Button x:Name="CancelButton" Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" 

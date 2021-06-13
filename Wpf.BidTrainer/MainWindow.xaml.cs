@@ -147,8 +147,8 @@ namespace Wpf.BidTrainer
 
         private void ShowBothHands()
         {
-            HandViewModelNorth.ShowHand(Deal[Player.North], Settings1.Default.AlternateSuits);
-            HandViewModelSouth.ShowHand(Deal[Player.South], Settings1.Default.AlternateSuits);
+            HandViewModelNorth.ShowHand(Deal[Player.North], Settings1.Default.AlternateSuits, Settings1.Default.CardImageSettings);
+            HandViewModelSouth.ShowHand(Deal[Player.South], Settings1.Default.AlternateSuits, Settings1.Default.CardImageSettings);
         }
 
         private void BidTillSouth()

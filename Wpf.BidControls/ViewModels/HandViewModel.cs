@@ -12,13 +12,17 @@ namespace Wpf.BidControls.ViewModels
     public class HandViewModel : ObservableObject
     {
         public ObservableCollection<Card> Cards { get; set; } = new();
+        public CardImageSettings CardImageSettings { get; set; }
         public HandViewModel()
         {
-            ShowHand("AQJ4,K32,843,QT9", true);
+            ShowHand("AQJ4,K32,843,QT9", true, "default");
         }
 
-        public void ShowHand(string hand, bool alternateSuits)
+        public void ShowHand(string hand, bool alternateSuits, string settings)
         {
+            var cardImageSettings = CardImageSettings.GetCardImageSettings(settings);
+
+            CardImageSettings = cardImageSettings;
             Cards.Clear();
             var suitOrder = alternateSuits ?
                 new List<Suit> { Suit.Spades, Suit.Hearts, Suit.Clubs, Suit.Diamonds } :
@@ -30,7 +34,13 @@ namespace Wpf.BidControls.ViewModels
             {
                 foreach (var card in suit.x)
                 {
-                    Cards.Add(new Card { Suit = suit.Item2, Face = Util.GetFaceFromDescription(card), Index = index * 20 });
+                    Cards.Add(new Card
+                    {
+                        Suit = suit.Item2,
+                        Face = Util.GetFaceFromDescription(card),
+                        Index = index * cardImageSettings.CardDistance,
+                        CardImageSettings = cardImageSettings
+                    });
                     index++;
                 }
             }

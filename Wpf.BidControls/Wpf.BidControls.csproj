@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Resource Include="Views\cardfaces.png" />
+    <Resource Include="Views\cardfaces2.jpg" />
   </ItemGroup>
 
   <ItemGroup>

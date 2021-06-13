@@ -7,5 +7,6 @@ namespace Wpf.BidControls
         public Suit Suit { get; set; }
         public Face Face { get; set; }
         public int Index { get; set; }
+        public CardImageSettings CardImageSettings { get; set; }
     }
 }

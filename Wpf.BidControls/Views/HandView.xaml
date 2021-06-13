@@ -16,6 +16,8 @@
 
     <Grid>
         <StackPanel>
+            <FrameworkElement x:Name="ProxyElement" Visibility="Collapsed"/>
+
             <ItemsControl ItemsSource="{Binding Cards}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -27,7 +29,8 @@
                         <Canvas>
                             <Image Canvas.Left="{Binding Index}">
                                 <Image.Source>
-                                    <CroppedBitmap Source="cardfaces.png" SourceRect="{Binding Converter={StaticResource CardToImageRectConverter}}"/>
+                                    <CroppedBitmap Source="{Binding DataContext.CardImageSettings.CardImage, Source={x:Reference ProxyElement}}" 
+                                                SourceRect="{Binding Converter={StaticResource CardToImageRectConverter}}"/>
                                 </Image.Source>
                             </Image>
                         </Canvas>

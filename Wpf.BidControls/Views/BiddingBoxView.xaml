@@ -33,7 +33,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="DataTemplate_Level1">
-            <ItemsControl ItemsSource="{Binding}" ItemTemplate="{DynamicResource DataTemplate_Level2}">
+            <ItemsControl ItemsSource="{Binding}" ItemTemplate="{StaticResource DataTemplate_Level2}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>
@@ -44,8 +44,8 @@
     </UserControl.Resources>
     <Grid>
         <StackPanel Grid.Column="1">
-            <ItemsControl ItemsSource="{Binding SuitBids}" ItemTemplate="{DynamicResource DataTemplate_Level1}"/>
-            <ItemsControl ItemsSource="{Binding NonSuitBids}" ItemTemplate="{DynamicResource NonSuitBidsTemplate}">
+            <ItemsControl ItemsSource="{Binding SuitBids}" ItemTemplate="{StaticResource DataTemplate_Level1}"/>
+            <ItemsControl ItemsSource="{Binding NonSuitBids}" ItemTemplate="{StaticResource NonSuitBidsTemplate}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>
