@@ -18,9 +18,9 @@ namespace Wpf.BidControls.ViewModels
             ShowHand("AQJ4,K32,843,QT9", true, "default");
         }
 
-        public void ShowHand(string hand, bool alternateSuits, string settings)
+        public void ShowHand(string hand, bool alternateSuits, string cardProfile)
         {
-            var cardImageSettings = CardImageSettings.GetCardImageSettings(settings);
+            var cardImageSettings = CardImageSettings.GetCardImageSettings(cardProfile);
 
             CardImageSettings = cardImageSettings;
             Cards.Clear();

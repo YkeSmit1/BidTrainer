@@ -14,10 +14,10 @@ namespace Wpf.BidControls.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var bid = (Card)value;
-            var settings = bid.CardImageSettings;
-            var suit = bid.Suit;
-            var face = settings.FirstCardIsAce ? (int)bid.Face : bid.Face == Face.Ace ? 12 : (int)bid.Face - 1;
+            var card = (Card)value;
+            var settings = card.CardImageSettings;
+            var suit = card.Suit;
+            var face = settings.FirstCardIsAce ? (int)card.Face : card.Face == Face.Ace ? 12 : (int)card.Face - 1;
             var topy = suit switch
             {
                 Suit.Clubs => settings.TopClubs,
