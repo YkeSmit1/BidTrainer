@@ -43,7 +43,7 @@ Pass	Pass	Pass
 [Vulnerable "NS"]
 [Deal "N:K42.96.KJT42.AK3 J83.QJT82.AQ.T84 A76.AK74.873.QJ7 QT95.53.965.9652"]
 [Auction "N"]
-	1D	1H	2H
+	1D	1H	3NT
 Pass	Pass	Pass
 
 [Event ""]
@@ -110,8 +110,8 @@ Pass	Pass
 [Vulnerable "NS"]
 [Deal "W:AQJ.KJ976.T8.Q32 9872.A4.QJ53.AK4 43.Q82.A764.9876 KT65.T53.K92.JT5"]
 [Auction "W"]
-1H	X	1NT	Pass
-Pass	Pass
+1H	X	1NT	2S
+Pass	Pass	Pass
 
 [Event ""]
 [Board "13"]
@@ -150,7 +150,7 @@ Pass	Pass	Pass
 [Deal "W:AKT43.AK2.T8.A84 J6.QJ76.KQJ9.J93 9875.T543.A764.Q Q2.98.532.KT7652"]
 [Auction "W"]
 1S	Pass	2S	Pass
-4S	Pass	Pass	Pass
+3S	Pass	Pass	Pass
 
 [Event ""]
 [Board "17"]
@@ -168,8 +168,8 @@ Pass	Pass	Pass
 [Deal "E:86.AKT43.A6.K972 AKQ7.86.KQ4.AJ54 954.J52.9872.QT3 JT32.Q97.JT53.86"]
 [Auction "E"]
 		1H	X
-Pass	2D	2H	Pass
-Pass	Pass
+Pass	2D	Pass	Pass
+Pass
 
 [Event ""]
 [Board "19"]

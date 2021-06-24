@@ -14,6 +14,17 @@ enum class Phase
     OneNTOvercall
 };
 
+enum class BidKind
+{
+    UnknownSuit,
+    FirstSuit,
+    SecondSuit,
+    LowestSuit,
+    HighestSuit,
+    PartnersSuit,
+    OpponentsSuit
+};
+
 extern "C" {
     __declspec(dllexport) int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position,
         int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description);
