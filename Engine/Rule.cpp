@@ -49,5 +49,5 @@ int HandCharacteristic::CalculateHcp(const std::string& hand)
 
 int HandCharacteristic::NumberOfCards(const std::string& hand, char card)
 {
-    return (int)std::count_if(hand.begin(), hand.end(), [card](char c) {return c == card; });
+    return (int)std::count_if(hand.begin(), hand.end(), [card](auto c) {return c == card; });
 }

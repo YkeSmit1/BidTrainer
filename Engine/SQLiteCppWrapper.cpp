@@ -55,15 +55,15 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
 
         while (queryShape->executeStep())
         {
-            auto id = queryShape->getColumn(5).getInt();
             auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
-            auto bidSuitKind = queryShape->getColumn(1).isNull() ? BidKind::UnknownSuit : (BidKind)queryShape->getColumn(1).getInt();
-            auto bidRank = queryShape->getColumn(2).isNull() ? 0 : queryShape->getColumn(2).getInt();
             auto nextPhase = queryShape->getColumn(3).isNull() ? phase : (Phase)queryShape->getColumn(3).getInt();
             auto str = queryShape->getColumn(4).getString();
 
             if (bidId != 0)
                 return std::make_tuple(bidId, nextPhase, str);
+
+            auto bidSuitKind = (BidKind)queryShape->getColumn(1).getInt();
+            auto bidRank = queryShape->getColumn(2).getInt();
             auto relBidId = GetBidIdRelative(bidSuitKind, bidRank, lastBidId, hand, board.partnersSuit, board.opponentsSuit);
             if (relBidId != 0)
                 return std::make_tuple(relBidId, nextPhase, str);
@@ -81,7 +81,6 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
 
 int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit)
 {
-    auto emptySuitLength = std::vector<int>{};
     switch (bidSuitKind)
     {
     case BidKind::UnknownSuit:
@@ -95,7 +94,7 @@ int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int las
     case BidKind::HighestSuit:
         return GetBidId(bidRank, IsNewSuit(hand.highestSuit, partnersSuit, opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
     case BidKind::PartnersSuit:
-        return GetBidId(bidRank, partnersSuit, lastBidId, emptySuitLength);
+        return GetBidId(bidRank, partnersSuit, lastBidId);
     default:
         throw new std::invalid_argument("Invalid value for bidSuitKind");
     }
@@ -111,6 +110,13 @@ int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId, const std::
     if (suit == -1)
         return 0;
     if (suitLengths.size() > 0 && suitLengths.at(suit) < 4)
+        return 0;
+    return GetBidId(bidRank, suit, lastBidId);
+}
+
+int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
+{
+    if (suit == -1)
         return 0;
     auto bidId = (bidRank - 1) * 5 + (3 - suit) + 1;
     return bidId > lastBidId ? bidId : 0;

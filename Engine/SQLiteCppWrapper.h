@@ -8,7 +8,7 @@ enum class BidKind;
 
 class SQLiteCppWrapper : public ISQLiteWrapper
 {
-    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description, Id FROM Rules 
+    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description FROM Rules 
         WHERE (bidId > ? OR bidId <= 0 OR bidID is NULL)
         AND ? BETWEEN MinSpades AND MaxSpades
         AND ? BETWEEN MinHearts AND MaxHearts
@@ -48,6 +48,7 @@ private:
     int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit);
     bool IsNewSuit(int suit, int partnersSuit, int opponentsSuit);
     int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);
+    int GetBidId(int bidRank, int suit, int lastBidId);
 
 };
 
