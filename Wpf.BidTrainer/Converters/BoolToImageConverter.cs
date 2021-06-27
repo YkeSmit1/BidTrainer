@@ -16,7 +16,7 @@ namespace Wpf.BidTrainer.Converters
             var correct = (bool)value;
             if (correct)
                 return "pack://application:,,,/Resources/correct.png";
-            else 
+            else
                 return "pack://application:,,,/Resources/incorrect.png";
         }
 
