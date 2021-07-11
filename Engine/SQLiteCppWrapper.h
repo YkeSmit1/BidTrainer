@@ -44,7 +44,6 @@ private:
     void SetDatabase(const std::string& database) override;
     std::string GetRulesByBid(Phase phase, int bidId, int position) final;
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
-    std::string GetSuit(int bidId);
     int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit);
     bool IsNewSuit(int suit, int partnersSuit, int opponentsSuit);
     int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);

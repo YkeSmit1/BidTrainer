@@ -174,7 +174,7 @@ void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, s
 {
     if (queryRules->getColumn("BidId").isNull() && (bidId % 5 != 0) && (bidId != -1) && !queryRules->getColumn("BidSuitKind").isNull())
     {
-        auto suit = GetSuit(bidId);
+        auto suit = Utils::GetSuit(bidId);
         auto bidKind = (BidKind)queryRules->getColumn("BidSuitKind").getInt();
         std::string suitKind = "";
         switch (bidKind)
@@ -208,19 +208,5 @@ void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, s
             break;
         }
 
-    }
-}
-
-std::string SQLiteCppWrapper::GetSuit(int bidId)
-{
-    auto suit = 4 - (bidId % 5);
-    switch (suit)
-    {
-    case 0: return "Spades";
-    case 1: return "Hearts";
-    case 2: return "Diamonds";
-    case 3: return "Clubs";
-    default:
-        throw new std::invalid_argument("UNknonw suit");
     }
 }
