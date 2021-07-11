@@ -8,6 +8,7 @@
 #include "SQLiteCppWrapper.h"
 #include <filesystem>
 #include "Utils.h"
+#include "BoardCharacteristic.h"
 
 HandCharacteristic GetHandCharacteristic(const std::string& hand)
 {
@@ -25,36 +26,14 @@ ISQLiteWrapper* GetSqliteWrapper()
     return sqliteWrapper.get();
 }
 
-bool GetHasStopInOponentsSuit(std::string hand, int oponentsSuit)
-{
-    auto cardsInOponentSuit = Utils::Split<char>(hand, ',')[oponentsSuit];
-    if (cardsInOponentSuit.length() == 0)
-        return false;
-
-    switch (cardsInOponentSuit[0])
-    {
-    case 'A': return true;
-    case 'K': return cardsInOponentSuit.length() >= 2;
-    case 'Q': return cardsInOponentSuit.length() >= 3;
-    case 'J': return cardsInOponentSuit.length() >= 4;
-    default:
-        return false;
-    }
-}
-
 int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description)
 {
     auto handCharacteristic = GetHandCharacteristic(hand);
-    std::vector<bool> fits;
     auto minSuitsPartnerVec = std::vector<int>(minSuitsPartner, minSuitsPartner + 4);
-    std::transform(handCharacteristic.suitLengths.begin(), handCharacteristic.suitLengths.end(), minSuitsPartnerVec.begin(), std::back_inserter(fits),
-        [](const auto& x, const auto& y) {return x + y >= 8; });
+    auto opponentsSuits = std::vector<int>(minSuitsOpener, minSuitsOpener + 4);
+    auto boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, minSuitsPartnerVec, opponentsSuits);
 
-    auto oponentsSuits = std::vector<int>(minSuitsOpener, minSuitsOpener + 4);
-    auto oponentsSuit = (int)std::distance(oponentsSuits.begin(), std::max_element(oponentsSuits.begin(), oponentsSuits.end()));
-    auto stopInOponentsSuit = GetHasStopInOponentsSuit(hand, oponentsSuit);
-
-    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, fits, oponentsSuit, stopInOponentsSuit, phase, lastBidId, position);
+    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, phase, lastBidId, position);
     strncpy(description, descr.c_str(), descr.size());
     description[descr.size()] = '\0';
     *newPhase = lNewfase;
@@ -80,5 +59,6 @@ void GetRulesByBid(Phase phase, int bidId, int position, char* information)
 {
     auto linformation = GetSqliteWrapper()->GetRulesByBid(phase, bidId, position);
     strncpy(information, linformation.c_str(), linformation.size());
+    assert(linformation.size() < 8192);
     information[linformation.size()] = '\0';
 }

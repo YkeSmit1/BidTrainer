@@ -15,6 +15,7 @@ class Utils
 public:
     template<typename chartype>
     static std::vector<std::basic_string<chartype>> Split(const std::basic_string<chartype>& str, const chartype& delimeter);
+    static std::string GetSuit(int bidId);
 };
 
 template<typename chartype>
@@ -32,5 +33,4 @@ std::vector<std::basic_string<chartype>> Utils::Split(const std::basic_string<ch
         subStrings.emplace_back("");
 
     return subStrings;
-
 }

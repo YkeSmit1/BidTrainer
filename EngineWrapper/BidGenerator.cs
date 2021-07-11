@@ -71,7 +71,7 @@ namespace EngineWrapper
 
         public static (Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords) GetRecords(Bid bid, Phase phase, int position)
         {
-            var informationJson = new StringBuilder(4096);
+            var informationJson = new StringBuilder(8192);
             Pinvoke.GetRulesByBid(phase, Bid.GetBidId(bid), position, informationJson);
             var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
             var minRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Min")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Min());
