@@ -3,12 +3,13 @@
 #include "ISQLiteWrapper.h"
 #include "SQLiteCpp/SQLiteCpp.h"
 #include <unordered_map>
+#include "Api.h"
 
 enum class BidKind;
 
 class SQLiteCppWrapper : public ISQLiteWrapper
 {
-    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description FROM Rules 
+    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description, Id FROM Rules 
         WHERE (bidId > ? OR bidId <= 0 OR bidID is NULL)
         AND ? BETWEEN MinSpades AND MaxSpades
         AND ? BETWEEN MinHearts AND MaxHearts
@@ -22,12 +23,14 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND ? BETWEEN MinSecondSuit AND MaxSecondSuit
         AND (HasFit IS NULL or HasFit = ?)
         AND (FitIsMajor IS NULL or FitIsMajor = ?)
+        AND (Module IS NULL or ? & Module = Module)
         AND Position = ?
         AND Phase = ?
         ORDER BY Priority ASC)";
 
     constexpr static std::string_view rulesSql = R"(SELECT * FROM Rules 
         WHERE (bidId = ? OR bidId is NULL)
+        AND (Module IS NULL or ? & Module = Module)
         AND Phase = ?
         AND Position = ?)";
 
@@ -35,6 +38,8 @@ class SQLiteCppWrapper : public ISQLiteWrapper
     std::unique_ptr<SQLite::Database> db;
     std::unique_ptr<SQLite::Statement> queryShape;
     std::unique_ptr<SQLite::Statement> queryRules;
+
+    int modules = (int)Modules::FiveCardMajors;
 
 public:
     SQLiteCppWrapper(const std::string& database);
@@ -48,6 +53,5 @@ private:
     bool IsNewSuit(int suit, int partnersSuit, int opponentsSuit);
     int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);
     int GetBidId(int bidRank, int suit, int lastBidId);
-
+    void SetModules(int modules) override;
 };
-

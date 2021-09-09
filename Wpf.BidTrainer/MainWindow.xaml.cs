@@ -65,6 +65,7 @@ namespace Wpf.BidTrainer
                 Settings1.Default.CurrentBoardIndex = 0;
             lesson = startPage.Lesson;
             pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+            Pinvoke.SetModules(Settings1.Default.EnabledModules);
             if (!startPage.IsContinueWhereLeftOff)
                 results.AllResults.Remove(lesson.LessonNr);
 
@@ -299,6 +300,12 @@ namespace Wpf.BidTrainer
                 ShowBothHands();
                 StatusBarUsername.Content = $"Username: {Settings1.Default.Username}";
             }
+        }
+
+        private void MenuBiddingSystem_Click(object sender, RoutedEventArgs e)
+        {
+            if (new BiddingSystemWindow().ShowDialog().Value)
+                Pinvoke.SetModules(Settings1.Default.EnabledModules);
         }
     }
 }

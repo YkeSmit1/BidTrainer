@@ -2,16 +2,25 @@
   {
     "PbnFile": "lesson2.pbn",
     "Content": "Lesson 2. One openings and responses",
-    "LessonNr": 2
+    "LessonNr": 2,
+    "System": 1
   },
   {
     "PbnFile": "lesson3.pbn",
     "Content": "Lesson 3. 1NT openings and responses",
-    "LessonNr": 3
+    "LessonNr": 3,
+    "System": 1
   },
   {
     "PbnFile": "lesson4.pbn",
     "Content": "Lesson 4. Overcall and take-out double",
-    "LessonNr": 4
+    "LessonNr": 4,
+    "System": 1
+  },
+  {
+    "PbnFile": "lesson5.pbn",
+    "Content": "Advanced course Lesson 1. Five card majors and 2 openings and higher",
+    "LessonNr": 5,
+    "System": 6
   }
 ]

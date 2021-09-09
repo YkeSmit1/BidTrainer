@@ -25,9 +25,21 @@ enum class BidKind
     OpponentsSuit
 };
 
+enum class Modules
+{
+    FourCardMajors = 1,
+    FiveCardMajors = 2,
+    TwoBidsAndHigher = 4,
+    NegativeDbl = 8,
+    Reverse = 16,
+    ControlBids = 32,
+    RKC = 64
+};
+
 extern "C" {
     __declspec(dllexport) int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position,
         int* minSuitsPartner, int* minSuitsOpener, Phase* newPhase, char* description);
     __declspec(dllexport) void GetRulesByBid(Phase phase, int bidId, int position, char* information);
     __declspec(dllexport) int Setup(const char* database);
+    __declspec(dllexport) void SetModules(int modules);
 }

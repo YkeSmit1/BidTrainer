@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\correct.png" />
+    <Resource Include="Resources\cards_48.png" />
     <Resource Include="Resources\incorrect.png" />
   </ItemGroup>
 
@@ -49,6 +50,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Pbn\lesson4.pbn">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Pbn\lesson5.pbn">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Settings1.settings">

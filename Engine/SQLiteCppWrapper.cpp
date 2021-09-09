@@ -50,11 +50,13 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
         queryShape->bind(11, hand.lengthSecondSuit);
         queryShape->bind(12, board.hasFit);
         queryShape->bind(13, board.fitIsMajor);
-        queryShape->bind(14, position);
-        queryShape->bind(15, (int)phase);
+        queryShape->bind(14, modules);
+        queryShape->bind(15, position);
+        queryShape->bind(16, (int)phase);
 
         while (queryShape->executeStep())
         {
+            auto id = queryShape->getColumn(5).getInt();
             auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
             auto nextPhase = queryShape->getColumn(3).isNull() ? phase : (Phase)queryShape->getColumn(3).getInt();
             auto str = queryShape->getColumn(4).getString();
@@ -124,11 +126,19 @@ int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
 
 void SQLiteCppWrapper::SetDatabase(const std::string& database)
 {
-    db.release();
-    db = std::make_unique<SQLite::Database>(database);
+    try
+    {
+        db.release();
+        db = std::make_unique<SQLite::Database>(database);
 
-    queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
-    queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
+        queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
+        queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what();
+        throw;
+    }
 }
 
 std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position)
@@ -138,8 +148,9 @@ std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position
         // Bind parameters
         queryRules->reset();
         queryRules->bind(1, bidId);
-        queryRules->bind(2, (int)phase);
-        queryRules->bind(3, position);
+        queryRules->bind(2, modules);
+        queryRules->bind(3, (int)phase);
+        queryRules->bind(4, position);
 
         std::vector<std::unordered_map<std::string, std::string>> records;
 
@@ -147,6 +158,14 @@ std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position
         {
             if (!queryRules->getColumn("BidId").isNull() || (bidId % 5 != 0))
             {
+                auto relevantIdsColumn = queryRules->getColumn("RelevantIds");
+                if (!relevantIdsColumn.isNull())
+                {
+                    auto vectorOfIds = Utils::Split(relevantIdsColumn.getString(), ',');
+                    if (std::find(vectorOfIds.begin(), vectorOfIds.end(), std::to_string(bidId)) == vectorOfIds.end())
+                        continue;
+                }
+
                 std::unordered_map<std::string, std::string> record;
                 for (int i = 0; i < queryRules->getColumnCount() - 1; i++)
                 {
@@ -209,4 +228,9 @@ void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, s
         }
 
     }
+}
+
+void SQLiteCppWrapper::SetModules(int modules)
+{
+    this->modules = modules;
 }

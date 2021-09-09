@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf.BidTrainer"
         mc:Ignorable="d"
-        Title="Choose lesson" Height="190" Width="500" WindowStartupLocation="CenterScreen">
+        Title="Choose lesson" Height="240" Width="600" WindowStartupLocation="CenterScreen" Icon="..\Resources\cards_48.png">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Background" Value="BlanchedAlmond"/>

@@ -62,3 +62,8 @@ void GetRulesByBid(Phase phase, int bidId, int position, char* information)
     assert(linformation.size() < 8192);
     information[linformation.size()] = '\0';
 }
+
+void SetModules(int modules)
+{
+    GetSqliteWrapper()->SetModules(modules);
+}

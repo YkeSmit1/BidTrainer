@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Wpf.BidTrainer": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
