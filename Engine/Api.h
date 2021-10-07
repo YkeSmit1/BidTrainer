@@ -11,7 +11,9 @@ enum class Phase
     JacobySpades,
     OverCall,
     TakeOutDbl,
-    OneNTOvercall
+    OneNTOvercall,
+    TwoNT,
+    TwoClubs
 };
 
 enum class BidKind

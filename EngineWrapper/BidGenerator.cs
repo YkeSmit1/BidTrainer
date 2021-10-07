@@ -24,7 +24,7 @@ namespace EngineWrapper
             if (bidId == 0)
             {
                 var hcpPartner = GetHcp(bidsPartner);
-                var bid = GetCalculatedBid(handsString, minLengthPartner, hcpPartner);
+                var bid = hcpPartner == 0 ? Bid.PassBid : GetCalculatedBid(handsString, minLengthPartner, hcpPartner);
                 if (bid > auction.currentContract)
                     bidId = Bid.GetBidId(bid);
             }
@@ -69,14 +69,15 @@ namespace EngineWrapper
             }
         }
 
-        public static (Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords) GetRecords(Bid bid, Phase phase, int position)
+        public static (Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords, List<int> ids) GetRecords(Bid bid, Phase phase, int position)
         {
             var informationJson = new StringBuilder(8192);
             Pinvoke.GetRulesByBid(phase, Bid.GetBidId(bid), position, informationJson);
             var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
             var minRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Min")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Min());
             var maxRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Max")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Max());
-            return (minRecords, maxRecords);
+            var ids = records.SelectMany(x => x).Where(x => x.Key == "Id").Select(x => Convert.ToInt32(x.Value)).ToList();
+            return (minRecords, maxRecords, ids);
         }
     }
 }

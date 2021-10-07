@@ -16,6 +16,7 @@ public:
     template<typename chartype>
     static std::vector<std::basic_string<chartype>> Split(const std::basic_string<chartype>& str, const chartype& delimeter);
     static std::string GetSuit(int bidId);
+    static int GetRank(int bidId);
 };
 
 template<typename chartype>

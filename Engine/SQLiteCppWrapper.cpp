@@ -166,6 +166,10 @@ std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position
                         continue;
                 }
 
+                auto bidRankColumn = queryRules->getColumn("BidRank");
+                if (!bidRankColumn.isNull() && Utils::GetRank(bidId) != bidRankColumn.getInt())
+                    continue;
+
                 std::unordered_map<std::string, std::string> record;
                 for (int i = 0; i < queryRules->getColumnCount() - 1; i++)
                 {

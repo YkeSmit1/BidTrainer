@@ -14,3 +14,8 @@ std::string Utils::GetSuit(int bidId)
         throw new std::invalid_argument("Unknown suit");
     }
 }
+
+int Utils::GetRank(int bidId)
+{
+    return (int)((bidId - 1) / 5) + 1;
+}

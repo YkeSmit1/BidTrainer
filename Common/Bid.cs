@@ -44,6 +44,7 @@ namespace Common
         public bool zoom;
         public Dictionary<string, int> minRecords;
         public Dictionary<string, int> maxRecords;
+        public List<int> ids;
 
         public Bid(int rank, Suit suit)
         {

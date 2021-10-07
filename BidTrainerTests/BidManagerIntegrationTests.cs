@@ -17,7 +17,7 @@ namespace BidTrainer.Tests
             var pbn = new Pbn();
             foreach (var pbnFile in Directory.GetFiles("..\\..\\..\\..\\Wpf.BidTrainer\\Pbn", "*.pbn"))
             {
-                Pinvoke.SetModules(Path.GetFileName(pbnFile) == "lesson5.pbn" ? 2 : 1);
+                Pinvoke.SetModules(Path.GetFileName(pbnFile) == "lesson5.pbn" ? 6 : 1);
                 pbn.Load(pbnFile);
                 foreach (var board in pbn.Boards)
                     board.Auction = bidManager.GetAuction(board.Deal, board.Dealer);

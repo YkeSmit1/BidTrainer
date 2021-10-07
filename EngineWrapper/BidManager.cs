@@ -38,14 +38,14 @@ namespace EngineWrapper
             currentBid.description = description;
 
             if (bidIdFromRule != 0)
-                (currentBid.minRecords, currentBid.maxRecords) = BidGenerator.GetRecords(currentBid, phase, position);
+                (currentBid.minRecords, currentBid.maxRecords, currentBid.ids) = BidGenerator.GetRecords(currentBid, phase, position);
 
             return currentBid;
         }
 
         public string GetInformation(Bid bid, int position)
         {
-            var (minRecords, maxRecords) = BidGenerator.GetRecords(bid, GetCurrentPhase(position), position);
+            var (minRecords, maxRecords, ids) = BidGenerator.GetRecords(bid, GetCurrentPhase(position), position);
             return Util.GetInformation(minRecords, maxRecords);
         }
 
