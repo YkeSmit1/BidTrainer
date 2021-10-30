@@ -26,14 +26,17 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (Module IS NULL or ? & Module = Module)
         AND Position = ?
         AND Phase = ?
+        AND (PreviousBidding IS NULL or PreviousBidding = ?)
+        AND (IsCompetitive IS NULL or IsCompetitive = ?)
         ORDER BY Priority ASC)";
 
     constexpr static std::string_view rulesSql = R"(SELECT * FROM Rules 
-        WHERE (bidId = ? OR bidId is NULL)
+        WHERE ((bidId = ?) OR (bidId is NULL AND ? > 0))
         AND (Module IS NULL or ? & Module = Module)
         AND Phase = ?
-        AND Position = ?)";
-
+        AND Position = ?
+        AND (PreviousBidding IS NULL or PreviousBidding = ?)
+        AND (IsCompetitive IS NULL or IsCompetitive = ?))";
 
     std::unique_ptr<SQLite::Database> db;
     std::unique_ptr<SQLite::Statement> queryShape;
@@ -45,9 +48,11 @@ public:
     SQLiteCppWrapper(const std::string& database);
 private:
     void GetBid(int bidId, int& rank, int& suit) final;
-    std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const Phase& phase, int lastBidId, int position) final;
+    std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, 
+        const Phase& phase, int lastBidId, int position, const std::string& previousBidding, bool isCompetitive) final;
     void SetDatabase(const std::string& database) override;
-    std::string GetRulesByBid(Phase phase, int bidId, int position) final;
+    std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    bool IsColumnMinSuit(const std::string& columnName);
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
     int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit);
     bool IsNewSuit(int suit, int partnersSuit, int opponentsSuit);

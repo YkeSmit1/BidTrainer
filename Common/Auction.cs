@@ -31,6 +31,19 @@ namespace Common
             return string.Join(separator, bidsNorth.Zip(bidsSouth, (x, y) => $"{x}{y} {y.description}")) + (bidsNorth.Count() > bidsSouth.Count() ? separator + bidsNorth.Last() : "");
         }
 
+        public Player GetDeclarer()
+        {
+            foreach (var biddingRoud in bids.Values)
+            {
+                foreach (var bid in biddingRoud)
+                {
+                    if (bid.Value.bidType == BidType.bid && bid.Value.suit == currentContract.suit)
+                        return bid.Key;
+                }
+            }
+            return Player.UnKnown;
+        }
+
         public Player GetDeclarer(Suit suit)
         {
             foreach (var biddingRoud in bids.Values)
@@ -95,6 +108,11 @@ namespace Common
         public string GetBidsAsString(Player player)
         {
             return bids.Where(x => x.Value.ContainsKey(player)).Aggregate(string.Empty, (current, biddingRound) => current + biddingRound.Value[player]);
+        }
+
+        public string GetBidsAsString()
+        {
+            return bids.SelectMany(x => x.Value.Values).Aggregate(string.Empty, (string current, Bid bid) => current + bid.ToStringASCII());
         }
 
         public string GetBidsAsString(Fase fase)
@@ -182,11 +200,23 @@ namespace Common
                 BidType.pass => true,
                 BidType.bid => currentContract.bidType != BidType.bid || currentContract < bid,
                 BidType.dbl => currentBidType == BidType.bid &&
-                    !Util.IsSameTeam(CurrentPlayer, GetDeclarer(currentContract.suit)),
+                    !Util.IsSameTeam(CurrentPlayer, GetDeclarer()),
                 BidType.rdbl => currentBidType == BidType.dbl &&
-                    Util.IsSameTeam(CurrentPlayer, GetDeclarer(currentContract.suit)),
+                    Util.IsSameTeam(CurrentPlayer, GetDeclarer()),
                 _ => throw new InvalidEnumArgumentException(nameof(bid.bidType), (int)bid.bidType, null),
             };
+        }
+
+        public bool IsCompetitive()
+        {
+            var nsHasBid = PlayerHasBid(Player.North) || PlayerHasBid(Player.South);
+            var ewHasBid = PlayerHasBid(Player.West) || PlayerHasBid(Player.East);
+            return nsHasBid && ewHasBid;
+
+            bool PlayerHasBid(Player player)
+            {
+                return GetBids(player).Any(x => x.bidType == BidType.bid);
+            }
         }
 
     }

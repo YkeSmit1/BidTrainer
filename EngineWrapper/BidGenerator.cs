@@ -16,11 +16,11 @@ namespace EngineWrapper
             var bidsPartner = auction.GetBids(Util.GetPartner(auction.CurrentPlayer));
             var minLengthPartner = GetMinSuitLength(bidsPartner);
 
-            var bidsOpener = auction.GetBids(auction.GetDeclarer(auction.currentContract.suit));
+            var bidsOpener = auction.GetBids(auction.GetDeclarer());
             var minLengthOpener = GetMinSuitLength(bidsOpener);
 
             var bidId = Pinvoke.GetBidFromRule(phase, handsString, Bid.GetBidId(auction.currentContract), auction.currentPosition,
-                minLengthPartner, minLengthOpener, out var nextPhase, description);
+                minLengthPartner, minLengthOpener, auction.GetBidsAsString(), auction.IsCompetitive(), out var nextPhase, description);
             if (bidId == 0)
             {
                 var hcpPartner = GetHcp(bidsPartner);
@@ -57,7 +57,7 @@ namespace EngineWrapper
                     .Take(2)
                     .Select((x, index) => (x, (Suit)(3 - index)))
                     .Where(z => z.x >= 8);
-                var hcp = Util.GetHcpCount(handsString);
+                var hcp = Util.GetHcpCount(handsString);                
                 var playingSuit = !majorFits.Any() ? Suit.NoTrump : majorFits.MaxBy(z => z.x).First().Item2;
                 var hcpPartnership = hcp + hcpPartner;
                 if (hcpPartnership < 23)
@@ -69,10 +69,10 @@ namespace EngineWrapper
             }
         }
 
-        public static (Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords, List<int> ids) GetRecords(Bid bid, Phase phase, int position)
+        public static (Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords, List<int> ids) GetRecords(Bid bid, Phase phase, Auction auction)
         {
             var informationJson = new StringBuilder(8192);
-            Pinvoke.GetRulesByBid(phase, Bid.GetBidId(bid), position, informationJson);
+            Pinvoke.GetRulesByBid(phase, Bid.GetBidId(bid), auction.currentPosition, auction.GetBidsAsString(), auction.IsCompetitive(), informationJson);
             var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
             var minRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Min")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Min());
             var maxRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Max")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Max());

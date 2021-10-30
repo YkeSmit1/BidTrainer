@@ -79,7 +79,7 @@ namespace Wpf.BidTrainer
             {
                 currentResult.UsedHint = true;
                 Cursor = Cursors.Arrow;
-                MessageBox.Show(bidManager.GetInformation(bid, auction.currentPosition), "Information");
+                MessageBox.Show(bidManager.GetInformation(bid, auction), "Information");
             }
             else
             {

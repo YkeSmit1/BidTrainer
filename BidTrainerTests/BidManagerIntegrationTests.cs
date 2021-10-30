@@ -5,11 +5,19 @@ using System.Text;
 using EngineWrapper;
 using System.IO;
 using Common;
+using Xunit.Abstractions;
 
 namespace BidTrainer.Tests
 {
     public class BidManagerIntegrationTests
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public BidManagerIntegrationTests(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         [Fact()]
         public void BidTest()
         {
@@ -17,10 +25,26 @@ namespace BidTrainer.Tests
             var pbn = new Pbn();
             foreach (var pbnFile in Directory.GetFiles("..\\..\\..\\..\\Wpf.BidTrainer\\Pbn", "*.pbn"))
             {
-                Pinvoke.SetModules(Path.GetFileName(pbnFile) == "lesson5.pbn" ? 6 : 1);
+                testOutputHelper.WriteLine($"Executing file {pbnFile}");
+                var modules = Path.GetFileName(pbnFile) switch
+                {
+                    "lesson2.pbn" => 1,
+                    "lesson3.pbn" => 1,
+                    "lesson4.pbn" => 1,
+                    "CursusSlotdrive.pbn" => 1,
+                    "lesson5.pbn" => 6,
+                    "lesson6.pbn" => 30,
+                    "lesson7.pbn" => 126,
+                    _ => 127
+                };
+                Pinvoke.SetModules(modules);
                 pbn.Load(pbnFile);
                 foreach (var board in pbn.Boards)
-                    board.Auction = bidManager.GetAuction(board.Deal, board.Dealer);
+                {
+                    var auction = bidManager.GetAuction(board.Deal, board.Dealer);
+                    board.Auction = auction;
+                    board.Declarer = auction.GetDeclarer();
+                }
 
                 var filePath = $"{pbnFile}.{DateTime.Now.ToShortDateString()}";
                 pbn.Save(filePath);

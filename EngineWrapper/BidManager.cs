@@ -20,7 +20,7 @@ namespace EngineWrapper
             var phase = GetCurrentPhase(auction.currentPosition);
 
             var (bidIdFromRule, nextPhase, description) = BidGenerator.GetBid(handsString, auction, phase);
-            var bid = CalculateBid(bidIdFromRule, description, auction.currentPosition, phase);
+            var bid = CalculateBid(bidIdFromRule, description, auction, phase);
 
             if (isPhaseOpener)
                 phaseOpener = nextPhase;
@@ -29,7 +29,7 @@ namespace EngineWrapper
             return bid;
         }
 
-        private static Bid CalculateBid(int bidIdFromRule, string description, int position, Phase phase)
+        private static Bid CalculateBid(int bidIdFromRule, string description, Auction auction, Phase phase)
         {
             if (bidIdFromRule == 0)
                 return Bid.PassBid;
@@ -38,14 +38,14 @@ namespace EngineWrapper
             currentBid.description = description;
 
             if (bidIdFromRule != 0)
-                (currentBid.minRecords, currentBid.maxRecords, currentBid.ids) = BidGenerator.GetRecords(currentBid, phase, position);
+                (currentBid.minRecords, currentBid.maxRecords, currentBid.ids) = BidGenerator.GetRecords(currentBid, phase, auction);
 
             return currentBid;
         }
 
-        public string GetInformation(Bid bid, int position)
+        public string GetInformation(Bid bid, Auction auction)
         {
-            var (minRecords, maxRecords, ids) = BidGenerator.GetRecords(bid, GetCurrentPhase(position), position);
+            var (minRecords, maxRecords, _) = BidGenerator.GetRecords(bid, GetCurrentPhase(auction.currentPosition), auction);
             return Util.GetInformation(minRecords, maxRecords);
         }
 

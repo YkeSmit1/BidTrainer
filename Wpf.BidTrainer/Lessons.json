@@ -22,5 +22,11 @@
     "Content": "Advanced course Lesson 1. Five card majors and 2 openings and higher",
     "LessonNr": 5,
     "System": 6
+  },
+  {
+    "PbnFile": "lesson6.pbn",
+    "Content": "Advanced course Lesson 2. Negative double and reverse",
+    "LessonNr": 6,
+    "System": 30
   }
 ]
