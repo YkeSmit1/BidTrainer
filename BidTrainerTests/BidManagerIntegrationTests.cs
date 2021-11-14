@@ -51,5 +51,18 @@ namespace BidTrainer.Tests
                 Assert.Equal(File.ReadAllText($"{pbnFile}.etalon"), File.ReadAllText(filePath));
             }
         }
+
+        [Fact()]
+        public void BidSpecificBoard()
+        {
+            var bidManager = new BidManager();
+            var pbn = new Pbn();
+            var pbnFile = "..\\..\\..\\..\\Wpf.BidTrainer\\Pbn\\lesson6.pbn";
+            var boardNr = 5;
+            pbn.Load(pbnFile);
+            Pinvoke.SetModules(126);
+            var board = pbn.Boards[boardNr];
+            var auction = bidManager.GetAuction(board.Deal, board.Dealer);
+        }
     }
 }

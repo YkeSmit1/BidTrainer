@@ -69,7 +69,7 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
 
             auto bidSuitKind = (BidKind)queryShape->getColumn(1).getInt();
             auto bidRank = queryShape->getColumn(2).getInt();
-            auto relBidId = GetBidIdRelative(bidSuitKind, bidRank, lastBidId, hand, board.partnersSuit, board.opponentsSuit);
+            auto relBidId = GetBidIdRelative(bidSuitKind, bidRank, lastBidId, hand, board);
             if (relBidId != 0)
                 return std::make_tuple(relBidId, nextPhase, str);
         }
@@ -84,30 +84,30 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
     }
 }
 
-int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit)
+int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, const BoardCharacteristic& board)
 {
     switch (bidSuitKind)
     {
     case BidKind::UnknownSuit:
         return 0;
     case BidKind::FirstSuit:
-        return GetBidId(bidRank, IsNewSuit(hand.firstSuit, partnersSuit, opponentsSuit) ? hand.firstSuit : hand.secondSuit, lastBidId, hand.suitLengths);
+        return GetBidId(bidRank, IsNewSuit(hand.firstSuit, board.partnersSuits, board.opponentsSuit) ? hand.firstSuit : hand.secondSuit, lastBidId, hand.suitLengths);
     case BidKind::SecondSuit:
         return GetBidId(bidRank, hand.secondSuit, lastBidId, hand.suitLengths);
     case BidKind::LowestSuit:
-        return GetBidId(bidRank, IsNewSuit(hand.lowestSuit, partnersSuit, opponentsSuit) ? hand.lowestSuit : hand.highestSuit, lastBidId, hand.suitLengths);
+        return GetBidId(bidRank, IsNewSuit(hand.lowestSuit, board.partnersSuits, board.opponentsSuit) ? hand.lowestSuit : hand.highestSuit, lastBidId, hand.suitLengths);
     case BidKind::HighestSuit:
-        return GetBidId(bidRank, IsNewSuit(hand.highestSuit, partnersSuit, opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
+        return GetBidId(bidRank, IsNewSuit(hand.highestSuit, board.partnersSuits, board.opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
     case BidKind::PartnersSuit:
-        return GetBidId(bidRank, partnersSuit, lastBidId);
+        return GetBidId(bidRank, board.fitWithPartnerSuit, lastBidId);
     default:
         throw new std::invalid_argument("Invalid value for bidSuitKind");
     }
 }
 
-bool SQLiteCppWrapper::IsNewSuit(int suit, int partnersSuit, int opponentsSuit)
+bool SQLiteCppWrapper::IsNewSuit(int suit, const std::vector<int>& partnersSuits, int opponentsSuit)
 {
-    return suit != partnersSuit && suit != opponentsSuit;
+    return (suit != -1 && partnersSuits.at(suit) == 0) && suit != opponentsSuit;
 }
 
 int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths)

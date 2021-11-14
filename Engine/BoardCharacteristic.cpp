@@ -9,15 +9,17 @@ BoardCharacteristic BoardCharacteristic::Create(HandCharacteristic hand, const s
 {
     BoardCharacteristic boardCharacteristic{};
 
-    std::vector<bool> fits;
-    boardCharacteristic.partnersSuit = GetSuit(partnersSuits);
-    std::transform(hand.suitLengths.begin(), hand.suitLengths.end(), partnersSuits.begin(), std::back_inserter(fits),
-        [](const auto& x, const auto& y) {return x + y >= 8; });
+    std::vector<int> suitLengthCombined;
+    std::transform(hand.suitLengths.begin(), hand.suitLengths.end(), partnersSuits.begin(), std::back_inserter(suitLengthCombined),
+        [](const auto& x, const auto& y) {return x + y; });
+    auto firstSuitWithFitIter = std::find_if(suitLengthCombined.begin(), suitLengthCombined.end(), [](const auto& x) {return x >= 8; });
+    boardCharacteristic.fitWithPartnerSuit = firstSuitWithFitIter == suitLengthCombined.end() ? -1 : (int)std::distance(suitLengthCombined.begin(), firstSuitWithFitIter);
+    boardCharacteristic.partnersSuits = partnersSuits;
 
     boardCharacteristic.opponentsSuit = GetSuit(opponentsSuits);
     boardCharacteristic.stopInOpponentsSuit = GetHasStopInOpponentsSuit(hand.hand, boardCharacteristic.opponentsSuit);
-    boardCharacteristic.hasFit = std::find(fits.begin(), fits.end(), true) != fits.end();
-    boardCharacteristic.fitIsMajor = fits.at(0) || fits.at(1);
+    boardCharacteristic.hasFit = firstSuitWithFitIter != suitLengthCombined.end();
+    boardCharacteristic.fitIsMajor = suitLengthCombined.at(0) >= 8 || suitLengthCombined.at(1) >= 8;
     return boardCharacteristic;
 
 }

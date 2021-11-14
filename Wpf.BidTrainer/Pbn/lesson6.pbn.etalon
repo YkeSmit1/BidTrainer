@@ -24,14 +24,14 @@ Pass	Pass	Pass
 [Board "3"]
 [Dealer "N"]
 [Vulnerable "None"]
-[Deal "N:76.AQJ32.T5.AQ64 KQJ54.54.KQJ8.73 983.87.A932.K985 AT2.KT96.764.JT2"]
+[Deal "N:76.AQJ32.T5.AQ64 KQJ54.54.KQJ8.73 983.K8.A932.K985 AT2.T963.764.JT2"]
 [Declarer "N"]
 [Auction "N"]
 	1H	1S	X
-2S	3C	Pass	Pass
+Pass	2C	Pass	Pass
 Pass
 
-[Event ""]  
+[Event ""]
 [Board "4"]
 [Dealer "N"]
 [Vulnerable "None"]
@@ -42,30 +42,30 @@ Pass
 Pass	4S	Pass	Pass
 Pass
 
-[Event ""]  
+[Event ""]
 [Board "5"]
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KJ5.74.AQT7.K853 AQT643.A3.J5.AJ6 92.KQJ986.96.T94 87.T52.K8432.Q72"]
-[Declarer "E"]
+[Declarer "S"]
 [Auction "N"]
 	1C	1S	X
 Pass	1NT	Pass	2H
 Pass	Pass	Pass
 
-[Event ""]  
+[Event ""]
 [Board "6"]
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:A5.A6.K9764.AQ73 J873.953.J82.KJ5 KQT92.K74.QT.642 64.QJT82.A53.T98"]
-[Declarer "E"]
+[Declarer "S"]
 [Auction "N"]
 	1D	Pass	1S
 Pass	2C	Pass	2NT
 Pass	3NT	Pass	Pass
 Pass
 
-[Event ""]  
+[Event ""]
 [Board "7"]
 [Dealer "N"]
 [Vulnerable "None"]
@@ -76,7 +76,7 @@ Pass
 Pass	2H	Pass	4H
 Pass	Pass	Pass
 
-[Event ""]  
+[Event ""]
 [Board "8"]
 [Dealer "N"]
 [Vulnerable "None"]

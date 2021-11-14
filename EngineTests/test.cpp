@@ -57,20 +57,20 @@ TEST(TestBoardCharacteristic, TestName)
     EXPECT_EQ(boardCharacteristic.hasFit, false);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, false);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, -1);
-    EXPECT_EQ(boardCharacteristic.partnersSuit, -1);
+    EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, -1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, false);
 
     boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, { 0, 0, 0, 4 }, { 0, 0, 4, 0 });
     EXPECT_EQ(boardCharacteristic.hasFit, false);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, false);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, 2);
-    EXPECT_EQ(boardCharacteristic.partnersSuit, 3);
+    EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, -1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, false);
 
     boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, { 0, 4, 0, 0 }, { 4, 0, 0, 0 });
     EXPECT_EQ(boardCharacteristic.hasFit, true);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, true);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, 0);
-    EXPECT_EQ(boardCharacteristic.partnersSuit, 1);
+    EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, 1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, true);
 }

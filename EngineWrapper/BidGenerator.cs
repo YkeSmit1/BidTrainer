@@ -24,7 +24,7 @@ namespace EngineWrapper
             if (bidId == 0)
             {
                 var hcpPartner = GetHcp(bidsPartner);
-                var bid = hcpPartner == 0 ? Bid.PassBid : GetCalculatedBid(handsString, minLengthPartner, hcpPartner);
+                var bid = hcpPartner == 0 ? Bid.PassBid : GetCalculatedBid(handsString, minLengthPartner, hcpPartner, auction);
                 if (bid > auction.currentContract)
                     bidId = Bid.GetBidId(bid);
             }
@@ -49,7 +49,7 @@ namespace EngineWrapper
                 return bidsPartner.Select(x => x.minRecords == null || !x.minRecords.Any() ? 0 : x.minRecords[property]).Max();
             }
 
-            static Bid GetCalculatedBid(string handsString, int[] minLengthPartner, int hcpPartner)
+            static Bid GetCalculatedBid(string handsString, int[] minLengthPartner, int hcpPartner, Auction auction)
             {
                 var suits = handsString.Split(',');
                 var majorFits = minLengthPartner
@@ -61,7 +61,10 @@ namespace EngineWrapper
                 var playingSuit = !majorFits.Any() ? Suit.NoTrump : majorFits.MaxBy(z => z.x).First().Item2;
                 var hcpPartnership = hcp + hcpPartner;
                 if (hcpPartnership < 23)
-                    return Bid.PassBid;
+                    return Util.IsSameTeam(auction.CurrentPlayer, auction.GetDeclarer()) && majorFits.Any()
+                        ? Bid.CheapestContract(auction.currentContract, majorFits.First().Item2)
+                        : Bid.PassBid;
+
                 var rank = playingSuit == Suit.NoTrump ? 2 : 3;
                 if (hcpPartnership >= 25)
                     rank++;

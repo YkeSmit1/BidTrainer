@@ -54,8 +54,8 @@ private:
     std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
     bool IsColumnMinSuit(const std::string& columnName);
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
-    int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit);
-    bool IsNewSuit(int suit, int partnersSuit, int opponentsSuit);
+    int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, const BoardCharacteristic& board);
+    bool IsNewSuit(int suit, const std::vector<int>& partnersSuits, int opponentsSuit);
     int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);
     int GetBidId(int bidRank, int suit, int lastBidId);
     void SetModules(int modules) override;

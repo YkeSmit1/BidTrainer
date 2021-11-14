@@ -10,7 +10,8 @@ struct BoardCharacteristic
 {
     bool hasFit;
     bool fitIsMajor;
-    int partnersSuit;
+    std::vector<int> partnersSuits;
+    int fitWithPartnerSuit;
     int opponentsSuit;
     bool stopInOpponentsSuit;
     static BoardCharacteristic Create(HandCharacteristic hand, const std::vector<int>& partnersSuits, const std::vector<int>& opponentsSuits);

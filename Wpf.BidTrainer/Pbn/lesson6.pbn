@@ -22,10 +22,10 @@ Pass	Pass	Pass
 [Board "3"]
 [Dealer "N"]
 [Vulnerable "None"]
-[Deal "N:76.AQJ32.T5.AQ64 KQJ54.54.KQJ8.73 983.87.A932.K985 AT2.KT96.764.JT2"]
+[Deal "N:76.AQJ32.T5.AQ64 KQJ54.54.KQJ8.73 983.K8.A932.K985 AT2.T963.764.JT2"]
 [Auction "N"]
 	1H	1S	X
-2S	3C	Pass	Pass
+Pass	2C	Pass	Pass
 Pass
 
 [Event ""]  
