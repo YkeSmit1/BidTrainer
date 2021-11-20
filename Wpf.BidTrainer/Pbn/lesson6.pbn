@@ -52,18 +52,17 @@ Pass	Pass
 [Board "6"]
 [Dealer "N"]
 [Vulnerable "None"]
-[Deal "N:A5.A6.K9764.AQ73 J873.953.J82.KJ5 KQT92.K74.QT.642 64.QJT82.A53.T98"]
+[Deal "N:A5.A6.Q9764.AQ73 J873.953.J82.KJ5 KQT92.K74.KT.642 64.QJT82.A53.T98"]
 [Auction "N"]
 	1D	Pass	1S
 Pass	2C	Pass	2NT
-Pass	3NT	Pass	Pass
-Pass
+Pass	Pass	Pass
 
 [Event ""]  
 [Board "7"]
 [Dealer "N"]
 [Vulnerable "None"]
-[Deal "N:A4.AQ54.K9642.A3 T965.J9.QJ.Q8742 KQJ82.KT86.T7.T5 73.732.A853.KJ96"]
+[Deal "N:A4.AQ54.K9642.A3 T965.J9.QJ.Q8742 KQJ82.KT86.AT.T5 73.732.8753.KJ96"]
 [Auction "N"]
 	1D	Pass	1S
 Pass	2H	Pass	4H

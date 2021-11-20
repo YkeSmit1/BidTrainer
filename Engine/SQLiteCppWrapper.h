@@ -28,6 +28,8 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND Phase = ?
         AND (PreviousBidding IS NULL or PreviousBidding = ?)
         AND (IsCompetitive IS NULL or IsCompetitive = ?)
+        AND (IsReverse IS NULL or IsReverse = ?)
+        AND (IsSemiBalanced IS NULL or IsSemiBalanced = ?)
         ORDER BY Priority ASC)";
 
     constexpr static std::string_view rulesSql = R"(SELECT * FROM Rules 
@@ -36,7 +38,8 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND Phase = ?
         AND Position = ?
         AND (PreviousBidding IS NULL or PreviousBidding = ?)
-        AND (IsCompetitive IS NULL or IsCompetitive = ?))";
+        AND (IsCompetitive IS NULL or IsCompetitive = ?)
+        AND UseInCalculation IS NULL)";
 
     std::unique_ptr<SQLite::Database> db;
     std::unique_ptr<SQLite::Statement> queryShape;

@@ -56,6 +56,8 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
         queryShape->bind(16, (int)phase);
         queryShape->bind(17, (std::string)previousBidding);
         queryShape->bind(18, isCompetitive);
+        queryShape->bind(19, hand.isReverse);
+        queryShape->bind(20, hand.isSemiBalanced);
 
         while (queryShape->executeStep())
         {
@@ -95,7 +97,10 @@ int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int las
     case BidKind::SecondSuit:
         return GetBidId(bidRank, hand.secondSuit, lastBidId, hand.suitLengths);
     case BidKind::LowestSuit:
-        return GetBidId(bidRank, IsNewSuit(hand.lowestSuit, board.partnersSuits, board.opponentsSuit) ? hand.lowestSuit : hand.highestSuit, lastBidId, hand.suitLengths);
+        {
+            auto bidId = GetBidId(bidRank, IsNewSuit(hand.lowestSuit, board.partnersSuits, board.opponentsSuit) ? hand.lowestSuit : hand.highestSuit, lastBidId, hand.suitLengths);
+            return bidId != 0 ? bidId : GetBidId(bidRank, IsNewSuit(hand.lowestSuit, board.partnersSuits, board.opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
+        }
     case BidKind::HighestSuit:
         return GetBidId(bidRank, IsNewSuit(hand.highestSuit, board.partnersSuits, board.opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
     case BidKind::PartnersSuit:
@@ -144,6 +149,11 @@ void SQLiteCppWrapper::SetDatabase(const std::string& database)
     }
 }
 
+/// <summary>
+/// Gets all the rules for this bid
+/// TODO filter rules not applicable for this bid by using a different bidsuitkind
+/// </summary>
+/// <returns>a JSON string with all the rules</returns>
 std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive)
 {
     try

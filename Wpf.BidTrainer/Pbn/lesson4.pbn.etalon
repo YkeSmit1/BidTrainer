@@ -65,11 +65,10 @@ Pass	Pass	Pass
 [Dealer "E"]
 [Vulnerable "All"]
 [Deal "E:AK.KT63.KQ865.87 84.AQJ942.74.542 JT75.7.T92.AJ963 Q9632.85.AJ3.KQT"]
-[Declarer "E"]
+[Declarer "W"]
 [Auction "E"]
 		1D	Pass
-1S	Pass	2H	Pass
-Pass	Pass
+1S	Pass	Pass	Pass
 
 [Event ""]
 [Board "8"]

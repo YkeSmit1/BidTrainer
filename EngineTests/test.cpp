@@ -8,6 +8,7 @@ TEST(TestHandCharacteristic, TestName)
     handCharacteristic.Initialize("A432,K5432,Q,J43");
 
     EXPECT_EQ(handCharacteristic.isBalanced, false);
+    EXPECT_EQ(handCharacteristic.isSemiBalanced, true);
     EXPECT_EQ(handCharacteristic.suitLengths[0], 4);
     EXPECT_EQ(handCharacteristic.suitLengths[1], 5);
     EXPECT_EQ(handCharacteristic.suitLengths[2], 1);
@@ -23,6 +24,7 @@ TEST(TestHandCharacteristic, TestName)
     handCharacteristic.Initialize("A32,K432,K432,J3");
 
     EXPECT_EQ(handCharacteristic.isBalanced, true);
+    EXPECT_EQ(handCharacteristic.isSemiBalanced, true);
     EXPECT_EQ(handCharacteristic.suitLengths[0], 3);
     EXPECT_EQ(handCharacteristic.suitLengths[1], 4);
     EXPECT_EQ(handCharacteristic.suitLengths[2], 4);
@@ -46,6 +48,16 @@ TEST(TestHandCharacteristic, TestName)
     handCharacteristic.Initialize("K432,J432,K432,A");
     EXPECT_EQ(handCharacteristic.lowestSuit, 2);
     EXPECT_EQ(handCharacteristic.highestSuit, 0);
+
+    handCharacteristic.Initialize("A32,K432,K432,J3");
+    EXPECT_EQ(handCharacteristic.isReverse, false);
+    handCharacteristic.Initialize("A2,K5432,K432,J3");
+    EXPECT_EQ(handCharacteristic.isReverse, false);
+    handCharacteristic.Initialize("A2,K432,K5432,J3");
+    EXPECT_EQ(handCharacteristic.isReverse, true);
+    handCharacteristic.Initialize("A,K5432,K65432,J");
+    EXPECT_EQ(handCharacteristic.isReverse, true);
+    EXPECT_EQ(handCharacteristic.isSemiBalanced, false);
 }
 
 TEST(TestBoardCharacteristic, TestName) 

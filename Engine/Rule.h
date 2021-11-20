@@ -11,6 +11,8 @@ struct HandCharacteristic
 	
 	std::vector<int> suitLengths;
 	bool isBalanced = false;
+	bool isSemiBalanced = false;
+	bool isReverse = false;
 	int lengthFirstSuit = 0;
 	int lengthSecondSuit = 0;
 

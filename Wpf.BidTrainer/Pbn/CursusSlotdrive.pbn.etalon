@@ -183,11 +183,11 @@ Pass	Pass	Pass
 [Dealer "E"]
 [Vulnerable "NS"]
 [Deal "E:86.AKT43.A6.K972 AKQ7.86.KQ4.AJ54 954.J52.9872.QT3 JT32.Q97.JT53.86"]
-[Declarer "N"]
+[Declarer "E"]
 [Auction "E"]
 		1H	X
-Pass	2D	Pass	Pass
-Pass
+Pass	1S	2C	Pass
+Pass	Pass
 
 [Event ""]
 [Board "19"]

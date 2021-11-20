@@ -66,10 +66,9 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
-      <BidTrainerBuildDirectory>$(ProjectDir)bin\$(Configuration)\$(TargetFramework)</BidTrainerBuildDirectory>
-      <BidTrainerIntegrationTestBuildDirectory>$(ProjectDir)..\BidTrainerTests\bin\$(Configuration)\$(TargetFramework)</BidTrainerIntegrationTestBuildDirectory>
+      <EngineDirectory>$(SolutionDir)\x64\$(Configuration)</EngineDirectory>
     </PropertyGroup>
-    <Copy SourceFiles="$(BidTrainerBuildDirectory)\Engine.dll;$(BidTrainerBuildDirectory)\sqlite3.dll" DestinationFolder="$(BidTrainerIntegrationTestBuildDirectory)" />
+    <Copy SourceFiles="$(EngineDirectory)\Engine.dll;$(EngineDirectory)\sqlite3.dll" DestinationFolder="$(OutDir)" />
   </Target>
 
 
