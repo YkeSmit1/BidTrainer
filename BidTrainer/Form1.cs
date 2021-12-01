@@ -96,9 +96,7 @@ namespace BidTrainer
                 var biddingBoxButton = (BiddingBoxButton)x;
                 if (Cursor == Cursors.Help)
                 {
-                    var (minRecords, maxRecords, ids) = BidGenerator.GetRecords(biddingBoxButton.bid,
-                        bidManager.GetCurrentPhase(auctionControl.auction.currentPosition), auctionControl.auction);
-                    var information = Util.GetInformation(minRecords, maxRecords);
+                    var information = bidManager.GetInformation(biddingBoxButton.bid, auctionControl.auction);
                     Cursor = Cursors.Default;
                     MessageBox.Show(information, "Information");
                 }

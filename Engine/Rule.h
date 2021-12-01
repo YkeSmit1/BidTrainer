@@ -22,9 +22,9 @@ struct HandCharacteristic
 	int highestSuit = -1;
 
 	int Hcp = 0;
+	std::vector<bool> controls{};
 
-	static int CalculateHcp(const std::string& hand);
-	static int NumberOfCards(const std::string& hand, char card);
+	bool GetHasControl(const std::string& suit);
 	void Initialize(const std::string& hand);
 	explicit HandCharacteristic(const std::string& hand);
 	HandCharacteristic() = default;

@@ -159,6 +159,20 @@ namespace Common
             };
         }
 
+        public static bool GetHasTrumpQueen(string handsString, Suit playingSuit)
+        {
+            var hand = handsString.Split(',');
+            return hand[3 - (int)playingSuit].Any(x => x == 'Q');
+        }
+
+        public static int GetKeyCards(string handsString, Suit playingSuit)
+        {
+            var hand = handsString.Split(',');
+            var trumpKing = hand[3 - (int)playingSuit].Any(x => x == 'K') ? 1 : 0;
+            var keyCards = handsString.Count(x => x == 'A') + trumpKing;
+            return keyCards;
+        }
+
         public static Face GetFaceFromDescription(char c)
         {
             return c switch
@@ -401,15 +415,6 @@ namespace Common
             {
                 return reader.ReadToEnd();
             }
-        }
-
-        public static string GetInformation(Dictionary<string, int> minRecords, Dictionary<string, int> maxRecords)
-        {
-            return minRecords.Count() == 0 ? "No information" : $"Spades: {minRecords["MinSpades"]} - {maxRecords["MaxSpades"]}" +
-                $"\nHearts: {minRecords["MinHearts"]} - {maxRecords["MaxHearts"]}" +
-                $"\nDiamonds: {minRecords["MinDiamonds"]} - {maxRecords["MaxDiamonds"]}" +
-                $"\nClubs: {minRecords["MinClubs"]} - {maxRecords["MaxClubs"]}" +
-                $"\nHcp: {minRecords["MinHcp"]} - {maxRecords["MaxHcp"]}";
         }
 
         public static Player GetPartner(Player player)

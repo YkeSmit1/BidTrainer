@@ -27,14 +27,16 @@ ISQLiteWrapper* GetSqliteWrapper()
 }
 
 int GetBidFromRule(Phase phase, const char* hand, int lastBidId, int position, int* minSuitsPartner, int* minSuitsOpener, 
-    const char* previousBidding, bool isCompetitive, Phase* newPhase, char* description)
+    const char* previousBidding, const char* previousSlamBidding, bool isCompetitive, int minHcpPartner, bool allControlsPresent, Phase* newPhase, char* description)
 {
     auto handCharacteristic = GetHandCharacteristic(hand);
     auto minSuitsPartnerVec = std::vector<int>(minSuitsPartner, minSuitsPartner + 4);
     auto opponentsSuits = std::vector<int>(minSuitsOpener, minSuitsOpener + 4);
     auto boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, minSuitsPartnerVec, opponentsSuits);
 
-    auto [bidId, lNewfase, descr] = GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, phase, lastBidId, position, previousBidding, isCompetitive);
+    auto [bidId, lNewfase, descr] = minHcpPartner + Utils::CalculateHcp(hand) < 29 && phase != Phase::SlamBidding ?
+        GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, phase, lastBidId, position, previousBidding, isCompetitive) :
+        GetSqliteWrapper()->GetRelativeRule(handCharacteristic, boardCharacteristic, lastBidId, previousSlamBidding, allControlsPresent);
     assert(descr.size() < 128);
     strncpy(description, descr.c_str(), descr.size());
     description[descr.size()] = '\0';
@@ -64,6 +66,15 @@ void GetRulesByBid(Phase phase, int bidId, int position, const char* previousBid
     strncpy(information, linformation.c_str(), linformation.size());
     information[linformation.size()] = '\0';
 }
+
+void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* information)
+{
+    auto linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, previousBidding);
+    assert(linformation.size() < 8192);
+    strncpy(information, linformation.c_str(), linformation.size());
+    information[linformation.size()] = '\0';
+}
+
 
 void SetModules(int modules)
 {

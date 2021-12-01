@@ -21,7 +21,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6c647d53-3232-4475-8622-d57f26b48879}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -35,11 +34,13 @@
   <ItemGroup>
     <ClInclude Include="..\Engine\BoardCharacteristic.h" />
     <ClInclude Include="..\Engine\Rule.h" />
+    <ClInclude Include="..\Engine\Utils.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Engine\BoardCharacteristic.cpp" />
     <ClCompile Include="..\Engine\Rule.cpp" />
+    <ClCompile Include="..\Engine\Utils.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

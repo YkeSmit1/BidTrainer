@@ -110,7 +110,7 @@ namespace Common
             return bids.Where(x => x.Value.ContainsKey(player)).Aggregate(string.Empty, (current, biddingRound) => current + biddingRound.Value[player]);
         }
 
-        public string GetBidsAsString()
+        public string GetBidsAsStringASCII()
         {
             return bids.SelectMany(x => x.Value.Values).Aggregate(string.Empty, (string current, Bid bid) => current + bid.ToStringASCII());
         }

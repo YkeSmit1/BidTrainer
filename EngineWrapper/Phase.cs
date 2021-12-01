@@ -11,6 +11,9 @@
         JacobySpades,
         OverCall,
         TakeOutDbl,
-        OneNTOvercall
+        OneNTOvercall,
+        TwoNT,
+        TwoClubs,
+        SlamBidding
     }
 }

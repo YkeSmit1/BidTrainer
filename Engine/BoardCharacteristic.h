@@ -14,6 +14,8 @@ struct BoardCharacteristic
     int fitWithPartnerSuit;
     int opponentsSuit;
     bool stopInOpponentsSuit;
+    int keyCards;
+    bool trumpQueen;
     static BoardCharacteristic Create(HandCharacteristic hand, const std::vector<int>& partnersSuits, const std::vector<int>& opponentsSuits);
 private:
     static int GetSuit(const std::vector<int>& suitLengths);

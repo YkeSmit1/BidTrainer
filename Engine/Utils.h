@@ -17,6 +17,8 @@ public:
     static std::vector<std::basic_string<chartype>> Split(const std::basic_string<chartype>& str, const chartype& delimeter);
     static std::string GetSuit(int bidId);
     static int GetRank(int bidId);
+    static int NumberOfCards(const std::string& hand, char card);
+    static int CalculateHcp(const std::string& hand);
 };
 
 template<typename chartype>

@@ -15,8 +15,11 @@ public:
     virtual std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& board, 
         const Phase& phase, int lastBidId, int position, const std::string& previousBidding, bool isCompetitive) = 0;
     virtual void GetBid(int bidId, int& rank, int& suit) = 0;
+    virtual std::tuple<int, Phase, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic,
+        int lastBidId, const std::string& previousBidding, bool allControlsPresent) = 0;
     virtual void SetDatabase(const std::string& database) = 0;
     virtual std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) = 0;
+    virtual std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding) = 0;
     virtual void SetModules(int modules) = 0;
 };
 

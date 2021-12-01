@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Common
 {
@@ -42,9 +41,7 @@ namespace Common
         public Fase fase = Fase.Unknown;
         public Fase pullFase = Fase.Unknown;
         public bool zoom;
-        public Dictionary<string, int> minRecords;
-        public Dictionary<string, int> maxRecords;
-        public List<int> ids;
+        public object extraInformation;
 
         public Bid(int rank, Suit suit)
         {

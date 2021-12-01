@@ -20,6 +20,10 @@ BoardCharacteristic BoardCharacteristic::Create(HandCharacteristic hand, const s
     boardCharacteristic.stopInOpponentsSuit = GetHasStopInOpponentsSuit(hand.hand, boardCharacteristic.opponentsSuit);
     boardCharacteristic.hasFit = firstSuitWithFitIter != suitLengthCombined.end();
     boardCharacteristic.fitIsMajor = suitLengthCombined.at(0) >= 8 || suitLengthCombined.at(1) >= 8;
+    auto suits = Utils::Split<char>(hand.hand, ',');
+    auto trumpSuit = boardCharacteristic.fitWithPartnerSuit == -1 ? "" : suits.at(boardCharacteristic.fitWithPartnerSuit);
+    boardCharacteristic.keyCards = Utils::NumberOfCards(hand.hand, 'A') + Utils::NumberOfCards(trumpSuit, 'K');
+    boardCharacteristic.trumpQueen = Utils::NumberOfCards(trumpSuit, 'Q');
     return boardCharacteristic;
 
 }

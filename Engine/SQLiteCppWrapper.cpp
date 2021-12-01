@@ -17,6 +17,25 @@ SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
     SetDatabase(database);
 }
 
+void SQLiteCppWrapper::SetDatabase(const std::string& database)
+{
+    try
+    {
+        db.release();
+        db = std::make_unique<SQLite::Database>(database);
+
+        queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
+        queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
+        queryShapeRelative = std::make_unique<SQLite::Statement>(*db, relativeShapeSql.data());
+        queryRelativeRules= std::make_unique<SQLite::Statement>(*db, relativeRulesSql.data());
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what();
+        throw;
+    }
+}
+
 void SQLiteCppWrapper::GetBid(int bidId, int& rank, int& suit)
 {
     SQLite::Statement query(*db, "SELECT Rank, Suit, description FROM bids where id = ?");
@@ -76,14 +95,54 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
                 return std::make_tuple(relBidId, nextPhase, str);
         }
         return std::make_tuple(0, phase, "");
-
-
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what();
         throw;
     }
+}
+
+std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, 
+    int lastBidId, const std::string& previousBidding, bool allControlsPresent)
+{
+    try
+    {
+        // Bind parameters
+        queryShapeRelative->reset();
+        queryShapeRelative->bind(1, lastBidId);
+        queryShapeRelative->bind(2, boardCharacteristic.keyCards);
+        queryShapeRelative->bind(3, boardCharacteristic.trumpQueen);
+        queryShapeRelative->bind(4, previousBidding);
+        queryShapeRelative->bind(5, std::to_string(boardCharacteristic.fitWithPartnerSuit));
+        queryShapeRelative->bind(6, hand.controls[0]);
+        queryShapeRelative->bind(7, hand.controls[1]);
+        queryShapeRelative->bind(8, hand.controls[2]);
+        queryShapeRelative->bind(9, hand.controls[3]);
+        queryShapeRelative->bind(10, allControlsPresent);
+        queryShapeRelative->bind(11, GetLastBid(previousBidding));
+
+        while (queryShapeRelative->executeStep())
+        {
+            auto bidId = queryShapeRelative->getColumn(0).getInt();
+            auto str = queryShapeRelative->getColumn(1).getString();
+
+            if (bidId != 0)
+                return std::make_tuple(bidId, Phase::SlamBidding, str);
+        }
+        return std::make_tuple(0, Phase::Unknown, "");
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what();
+        throw;
+    }
+}
+
+std::string SQLiteCppWrapper::GetLastBid(const std::string& previousBidding)
+{
+    auto lastBid = previousBidding.length() == 0 ? previousBidding : previousBidding.substr(previousBidding.length() - 2);
+    return lastBid == "NT" ? previousBidding.substr(previousBidding.length() - 3) : lastBid;
 }
 
 int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, const BoardCharacteristic& board)
@@ -130,23 +189,6 @@ int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
         return 0;
     auto bidId = (bidRank - 1) * 5 + (3 - suit) + 1;
     return bidId > lastBidId ? bidId : 0;
-}
-
-void SQLiteCppWrapper::SetDatabase(const std::string& database)
-{
-    try
-    {
-        db.release();
-        db = std::make_unique<SQLite::Database>(database);
-
-        queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
-        queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what();
-        throw;
-    }
 }
 
 /// <summary>
@@ -255,6 +297,48 @@ void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, s
             break;
         }
 
+    }
+}
+
+/// <summary>
+/// Gets all the rules for this bid in the relativeRules table
+/// </summary>
+/// <returns>a JSON string with all the relative rules</returns>
+std::string SQLiteCppWrapper::GetRelativeRulesByBid(int bidId, const std::string& previousBidding)
+{
+    try
+    {
+        // Bind parameters
+        queryRelativeRules->reset();
+        queryRelativeRules->bind(1, bidId);
+        queryRelativeRules->bind(2, previousBidding);
+        queryRelativeRules->bind(3, GetLastBid(previousBidding));
+        
+        std::vector<std::unordered_map<std::string, std::string>> records;
+
+        while (queryRelativeRules->executeStep())
+        {
+            if (!queryRelativeRules->getColumn("BidId").isNull() || (bidId % 5 != 0))
+            {
+                std::unordered_map<std::string, std::string> record;
+                for (int i = 0; i < queryRelativeRules->getColumnCount() - 1; i++)
+                {
+                    auto column = queryRelativeRules->getColumn(i);
+                    record.emplace(std::make_pair(column.getName(), column.getString()));
+                }
+                records.push_back(record);
+            }
+        }
+        nlohmann::json j = records;
+        std::stringstream ss;
+        ss << j;
+        auto s = ss.str();
+        return s;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what();
+        throw;
     }
 }
 

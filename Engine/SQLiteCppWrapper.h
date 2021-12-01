@@ -41,9 +41,30 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (IsCompetitive IS NULL or IsCompetitive = ?)
         AND UseInCalculation IS NULL)";
 
+    constexpr static std::string_view relativeShapeSql = R"(SELECT bidId, Description FROM RelativeRules 
+        WHERE bidId > ?
+        AND (KeyCards IS NULL or KeyCards = ?)
+        AND (TrumpQueen IS NULL or TrumpQueen = ?)
+        AND (PreviousBidding IS NULL or PreviousBidding = ?)
+        AND (TrumpSuits IS NULL OR TrumpSuits LIKE '%' || ? || '%')
+        AND (SpadeControl IS NULL or SpadeControl = ?)
+        AND (HeartControl IS NULL or HeartControl = ?)
+        AND (DiamondControl IS NULL or DiamondControl = ?)
+        AND (ClubControl IS NULL or ClubControl = ?)
+        AND (AllControlsPresent IS NULL or AllControlsPresent = ?)
+        AND (LastBid IS NULL or LastBid = ?)
+        ORDER BY Priority ASC)";
+
+    constexpr static std::string_view relativeRulesSql = R"(SELECT * FROM RelativeRules 
+        WHERE bidId = ?
+        AND (PreviousBidding IS NULL or PreviousBidding = ?)
+        AND (LastBid IS NULL or LastBid = ?))";
+
     std::unique_ptr<SQLite::Database> db;
     std::unique_ptr<SQLite::Statement> queryShape;
     std::unique_ptr<SQLite::Statement> queryRules;
+    std::unique_ptr<SQLite::Statement> queryShapeRelative;
+    std::unique_ptr<SQLite::Statement> queryRelativeRules;
 
     int modules = (int)Modules::FiveCardMajors;
 
@@ -53,6 +74,9 @@ private:
     void GetBid(int bidId, int& rank, int& suit) final;
     std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, 
         const Phase& phase, int lastBidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    std::tuple<int, Phase, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic,
+        int lastBidId, const std::string& previousBidding, bool allControlsPresent) final;
+    std::string GetLastBid(const std::string& previousBidding);
     void SetDatabase(const std::string& database) override;
     std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
     bool IsColumnMinSuit(const std::string& columnName);
@@ -61,5 +85,6 @@ private:
     bool IsNewSuit(int suit, const std::vector<int>& partnersSuits, int opponentsSuit);
     int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);
     int GetBidId(int bidRank, int suit, int lastBidId);
+    std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding);
     void SetModules(int modules) override;
 };

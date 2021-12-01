@@ -58,6 +58,18 @@ TEST(TestHandCharacteristic, TestName)
     handCharacteristic.Initialize("A,K5432,K65432,J");
     EXPECT_EQ(handCharacteristic.isReverse, true);
     EXPECT_EQ(handCharacteristic.isSemiBalanced, false);
+
+    handCharacteristic.Initialize("432,VB2,A,AK5432");
+    EXPECT_EQ(handCharacteristic.controls[0], false);
+    EXPECT_EQ(handCharacteristic.controls[1], false);
+    EXPECT_EQ(handCharacteristic.controls[2], true);
+    EXPECT_EQ(handCharacteristic.controls[3], true);
+
+    handCharacteristic.Initialize("A65432,K65432,2,");
+    EXPECT_EQ(handCharacteristic.controls[0], true);
+    EXPECT_EQ(handCharacteristic.controls[1], true);
+    EXPECT_EQ(handCharacteristic.controls[2], true);
+    EXPECT_EQ(handCharacteristic.controls[3], true);
 }
 
 TEST(TestBoardCharacteristic, TestName) 
@@ -85,4 +97,17 @@ TEST(TestBoardCharacteristic, TestName)
     EXPECT_EQ(boardCharacteristic.opponentsSuit, 0);
     EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, 1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, true);
+    EXPECT_EQ(boardCharacteristic.keyCards, 2);
+    EXPECT_EQ(boardCharacteristic.trumpQueen, false);
+
+    HandCharacteristic handCharacteristicSlam{};
+    handCharacteristicSlam.Initialize("A432,Q5432,A,AJ4");
+    boardCharacteristic = BoardCharacteristic::Create(handCharacteristicSlam, { 0, 4, 0, 0 }, { 4, 0, 0, 0 });
+    EXPECT_EQ(boardCharacteristic.hasFit, true);
+    EXPECT_EQ(boardCharacteristic.fitIsMajor, true);
+    EXPECT_EQ(boardCharacteristic.opponentsSuit, 0);
+    EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, 1);
+    EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, true);
+    EXPECT_EQ(boardCharacteristic.keyCards, 3);
+    EXPECT_EQ(boardCharacteristic.trumpQueen, true);
 }
