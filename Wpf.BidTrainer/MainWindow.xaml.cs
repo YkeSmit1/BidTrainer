@@ -65,7 +65,7 @@ namespace Wpf.BidTrainer
                 Settings1.Default.CurrentBoardIndex = 0;
             lesson = startPage.Lesson;
             pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
-            Pinvoke.SetModules(Settings1.Default.EnabledModules);
+            Pinvoke.SetModules(lesson.Modules);
             if (!startPage.IsContinueWhereLeftOff)
                 results.AllResults.Remove(lesson.LessonNr);
 

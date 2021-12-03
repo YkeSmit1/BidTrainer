@@ -53,6 +53,7 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (ClubControl IS NULL or ClubControl = ?)
         AND (AllControlsPresent IS NULL or AllControlsPresent = ?)
         AND (LastBid IS NULL or LastBid = ?)
+        AND (Module IS NULL or ? & Module = Module)
         ORDER BY Priority ASC)";
 
     constexpr static std::string_view relativeRulesSql = R"(SELECT * FROM RelativeRules 

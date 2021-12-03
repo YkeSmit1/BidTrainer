@@ -121,6 +121,7 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRelativeRule(const Hand
         queryShapeRelative->bind(9, hand.controls[3]);
         queryShapeRelative->bind(10, allControlsPresent);
         queryShapeRelative->bind(11, GetLastBid(previousBidding));
+        queryShapeRelative->bind(12, modules);
 
         while (queryShapeRelative->executeStep())
         {
