@@ -28,8 +28,8 @@ Pass	Pass	Pass
 [Declarer "N"]
 [Auction "N"]
 	1H	1S	X
-Pass	2C	Pass	Pass
-Pass
+Pass	2C	Pass	3C
+Pass	Pass	Pass
 
 [Event ""]
 [Board "4"]

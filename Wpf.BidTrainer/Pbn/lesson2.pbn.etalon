@@ -52,7 +52,8 @@ Pass
 [Declarer "N"]
 [Auction "N"]
 	1D	Pass	1H
-Pass	1S	Pass	Pass
+Pass	1S	Pass	3S
+Pass	4S	Pass	Pass
 Pass
 
 [Event ""]
@@ -85,6 +86,7 @@ Pass	Pass	Pass
 [Declarer "N"]
 [Auction "W"]
 Pass	1D	Pass	1H
-Pass	1S	Pass	Pass
+Pass	1S	Pass	3D
+Pass	3NT	Pass	Pass
 Pass
 
