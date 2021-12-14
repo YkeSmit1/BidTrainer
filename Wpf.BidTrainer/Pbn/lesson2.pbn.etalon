@@ -47,7 +47,8 @@ Pass
 [Deal "N:KJ54.K6.AT843.KJ A9.J743.KJ2.Q965 QT72.A952.965.AT 863.QT8.Q7.87432"]
 [Auction "N"]
 	1D	Pass	1H
-Pass	1S	Pass	Pass
+Pass	1S	Pass	3S
+Pass	4S	Pass	Pass
 Pass
 
 [Event ""]
@@ -77,6 +78,7 @@ Pass	Pass	Pass
 [Deal "W:AK87.T873.63.Q53 Q942.65.AKJ52.AJ T65.K94.T4.KT842 J3.AQJ2.Q987.976"]
 [Auction "W"]
 Pass	1D	Pass	1H
-Pass	1S	Pass	Pass
+Pass	1S	Pass	3S
+Pass	4S	Pass	Pass
 Pass
 
