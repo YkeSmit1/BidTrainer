@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Utils.h"
 
 std::string Utils::GetSuit(int bidId)

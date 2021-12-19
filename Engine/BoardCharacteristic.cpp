@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "BoardCharacteristic.h"
 #include <vector>
 #include <algorithm>
