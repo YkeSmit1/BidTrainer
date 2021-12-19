@@ -14,7 +14,11 @@
 
 SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
 {
-    SetDatabase(database);
+    db.release();
+    db = std::make_unique<SQLite::Database>(database);
+
+    queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
+    queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
 }
 
 void SQLiteCppWrapper::GetBid(int bidId, int& rank, int& suit)
@@ -120,15 +124,6 @@ int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
         return 0;
     auto bidId = (bidRank - 1) * 5 + (3 - suit) + 1;
     return bidId > lastBidId ? bidId : 0;
-}
-
-void SQLiteCppWrapper::SetDatabase(const std::string& database)
-{
-    db.release();
-    db = std::make_unique<SQLite::Database>(database);
-
-    queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
-    queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
 }
 
 std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position)

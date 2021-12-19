@@ -41,7 +41,6 @@ public:
 private:
     void GetBid(int bidId, int& rank, int& suit) final;
     std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const Phase& phase, int lastBidId, int position) final;
-    void SetDatabase(const std::string& database) override;
     std::string GetRulesByBid(Phase phase, int bidId, int position) final;
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
     int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, int partnersSuit, int opponentsSuit);
