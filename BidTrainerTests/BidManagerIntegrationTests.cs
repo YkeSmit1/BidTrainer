@@ -38,7 +38,7 @@ namespace BidTrainer.Tests
                 BidBoard(bidManager, board);
             }
 
-            var filePath = $"{pbnFile}.{DateTime.Now.ToShortDateString()}";
+            var filePath = $"{pbnFile}.{DateTime.Now.ToString("d MMM yyyy")}";
             pbn.Save(filePath);
             Assert.Equal(File.ReadAllText($"{pbnFile}.etalon"), File.ReadAllText(filePath));
         }

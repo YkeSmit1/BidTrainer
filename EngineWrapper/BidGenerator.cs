@@ -94,12 +94,14 @@ namespace EngineWrapper
                 bool SlamIsPossible()
                 {
                     var keyCards = Util.GetKeyCards(handsString, playingSuit);
-                    var trumpQueen = Util.GetHasTrumpQueen(handsString, playingSuit);
                     var bidsWithKeyCards = bidsPartner.Where(x => ((BidInformation)x.extraInformation).possibleKeyCards.Any());
                     var keyCardsPartner = bidsWithKeyCards.Any() ? ((BidInformation)bidsWithKeyCards.Single().extraInformation).possibleKeyCards : null;
+                    var totalKeyCards = keyCards + (keyCardsPartner?.SingleOrDefault(x => x + keyCards <= 5) ?? 0);
+
+                    var trumpQueen = Util.GetHasTrumpQueen(handsString, playingSuit);
                     var bidsWithTrumpQueen = bidsPartner.Where(x => ((BidInformation)x.extraInformation).trumpQueen != null);
                     var trumpQueenPartner = bidsWithTrumpQueen.Any() ? ((BidInformation)bidsWithTrumpQueen.Single().extraInformation).trumpQueen : null;
-                    var totalKeyCards = keyCards + (keyCardsPartner == null ? 0 : keyCardsPartner.SingleOrDefault(x => x + keyCards <= 5));
+
                     var totalTrumpQueen = trumpQueen || (trumpQueenPartner.HasValue && trumpQueenPartner.Value);
 
                     return totalKeyCards >= 4 && totalTrumpQueen && allControlsPresent;
