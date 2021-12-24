@@ -15,7 +15,12 @@ class Utils
 public:
     template<typename chartype>
     static std::vector<std::basic_string<chartype>> Split(const std::basic_string<chartype>& str, const chartype& delimeter);
-    static std::string GetSuit(int bidId);
+    static std::string GetSuitPretty(int bidId);
+    static int GetSuitInt(int bidId);
+    static int GetSuit(const std::string& suit);
+    static std::string GetSuitASCII(int bidId);
+    static std::vector<int> SplitAuction(const std::string& auction);
+    static int GetBidId(const std::string& bid);
     static int GetRank(int bidId);
     static int NumberOfCards(const std::string& hand, char card);
     static int CalculateHcp(const std::string& hand);

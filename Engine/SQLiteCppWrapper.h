@@ -9,7 +9,7 @@ enum class BidKind;
 
 class SQLiteCppWrapper : public ISQLiteWrapper
 {
-    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description, Id FROM Rules 
+    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description, Id, BidKindAuction FROM Rules 
         WHERE (bidId > ? OR bidId <= 0 OR bidID is NULL)
         AND ? BETWEEN MinSpades AND MaxSpades
         AND ? BETWEEN MinHearts AND MaxHearts
@@ -71,6 +71,7 @@ class SQLiteCppWrapper : public ISQLiteWrapper
 
 public:
     SQLiteCppWrapper(const std::string& database);
+    static BidKindAuction GetBidKindFromAuction(const std::string& previousBidding, int bidId);
 private:
     void GetBid(int bidId, int& rank, int& suit) final;
     std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, 
@@ -80,6 +81,13 @@ private:
     std::string GetLastBid(const std::string& previousBidding);
     void SetDatabase(const std::string& database) override;
     std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    static bool HasFitWithPartnerPrevious(const std::vector<int>& bids, size_t lengthAuction, int suit);
+    static bool HasFitWithPartnerFirst(const std::vector<int>& bids, size_t lengthAuction, int suit);
+    static bool HasFitWithPartner(const std::vector<int>& bids, size_t lengthAuction, int suit);
+    static bool IsReverse(int suit, int rank, int previousSuit, int previousRank);
+    static bool IsNonReverse(int suit, int rank, int previousSuit, int previousRank);
+    static bool IsRebidOwnSuit(const std::vector<int>& bids, size_t lengthAuction, int suit);
+    static bool IsRepondingToDouble(const std::vector<int>& bids, size_t lengthAuction);
     bool IsColumnMinSuit(const std::string& columnName);
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
     int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, const BoardCharacteristic& board);

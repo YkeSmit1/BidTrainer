@@ -17,6 +17,9 @@ enum class Phase
     SlamBidding
 };
 
+/// <summary>
+/// Types of bids deduced from the hand
+/// </summary>
 enum class BidKind
 {
     UnknownSuit,
@@ -25,7 +28,19 @@ enum class BidKind
     LowestSuit,
     HighestSuit,
     PartnersSuit,
-    OpponentsSuit
+};
+
+/// <summary>
+/// Type of bids deduced from the auction
+/// </summary>
+enum class BidKindAuction
+{
+    UnknownSuit,
+    NonReverse,
+    Reverse,
+    OwnSuit,
+    PartnersSuit,
+    RespondingToDouble
 };
 
 enum class Modules

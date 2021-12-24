@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BidTrainer", "BidTrainer\BidTrainer.csproj", "{FB511C60-DD81-4D6F-8929-42070ED8CF6C}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -14,8 +14,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcx
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BidTrainerTests", "BidTrainerTests\BidTrainerTests.csproj", "{F29939AD-08E0-48B9-A421-19DF3B6BE698}"
 	ProjectSection(ProjectDependencies) = postProject
-		{E5A8B95B-E96D-4E14-AD91-328FC71CF8EF} = {E5A8B95B-E96D-4E14-AD91-328FC71CF8EF}
-		{BC99C89F-D923-49C5-9826-5CD0D34A3665} = {BC99C89F-D923-49C5-9826-5CD0D34A3665}
 		{66942AF0-3C9A-4CB5-9284-6540D37BABD8} = {66942AF0-3C9A-4CB5-9284-6540D37BABD8}
 	EndProjectSection
 EndProject

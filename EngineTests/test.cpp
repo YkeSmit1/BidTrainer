@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "../Engine/Rule.h"
 #include "../Engine/BoardCharacteristic.h"
+#include "../Engine/SQLiteCppWrapper.h"
 
 TEST(TestHandCharacteristic, TestName)
 {
@@ -110,4 +111,31 @@ TEST(TestBoardCharacteristic, TestName)
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, true);
     EXPECT_EQ(boardCharacteristic.keyCards, 3);
     EXPECT_EQ(boardCharacteristic.trumpQueen, true);
+}
+
+TEST(TestGetBidKindFromAuction, TestName)
+{
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("", 4), (int)BidKindAuction::UnknownSuit);
+
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1H", 4), (int)BidKindAuction::UnknownSuit);
+
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1HPass", 4), (int)BidKindAuction::UnknownSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1HX", 5), (int)BidKindAuction::UnknownSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1HPass", 8), (int)BidKindAuction::PartnersSuit);
+
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1H1SPass", 5), (int)BidKindAuction::UnknownSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1H1SX", 6), (int)BidKindAuction::UnknownSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1H1SPass", 9), (int)BidKindAuction::PartnersSuit);
+
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1SPass", 5), (int)BidKindAuction::UnknownSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1SPass", 6), (int)BidKindAuction::NonReverse);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1SPass", 7), (int)BidKindAuction::OwnSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1SPass", 8), (int)BidKindAuction::Reverse);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1SPass", 9), (int)BidKindAuction::PartnersSuit);
+
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass1NTPass", 6), (int)BidKindAuction::NonReverse);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass1NTPass", 7), (int)BidKindAuction::PartnersSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass1NTPass", 8), (int)BidKindAuction::OwnSuit);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass1NTPass", 9), (int)BidKindAuction::Reverse);
+    EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass2SPass", 14), (int)BidKindAuction::PartnersSuit);
 }
