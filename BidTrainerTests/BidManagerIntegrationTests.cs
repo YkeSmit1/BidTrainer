@@ -65,7 +65,8 @@ namespace BidTrainer.Tests
             var auction = bidManager.GetAuction(board.Deal, board.Dealer);
             board.Auction = auction;
             board.Declarer = auction.GetDeclarer();
-            testOutputHelper.WriteLine(auction.GetPrettyAuction("|"));
+            testOutputHelper.WriteLine($"Board:{board.BoardNumber}");
+            testOutputHelper.WriteLine(auction.GetAuctionAll("|"));
         }
 
         [Fact]

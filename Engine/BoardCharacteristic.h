@@ -4,6 +4,7 @@
 #include <string>
 
 struct HandCharacteristic;
+struct InformationFromAuction;
 
 
 struct BoardCharacteristic
@@ -16,9 +17,15 @@ struct BoardCharacteristic
     bool stopInOpponentsSuit;
     int keyCards;
     bool trumpQueen;
-    static BoardCharacteristic Create(HandCharacteristic hand, const std::vector<int>& partnersSuits, const std::vector<int>& opponentsSuits);
+    int position;
+    int lastBidId;
+    bool isCompetitive;
+    int minHcpPartner;
+    bool allControlsPresent;
+    BoardCharacteristic(HandCharacteristic hand, const std::string& previousBidding, InformationFromAuction informationFromAuction);
 private:
-    static int GetSuit(const std::vector<int>& suitLengths);
+    static int GetLongestSuit(const std::vector<int>& suitLengths);
     static bool GetHasStopInOpponentsSuit(const std::string& hand, int opponentsSuit);
+    static bool GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction);
 };
 

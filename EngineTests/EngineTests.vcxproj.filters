@@ -15,6 +15,9 @@
     <ClCompile Include="..\Engine\SQLiteCppWrapper.cpp">
       <Filter>External files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Engine\InformationFromAuction.cpp">
+      <Filter>External files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -28,6 +31,9 @@
       <Filter>External files</Filter>
     </ClInclude>
     <ClInclude Include="..\Engine\SQLiteCppWrapper.h">
+      <Filter>External files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Engine\InformationFromAuction.h">
       <Filter>External files</Filter>
     </ClInclude>
   </ItemGroup>

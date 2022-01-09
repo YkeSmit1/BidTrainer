@@ -75,12 +75,13 @@ public:
 private:
     void GetBid(int bidId, int& rank, int& suit) final;
     std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, 
-        const Phase& phase, int lastBidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+        const Phase& phase, const std::string& previousBidding) final;
     std::tuple<int, Phase, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic,
-        int lastBidId, const std::string& previousBidding, bool allControlsPresent) final;
+        const std::string& previousBidding) final;
     std::string GetLastBid(const std::string& previousBidding);
     void SetDatabase(const std::string& database) override;
     std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    std::vector<std::unordered_map<std::string, std::string>> GetInternalRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
     static bool HasFitWithPartnerPrevious(const std::vector<int>& bids, size_t lengthAuction, int suit);
     static bool HasFitWithPartnerFirst(const std::vector<int>& bids, size_t lengthAuction, int suit);
     static bool HasFitWithPartner(const std::vector<int>& bids, size_t lengthAuction, int suit);
@@ -95,5 +96,6 @@ private:
     int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);
     int GetBidId(int bidRank, int suit, int lastBidId);
     std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding);
+    std::vector<std::unordered_map<std::string, std::string>> GetInternalRelativeRulesByBid(int bidId, const std::string& previousBidding) final;
     void SetModules(int modules) override;
 };

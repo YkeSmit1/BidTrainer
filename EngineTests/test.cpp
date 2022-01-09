@@ -2,6 +2,8 @@
 #include "../Engine/Rule.h"
 #include "../Engine/BoardCharacteristic.h"
 #include "../Engine/SQLiteCppWrapper.h"
+#include "../Engine/InformationFromAuction.h"
+#include "gtest/gtest.h"
 
 TEST(TestHandCharacteristic, TestName)
 {
@@ -77,22 +79,27 @@ TEST(TestBoardCharacteristic, TestName)
 {
     HandCharacteristic handCharacteristic{};
     handCharacteristic.Initialize("A432,K5432,Q,J43");
+    InformationFromAuction informationFromAuction{};
 
-    BoardCharacteristic boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, { 0, 0, 0, 0 }, { 0, 0, 0, 0 });
+    BoardCharacteristic boardCharacteristic{ handCharacteristic, "", informationFromAuction };
     EXPECT_EQ(boardCharacteristic.hasFit, false);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, false);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, -1);
     EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, -1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, false);
 
-    boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, { 0, 0, 0, 4 }, { 0, 0, 4, 0 });
+    informationFromAuction.minSuitLengths = { { 0, 0, 4, 0 }, { 0, 0, 0, 4 }, { 0, 0, 0, 0 },{ 0, 0, 0, 0 } };
+
+    boardCharacteristic = BoardCharacteristic{ handCharacteristic, "1C", informationFromAuction };
     EXPECT_EQ(boardCharacteristic.hasFit, false);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, false);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, 2);
     EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, -1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, false);
 
-    boardCharacteristic = BoardCharacteristic::Create(handCharacteristic, { 0, 4, 0, 0 }, { 4, 0, 0, 0 });
+    informationFromAuction.minSuitLengths = { { 4, 0, 0, 0 }, { 0, 4, 0, 0 }, { 0, 0, 0, 0 },{ 0, 0, 0, 0 } };
+
+    boardCharacteristic = BoardCharacteristic{ handCharacteristic, "1H1SPass", informationFromAuction };
     EXPECT_EQ(boardCharacteristic.hasFit, true);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, true);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, 0);
@@ -103,7 +110,7 @@ TEST(TestBoardCharacteristic, TestName)
 
     HandCharacteristic handCharacteristicSlam{};
     handCharacteristicSlam.Initialize("A432,Q5432,A,AJ4");
-    boardCharacteristic = BoardCharacteristic::Create(handCharacteristicSlam, { 0, 4, 0, 0 }, { 4, 0, 0, 0 });
+    boardCharacteristic = BoardCharacteristic{ handCharacteristicSlam, "1H1SPass", informationFromAuction };
     EXPECT_EQ(boardCharacteristic.hasFit, true);
     EXPECT_EQ(boardCharacteristic.fitIsMajor, true);
     EXPECT_EQ(boardCharacteristic.opponentsSuit, 0);

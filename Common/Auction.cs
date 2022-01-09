@@ -21,14 +21,18 @@ namespace Common
 
         private string DebuggerDisplay
         {
-            get { return GetPrettyAuction(Environment.NewLine); }
+            get { return GetAuctionAll(Environment.NewLine); }
         }
 
         public string GetPrettyAuction(string separator)
         {
-            var bidsNorth = GetBids(Player.North);
-            var bidsSouth = GetBids(Player.South);
-            return string.Join(separator, bidsNorth.Zip(bidsSouth, (x, y) => $"{x}{y} {y.description}")) + (bidsNorth.Count() > bidsSouth.Count() ? separator + bidsNorth.Last() : "");
+            return bids.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendJoin(" ", kvp.Value.Where(p => new [] { Player.North, Player.South }.Contains(p.Key))
+                .Select(x => x.Value).Where(y => y != Bid.AlignBid)).Append(separator), sb => sb.ToString());
+        }
+
+        public string GetAuctionAll(string separator)
+        {
+            return bids.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendJoin(" ", kvp.Value.Values.Where(y => y != Bid.AlignBid)).Append(separator), sb => sb.ToString());
         }
 
         public Player GetDeclarer()
@@ -112,7 +116,9 @@ namespace Common
 
         public string GetBidsAsStringASCII()
         {
-            return bids.SelectMany(x => x.Value.Values).Aggregate(string.Empty, (string current, Bid bid) => current + bid.ToStringASCII());
+            return bids.SelectMany(x => x.Value.Values)
+                .SkipWhile(y => y == Bid.PassBid || y == Bid.AlignBid)
+                .Aggregate(string.Empty, (string current, Bid bid) => current + bid.ToStringASCII());
         }
 
         public string GetBidsAsString(Fase fase)

@@ -22,7 +22,7 @@ namespace EngineWrapper
             var phase = GetCurrentPhase(auction.currentPosition);
 
             string slamBids = string.Join("", SlamBids);
-            var (bidIdFromRule, nextPhase, description) = BidGenerator.GetBid(handsString, auction, phase, slamBids);
+            var (bidIdFromRule, nextPhase, description) = BidGenerator.GetBid(handsString, auction, phase);
             var bid = CalculateBid(bidIdFromRule, description, auction, phase, nextPhase, slamBids);
             if (nextPhase == Phase.SlamBidding)
                 SlamBids.Add(bid.ToStringASCII());

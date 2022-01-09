@@ -10,7 +10,7 @@ namespace EngineWrapper
 {
     public class BidGenerator
     {
-        public static (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase, string slamBids)
+        public static (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase)
         {
             var description = new StringBuilder(128);
             var bidsPartner = auction.GetBids(Util.GetPartner(auction.CurrentPlayer)).Where(x => x.extraInformation != null);
@@ -20,9 +20,7 @@ namespace EngineWrapper
             var minLengthOpener = GetMinSuitLength(bidsOpener);
             var allControlsPresent = GetAllControlsPresent();
 
-            var bidId = Pinvoke.GetBidFromRule(phase, handsString, Bid.GetBidId(auction.currentContract), auction.currentPosition,
-                minLengthPartner, minLengthOpener, auction.GetBidsAsStringASCII(), slamBids, 
-                auction.IsCompetitive(), GetHcp(bidsPartner), allControlsPresent, out var nextPhase, description);
+            var bidId = Pinvoke.GetBidFromRule(phase, handsString, auction.GetBidsAsStringASCII(), out var nextPhase, description);
             if (bidId == 0)
             {
                 var hcpPartner = GetHcp(bidsPartner);
@@ -54,8 +52,6 @@ namespace EngineWrapper
             bool GetAllControlsPresent()
             {
                 var controlInfoPartner = bidsPartner.Select(x => ((BidInformation)x.extraInformation).controls);
-                if (!controlInfoPartner.Any())
-                    return false;
                 var controls = handsString.Split(",").Select((x, index) => (HasControl(x), index));
                 var controlsPartnership = controls.Select(x => x.Item1 || controlInfoPartner.Any(y => y[x.index].HasValue && y[x.index].Value));
                 return controlsPartnership.All(x => x);
