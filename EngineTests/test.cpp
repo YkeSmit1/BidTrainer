@@ -75,7 +75,7 @@ TEST(TestHandCharacteristic, TestName)
     EXPECT_EQ(handCharacteristic.controls[3], true);
 }
 
-TEST(TestBoardCharacteristic, TestName) 
+TEST(TestBoardCharacteristic, TestName)
 {
     HandCharacteristic handCharacteristic{};
     handCharacteristic.Initialize("A432,K5432,Q,J43");
@@ -88,7 +88,8 @@ TEST(TestBoardCharacteristic, TestName)
     EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, -1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, false);
 
-    informationFromAuction.minSuitLengths = { { 0, 0, 4, 0 }, { 0, 0, 0, 4 }, { 0, 0, 0, 0 },{ 0, 0, 0, 0 } };
+    informationFromAuction.openersSuits = { 0, 0, 4, 0 };
+    informationFromAuction.partnersSuits = { 0, 0, 0, 4 };
 
     boardCharacteristic = BoardCharacteristic{ handCharacteristic, "1C", informationFromAuction };
     EXPECT_EQ(boardCharacteristic.hasFit, false);
@@ -97,7 +98,8 @@ TEST(TestBoardCharacteristic, TestName)
     EXPECT_EQ(boardCharacteristic.fitWithPartnerSuit, -1);
     EXPECT_EQ(boardCharacteristic.stopInOpponentsSuit, false);
 
-    informationFromAuction.minSuitLengths = { { 4, 0, 0, 0 }, { 0, 4, 0, 0 }, { 0, 0, 0, 0 },{ 0, 0, 0, 0 } };
+    informationFromAuction.openersSuits = { 4, 0, 0, 0 };
+    informationFromAuction.partnersSuits = { 0, 4, 0, 0 };
 
     boardCharacteristic = BoardCharacteristic{ handCharacteristic, "1H1SPass", informationFromAuction };
     EXPECT_EQ(boardCharacteristic.hasFit, true);

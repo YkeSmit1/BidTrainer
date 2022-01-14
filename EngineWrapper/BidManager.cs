@@ -42,9 +42,6 @@ namespace EngineWrapper
             var currentBid = Bid.GetBid(bidIdFromRule);
             currentBid.description = description;
 
-            if (bidIdFromRule != 0)
-                currentBid.extraInformation = BidGenerator.GetRecords(currentBid, phase, nextPhase, auction, string.Join("", slamBids));
-
             return currentBid;
         }
 

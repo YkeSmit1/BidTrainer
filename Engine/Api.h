@@ -60,4 +60,5 @@ extern "C" {
     __declspec(dllexport) void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* information);
         __declspec(dllexport) int Setup(const char* database);
     __declspec(dllexport) void SetModules(int modules);
+    __declspec(dllexport) void GetInformationFromAuction(const char* previousBidding, char* informationFromAuctionjson);
 }

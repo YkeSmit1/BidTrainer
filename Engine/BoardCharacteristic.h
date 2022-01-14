@@ -11,7 +11,7 @@ struct BoardCharacteristic
 {
     bool hasFit;
     bool fitIsMajor;
-    std::vector<int> partnersSuits;
+    std::vector<int> partnersSuits{0,0,0,0};
     int fitWithPartnerSuit;
     int opponentsSuit;
     bool stopInOpponentsSuit;
@@ -26,6 +26,6 @@ struct BoardCharacteristic
 private:
     static int GetLongestSuit(const std::vector<int>& suitLengths);
     static bool GetHasStopInOpponentsSuit(const std::string& hand, int opponentsSuit);
-    static bool GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction);
+    static bool GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction, int fitWithPartnerSuit);
 };
 

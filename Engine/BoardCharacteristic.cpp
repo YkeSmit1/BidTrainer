@@ -11,11 +11,8 @@ BoardCharacteristic::BoardCharacteristic(HandCharacteristic hand, const std::str
     auto bidIds = Utils::SplitAuction(previousBidding);
     position = (int)bidIds.size() + 1;
 
-    auto partner = ((size_t)position + 1) % 4;
-    partnersSuits = informationFromAuction.minSuitLengths.at(partner);
-    auto &opponentsSuits = informationFromAuction.minSuitLengths.at(0);
-
-    opponentsSuit = GetLongestSuit(opponentsSuits);
+    partnersSuits = informationFromAuction.partnersSuits;
+    opponentsSuit = GetLongestSuit(informationFromAuction.openersSuits);
     stopInOpponentsSuit = GetHasStopInOpponentsSuit(hand.hand, opponentsSuit);
 
     std::vector<int> suitLengthCombined;
@@ -36,8 +33,8 @@ BoardCharacteristic::BoardCharacteristic(HandCharacteristic hand, const std::str
     lastBidId = lastBidding == bidIds.rend() ? 0 : *lastBidding;
 
     isCompetitive = Utils::GetIsCompetitive(previousBidding);
-    minHcpPartner = informationFromAuction.minHcps.at(partner);
-    allControlsPresent = GetAllControlsPresent(hand, informationFromAuction);
+    minHcpPartner = informationFromAuction.minHcpPartner;
+    allControlsPresent = GetAllControlsPresent(hand, informationFromAuction, fitWithPartnerSuit);
 }
 
 int BoardCharacteristic::GetLongestSuit(const std::vector<int>& suitLengths)
@@ -65,11 +62,15 @@ bool BoardCharacteristic::GetHasStopInOpponentsSuit(const std::string& hand, int
     }
 }
 
-bool BoardCharacteristic::GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction)
+bool BoardCharacteristic::GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction, int fitWithPartnerSuit)
 {
     std::vector<bool> controlsCombined;
     std::copy(informationFromAuction.controls.begin(), informationFromAuction.controls.end(), std::back_inserter(controlsCombined));
     std::transform(controlsCombined.begin(), controlsCombined.end(), handCharacteristic.controls.begin(), controlsCombined.begin(), [](auto a, auto b) {return a || b;  });
-    auto allControlsCombined = std::all_of(controlsCombined.begin(), controlsCombined.end(), [](bool a) {return a; });
-    return allControlsCombined;
+    for (int i = 0; i < 3; i++)
+    {
+        if (!controlsCombined.at(i) && i != fitWithPartnerSuit)
+            return false;
+    }
+    return true;
 }
