@@ -4,18 +4,28 @@
 #include <string>
 
 struct HandCharacteristic;
+struct InformationFromAuction;
 
 
 struct BoardCharacteristic
 {
     bool hasFit;
     bool fitIsMajor;
-    int partnersSuit;
+    std::vector<int> partnersSuits{0,0,0,0};
+    int fitWithPartnerSuit;
     int opponentsSuit;
     bool stopInOpponentsSuit;
-    static BoardCharacteristic Create(HandCharacteristic hand, const std::vector<int>& partnersSuits, const std::vector<int>& opponentsSuits);
+    int keyCards;
+    bool trumpQueen;
+    int position;
+    int lastBidId;
+    bool isCompetitive;
+    int minHcpPartner;
+    bool allControlsPresent;
+    BoardCharacteristic(HandCharacteristic hand, const std::string& previousBidding, InformationFromAuction informationFromAuction);
 private:
-    static int GetSuit(const std::vector<int>& suitLengths);
+    static int GetLongestSuit(const std::vector<int>& suitLengths);
     static bool GetHasStopInOpponentsSuit(const std::string& hand, int opponentsSuit);
+    static bool GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction, int fitWithPartnerSuit);
 };
 

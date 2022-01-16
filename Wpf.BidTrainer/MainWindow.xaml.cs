@@ -21,7 +21,6 @@ namespace Wpf.BidTrainer
     public partial class MainWindow : Window
     {
         // Bidding
-        private readonly BidManager bidManager = new();
         private readonly Auction auction = new();
         private readonly Pbn pbn = new();
 
@@ -65,6 +64,7 @@ namespace Wpf.BidTrainer
                 Settings1.Default.CurrentBoardIndex = 0;
             lesson = startPage.Lesson;
             pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+            Pinvoke.SetModules(lesson.Modules);
             if (!startPage.IsContinueWhereLeftOff)
                 results.AllResults.Remove(lesson.LessonNr);
 
@@ -78,11 +78,11 @@ namespace Wpf.BidTrainer
             {
                 currentResult.UsedHint = true;
                 Cursor = Cursors.Arrow;
-                MessageBox.Show(bidManager.GetInformation(bid, auction.currentPosition), "Information");
+                MessageBox.Show(BidManager.GetInformation(bid, auction), "Information");
             }
             else
             {
-                var engineBid = bidManager.GetBid(auction, Deal[Player.South]);
+                var engineBid = BidManager.GetBid(auction, Deal[Player.South]);
                 UpdateBidControls(engineBid);
 
                 if (bid != engineBid)
@@ -138,7 +138,6 @@ namespace Wpf.BidTrainer
             auction.Clear(Dealer);
             BiddingBoxViewModel.DoBid.RaiseCanExecuteChanged();
             AuctionViewModel.UpdateAuction(auction);
-            bidManager.Init();
             StatusBarLesson.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
             startTimeBoard = DateTime.Now;
             currentResult = new Result();
@@ -155,7 +154,7 @@ namespace Wpf.BidTrainer
         {
             while (auction.CurrentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
+                var bid = BidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
                 UpdateBidControls(bid);
             }
 
@@ -299,6 +298,12 @@ namespace Wpf.BidTrainer
                 ShowBothHands();
                 StatusBarUsername.Content = $"Username: {Settings1.Default.Username}";
             }
+        }
+
+        private void MenuBiddingSystem_Click(object sender, RoutedEventArgs e)
+        {
+            if (new BiddingSystemWindow().ShowDialog().Value)
+                Pinvoke.SetModules(Settings1.Default.EnabledModules);
         }
     }
 }

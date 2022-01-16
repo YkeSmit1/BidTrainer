@@ -7,7 +7,12 @@
         xmlns:userControls="clr-namespace:Wpf.BidControls.Views;assembly=Wpf.BidControls" 
         xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
         mc:Ignorable="d"
-        Title="Bidtrainer" Height="601" Width="746" Closed="Window_Closed" WindowStartupLocation="CenterScreen">
+        Title="Bidtrainer" 
+        Height="601" 
+        Width="746" 
+        Closed="Window_Closed" 
+        WindowStartupLocation="CenterScreen" 
+        Icon="Resources\cards_48.png">
     <Window.Resources>
     </Window.Resources>
     <Grid Background="MediumSeaGreen">
@@ -34,9 +39,12 @@
             <MenuItem Header="_View">
                 <MenuItem Name="MenuShowReport" Header="_Show report" Click="MenuShowReport_Click"/>
                 <MenuItem Name="MenuShowLeaderboard" Header="_Leaderboard" Click="MenuShowLeaderboard_Click"/>
-                <MenuItem Name="MenuOptions" Header="_Options" Click="MenuOptions_Click"/>
             </MenuItem>
-
+            <MenuItem Header="_Tools">
+                <MenuItem Name="MenuOptions" Header="_Options" Click="MenuOptions_Click"/>
+                <Separator/>
+                <MenuItem Name="MenuBiddingSystem" Header="_Bidding system" Click="MenuBiddingSystem_Click"/>
+            </MenuItem>                      
         </Menu>
         <!--Cards-->
         <StackPanel Grid.Row="1" Orientation="Vertical">

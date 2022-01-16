@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "BidTrainerTests": {
+    "Wpf.BidTrainer": {
       "commandName": "Project",
       "nativeDebugging": true
     }

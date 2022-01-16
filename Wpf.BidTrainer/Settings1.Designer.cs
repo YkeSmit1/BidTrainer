@@ -82,5 +82,17 @@ namespace Wpf.BidTrainer {
                 this["CardImageSettings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int EnabledModules {
+            get {
+                return ((int)(this["EnabledModules"]));
+            }
+            set {
+                this["EnabledModules"] = value;
+            }
+        }
     }
 }

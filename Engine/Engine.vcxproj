@@ -72,7 +72,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Wpf.BidTrainer\Bin\$(Configuration)\net5.0-windows\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -82,7 +81,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Wpf.BidTrainer\Bin\$(Configuration)\net5.0-windows\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -160,6 +158,7 @@
     <ClInclude Include="Api.h" />
     <ClInclude Include="BoardCharacteristic.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="InformationFromAuction.h" />
     <ClInclude Include="ISQLiteWrapper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Rule.h" />
@@ -170,6 +169,7 @@
     <ClCompile Include="Api.cpp" />
     <ClCompile Include="BoardCharacteristic.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="InformationFromAuction.cpp" />
     <ClCompile Include="ISQLiteWrapper.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Rule.cpp" />

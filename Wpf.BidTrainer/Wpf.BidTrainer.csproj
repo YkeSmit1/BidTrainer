@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\correct.png" />
+    <Resource Include="Resources\cards_48.png" />
     <Resource Include="Resources\incorrect.png" />
   </ItemGroup>
 
@@ -51,6 +52,15 @@
     <None Update="Pbn\lesson4.pbn">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Pbn\lesson5.pbn">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Pbn\lesson6.pbn">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Pbn\lesson7.pbn">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Settings1.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
@@ -59,10 +69,9 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
-      <BidTrainerBuildDirectory>$(ProjectDir)bin\$(Configuration)\$(TargetFramework)</BidTrainerBuildDirectory>
-      <BidTrainerIntegrationTestBuildDirectory>$(ProjectDir)..\BidTrainerTests\bin\$(Configuration)\$(TargetFramework)</BidTrainerIntegrationTestBuildDirectory>
+      <EngineDirectory>$(SolutionDir)\x64\$(Configuration)</EngineDirectory>
     </PropertyGroup>
-    <Copy SourceFiles="$(BidTrainerBuildDirectory)\Engine.dll;$(BidTrainerBuildDirectory)\sqlite3.dll" DestinationFolder="$(BidTrainerIntegrationTestBuildDirectory)" />
+    <Copy SourceFiles="$(EngineDirectory)\Engine.dll;$(EngineDirectory)\sqlite3.dll" DestinationFolder="$(OutDir)" />
   </Target>
 
 

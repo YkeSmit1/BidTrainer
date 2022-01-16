@@ -13,7 +13,6 @@ namespace BidTrainer
     {
         private BiddingBox biddingBox;
         private AuctionControl auctionControl;
-        private readonly BidManager bidManager = new();
         private readonly Pbn pbn = new();
         private int boardIndex = 0;
         private Dictionary<Player, string> Deal => pbn.Boards[boardIndex].Deal;
@@ -96,15 +95,13 @@ namespace BidTrainer
                 var biddingBoxButton = (BiddingBoxButton)x;
                 if (Cursor == Cursors.Help)
                 {
-                    var (minRecords, maxRecords) = BidGenerator.GetRecords(biddingBoxButton.bid,
-                        bidManager.GetCurrentPhase(auctionControl.auction.currentPosition), auctionControl.auction.currentPosition);
-                    var information = Util.GetInformation(minRecords, maxRecords);
+                    var information = BidManager.GetInformation(biddingBoxButton.bid, auctionControl.auction);
                     Cursor = Cursors.Default;
                     MessageBox.Show(information, "Information");
                 }
                 else
                 {
-                    var bid = bidManager.GetBid(auctionControl.auction, Deal[Player.South]);
+                    var bid = BidManager.GetBid(auctionControl.auction, Deal[Player.South]);
                     auctionControl.auction.AddBid(bid);
 
                     if (biddingBoxButton.bid != bid)
@@ -129,7 +126,6 @@ namespace BidTrainer
         {
             auctionControl.auction.Clear(pbn.Boards[boardIndex].Dealer);
             biddingBox.Clear();
-            bidManager.Init();
             toolStripStatusLabel1.Text = $"Board:{boardIndex + 1}";
             auctionControl.auction.CurrentPlayer = pbn.Boards[boardIndex].Dealer;
             BidTillSouth(auctionControl.auction);
@@ -139,7 +135,7 @@ namespace BidTrainer
         {
             while (auction.CurrentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
+                var bid = BidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
                 auction.AddBid(bid);
                 biddingBox.UpdateButtons(bid, auction.CurrentPlayer);
             }

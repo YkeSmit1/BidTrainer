@@ -3,25 +3,40 @@
 #include <algorithm>
 #include "Rule.h"
 #include "Utils.h"
+#include "InformationFromAuction.h"
 
-BoardCharacteristic BoardCharacteristic::Create(HandCharacteristic hand, const std::vector<int>& partnersSuits, const std::vector<int>& opponentsSuits)
+BoardCharacteristic::BoardCharacteristic(HandCharacteristic hand, const std::string& previousBidding, InformationFromAuction informationFromAuction)
 {
-    BoardCharacteristic boardCharacteristic{};
+    auto bidIds = Utils::SplitAuction(previousBidding);
+    position = (int)bidIds.size() + 1;
 
-    std::vector<bool> fits;
-    boardCharacteristic.partnersSuit = GetSuit(partnersSuits);
-    std::transform(hand.suitLengths.begin(), hand.suitLengths.end(), partnersSuits.begin(), std::back_inserter(fits),
-        [](const auto& x, const auto& y) {return x + y >= 8; });
+    partnersSuits = informationFromAuction.partnersSuits;
+    opponentsSuit = GetLongestSuit(informationFromAuction.openersSuits);
+    stopInOpponentsSuit = GetHasStopInOpponentsSuit(hand.hand, opponentsSuit);
 
-    boardCharacteristic.opponentsSuit = GetSuit(opponentsSuits);
-    boardCharacteristic.stopInOpponentsSuit = GetHasStopInOpponentsSuit(hand.hand, boardCharacteristic.opponentsSuit);
-    boardCharacteristic.hasFit = std::find(fits.begin(), fits.end(), true) != fits.end();
-    boardCharacteristic.fitIsMajor = fits.at(0) || fits.at(1);
-    return boardCharacteristic;
+    std::vector<int> suitLengthCombined;
+    std::transform(hand.suitLengths.begin(), hand.suitLengths.end(), partnersSuits.begin(), std::back_inserter(suitLengthCombined),
+        [](const auto& x, const auto& y) {return x + y; });
+    auto firstSuitWithFitIter = std::find_if(suitLengthCombined.begin(), suitLengthCombined.end(), 
+        [](const auto& x) {return x >= 8; });
+    fitWithPartnerSuit = firstSuitWithFitIter == suitLengthCombined.end() ? -1 : (int)std::distance(suitLengthCombined.begin(), firstSuitWithFitIter);
+    hasFit = firstSuitWithFitIter != suitLengthCombined.end();
+    fitIsMajor = suitLengthCombined.at(0) >= 8 || suitLengthCombined.at(1) >= 8;
 
+    auto suits = Utils::Split<char>(hand.hand, ',');
+    auto trumpSuit = fitWithPartnerSuit == -1 ? "" : suits.at(fitWithPartnerSuit);
+    keyCards = Utils::NumberOfCards(hand.hand, 'A') + Utils::NumberOfCards(trumpSuit, 'K');
+    trumpQueen = Utils::NumberOfCards(trumpSuit, 'Q');
+
+    auto lastBidding = std::find_if(bidIds.rbegin(), bidIds.rend(), [](auto bidId) {return bidId > 0; });
+    lastBidId = lastBidding == bidIds.rend() ? 0 : *lastBidding;
+
+    isCompetitive = Utils::GetIsCompetitive(previousBidding);
+    minHcpPartner = informationFromAuction.minHcpPartner;
+    allControlsPresent = GetAllControlsPresent(hand, informationFromAuction, fitWithPartnerSuit);
 }
 
-int BoardCharacteristic::GetSuit(const std::vector<int>& suitLengths)
+int BoardCharacteristic::GetLongestSuit(const std::vector<int>& suitLengths)
 {
     return !std::any_of(suitLengths.begin(), suitLengths.end(), [](const auto& x) {return x > 0; }) ? -1 :
         (int)std::distance(suitLengths.begin(), std::max_element(suitLengths.begin(), suitLengths.end()));
@@ -44,4 +59,17 @@ bool BoardCharacteristic::GetHasStopInOpponentsSuit(const std::string& hand, int
     default:
         return false;
     }
+}
+
+bool BoardCharacteristic::GetAllControlsPresent(const HandCharacteristic& handCharacteristic, const InformationFromAuction& informationFromAuction, int fitWithPartnerSuit)
+{
+    std::vector<bool> controlsCombined;
+    std::copy(informationFromAuction.controls.begin(), informationFromAuction.controls.end(), std::back_inserter(controlsCombined));
+    std::transform(controlsCombined.begin(), controlsCombined.end(), handCharacteristic.controls.begin(), controlsCombined.begin(), [](auto a, auto b) {return a || b;  });
+    for (int i = 0; i < 3; i++)
+    {
+        if (!controlsCombined.at(i) && i != fitWithPartnerSuit)
+            return false;
+    }
+    return true;
 }

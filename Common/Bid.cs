@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Common
 {
@@ -42,8 +41,7 @@ namespace Common
         public Fase fase = Fase.Unknown;
         public Fase pullFase = Fase.Unknown;
         public bool zoom;
-        public Dictionary<string, int> minRecords;
-        public Dictionary<string, int> maxRecords;
+        public object extraInformation;
 
         public Bid(int rank, Suit suit)
         {
@@ -146,6 +144,14 @@ namespace Common
             if (currentBid + (canUseNextBid ? 0 : 1) < bid)
                 return bid;
             return bid + (5 * (((currentBid + 1 - bid) / 5) + 1));
+        }
+
+        public static Bid CheapestContract(Bid currentBid, Suit suit)
+        {
+            if (currentBid.suit == suit)
+                return PassBid;
+            var bid = new Bid(currentBid.rank + (currentBid.suit > suit ? 1 : 0), suit);
+            return bid;
         }
 
         public static Bid GetBestContract(ExpectedContract expectedContract, Suit item1, Bid currentBid)
