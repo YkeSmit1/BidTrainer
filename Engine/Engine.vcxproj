@@ -97,6 +97,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+
+xcopy /Y $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+
+xcopy /Y $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,6 +124,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+
+xcopy $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+
+xcopy $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -133,6 +155,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+
+xcopy $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+
+xcopy $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,6 +186,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net5.0-windows
+
+xcopy $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net5.0-windows
+
+xcopy $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+xcopy $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net5.0-windows
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Api.h" />

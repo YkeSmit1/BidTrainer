@@ -30,11 +30,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <PropertyGroup>
-      <EngineDirectory>$(SolutionDir)\x64\$(Configuration)</EngineDirectory>
-    </PropertyGroup>
-    <Copy SourceFiles="$(EngineDirectory)\Engine.dll;$(EngineDirectory)\sqlite3.dll" DestinationFolder="$(OutDir)" />
-  </Target>
-
 </Project>
