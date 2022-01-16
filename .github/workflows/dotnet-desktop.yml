@@ -9,20 +9,22 @@ on:
 jobs:
   build:
 
-    runs-on:  windows-latest
+    runs-on:  windows-2022
 
     steps:
     - uses: actions/checkout@v2
       with:
           submodules: true      
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.1
     - name: Setup .NET 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
     - name: Install dependencies
       run: dotnet restore
+    - name: NuGet Restore
+      run: nuget restore BidTrainer.sln      
     # Restore from cache the previously built ports. If cache-miss, download, build vcpkg.
     - name: Restore from cache and install vcpkg
       # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.

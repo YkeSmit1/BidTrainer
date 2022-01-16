@@ -16,5 +16,7 @@ namespace EngineWrapper
 
         [DllImport("Engine")]
         public static extern void GetInformationFromAuction(string previousBidding, StringBuilder informationFromAuctionjson);
+        [DllImport("Engine")]
+        public static extern int Setup(string database);
     }
 }

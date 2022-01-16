@@ -16,6 +16,7 @@ namespace BidTrainer.Tests
         public BidManagerIntegrationTests(ITestOutputHelper testOutputHelper)
         {
             this.testOutputHelper = testOutputHelper;
+            var _ = Pinvoke.Setup("four_card_majors.db3");
         }
 
         [Fact]

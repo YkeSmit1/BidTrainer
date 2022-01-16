@@ -1,4 +1,3 @@
-#include "pch.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -14,11 +13,6 @@
 #include <regex>
 
 SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
-{
-    SetDatabase(database);
-}
-
-void SQLiteCppWrapper::SetDatabase(const std::string& database)
 {
     try
     {

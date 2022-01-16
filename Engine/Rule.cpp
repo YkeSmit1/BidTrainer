@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Rule.h"
 #include "Utils.h"
 #include <algorithm>

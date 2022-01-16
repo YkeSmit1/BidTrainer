@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Api.h"
 
 #include <string>
@@ -7,6 +6,9 @@
 #include "SQLiteCppWrapper.h"
 #include "BoardCharacteristic.h"
 #include "InformationFromAuction.h"
+
+std::unique_ptr<ISQLiteWrapper> sqliteWrapper = nullptr;
+
 
 HandCharacteristic GetHandCharacteristic(const std::string& hand)
 {
@@ -20,7 +22,8 @@ HandCharacteristic GetHandCharacteristic(const std::string& hand)
 
 ISQLiteWrapper* GetSqliteWrapper()
 {
-    static std::unique_ptr<ISQLiteWrapper> sqliteWrapper = std::make_unique<SQLiteCppWrapper>("four_card_majors.db3");
+    if (sqliteWrapper == nullptr)
+        throw std::logic_error("Setup was not called to initialize sqlite database");
     return sqliteWrapper.get();
 }
 
@@ -44,7 +47,7 @@ int Setup(const char* database)
 
     if (!exists(path(database)))
         return -1;
-    GetSqliteWrapper()->SetDatabase(database);
+    sqliteWrapper = std::make_unique<SQLiteCppWrapper>(database);
     return 0;
 }
 
