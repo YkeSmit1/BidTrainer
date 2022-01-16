@@ -21,24 +21,23 @@ namespace BidTrainer.Tests
         [Fact]
         public void BidTest()
         {
-            var bidManager = new BidManager();
             var pbn = new Pbn();
             foreach (var pbnFile in Directory.GetFiles("..\\..\\..\\..\\Wpf.BidTrainer\\Pbn", "*.pbn"))
             {
-                BidPbnFile(bidManager, pbn, pbnFile);
+                BidPbnFile(pbn, pbnFile);
             }
         }
 
-        private void BidPbnFile(BidManager bidManager, Pbn pbn, string pbnFile)
+        private void BidPbnFile(Pbn pbn, string pbnFile)
         {
             testOutputHelper.WriteLine($"Executing file {pbnFile}");
             LoadPbnFile(pbn, pbnFile);
             foreach (var board in pbn.Boards)
             {
-                BidBoard(bidManager, board);
+                BidBoard(board);
             }
 
-            var filePath = $"{pbnFile}.{DateTime.Now.ToString("d MMM yyyy")}";
+            var filePath = $"{pbnFile}.{DateTime.Now:d MMM yyyy}";
             pbn.Save(filePath);
             Assert.Equal(File.ReadAllText($"{pbnFile}.etalon"), File.ReadAllText(filePath));
         }
@@ -60,9 +59,9 @@ namespace BidTrainer.Tests
             pbn.Load(pbnFile);
         }
 
-        private void BidBoard(BidManager bidManager, BoardDto board)
+        private void BidBoard(BoardDto board)
         {
-            var auction = bidManager.GetAuction(board.Deal, board.Dealer);
+            var auction = BidManager.GetAuction(board.Deal, board.Dealer);
             board.Auction = auction;
             board.Declarer = auction.GetDeclarer();
             testOutputHelper.WriteLine($"Board:{board.BoardNumber}");
@@ -72,21 +71,19 @@ namespace BidTrainer.Tests
         [Fact]
         public void BidSpecificBoard()
         {
-            var bidManager = new BidManager();
             var pbn = new Pbn();
             var pbnFile = "..\\..\\..\\..\\Wpf.BidTrainer\\Pbn\\lesson7.pbn";
             LoadPbnFile(pbn, pbnFile);
-            BidBoard(bidManager, pbn.Boards[0]);
+            BidBoard(pbn.Boards[0]);
         }
 
         [Fact]
         public void BidSpecificPbnFile()
         {
-            var bidManager = new BidManager();
             var pbn = new Pbn();
             var pbnFile = "..\\..\\..\\..\\Wpf.BidTrainer\\Pbn\\lesson7.pbn";
             LoadPbnFile(pbn, pbnFile);
-            BidPbnFile(bidManager, pbn, pbnFile);
+            BidPbnFile(pbn, pbnFile);
         }
     }
 }

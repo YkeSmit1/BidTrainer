@@ -11,6 +11,7 @@
 #include "Utils.h"
 #include "Api.h"
 #include "BoardCharacteristic.h"
+#include <regex>
 
 SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
 {
@@ -48,8 +49,7 @@ void SQLiteCppWrapper::GetBid(int bidId, int& rank, int& suit)
     }
 }
 
-std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic& hand, const BoardCharacteristic& board, 
-    const Phase& phase, const std::string& previousBidding)
+std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic& hand, const BoardCharacteristic& board, const std::string& previousBidding)
 {
     try
     {
@@ -72,21 +72,26 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
         queryShape->bind(13, board.fitIsMajor);
         queryShape->bind(14, modules);
         queryShape->bind(15, board.position);
-        queryShape->bind(16, (int)phase);
-        queryShape->bind(17, (std::string)previousBidding);
-        queryShape->bind(18, board.isCompetitive);
-        queryShape->bind(19, hand.isReverse);
-        queryShape->bind(20, hand.isSemiBalanced);
+        queryShape->bind(16, board.isCompetitive);
+        queryShape->bind(17, hand.isReverse);
+        queryShape->bind(18, hand.isSemiBalanced);
 
         while (queryShape->executeStep())
         {
             auto id = queryShape->getColumn(5).getInt();
+            auto previousBiddingColumn = queryShape->getColumn(7);
+            if (!previousBiddingColumn.isNull())
+            {
+                auto value = previousBiddingColumn.getString();
+                std::regex regex(value);
+                if (!std::regex_search(previousBidding, regex))
+                    continue;
+            }
             auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
-            auto nextPhase = queryShape->getColumn(3).isNull() ? phase : (Phase)queryShape->getColumn(3).getInt();
             auto str = queryShape->getColumn(4).getString();
 
             if (bidId != 0)
-                return std::make_tuple(bidId, nextPhase, str);
+                return std::make_tuple(bidId, str);
 
             auto bidSuitKind = (BidKind)queryShape->getColumn(1).getInt();
             auto bidRank = queryShape->getColumn(2).getInt();
@@ -94,9 +99,9 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
             auto bidKindAuctionColumn = queryShape->getColumn(6);
             auto bidKindAuction = bidKindAuctionColumn.isNull() ? BidKindAuction::UnknownSuit : (BidKindAuction)bidKindAuctionColumn.getInt();
             if (relBidId != 0 && (bidKindAuction == BidKindAuction::UnknownSuit || bidKindAuction == GetBidKindFromAuction(previousBidding, relBidId)))
-                return std::make_tuple(relBidId, nextPhase, str);
+                return std::make_tuple(relBidId, str);
         }
-        return std::make_tuple(0, phase, "");
+        return std::make_tuple(0, "");
     }
     catch (const std::exception& e)
     {
@@ -107,11 +112,6 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRule(const HandCharacte
 
 BidKindAuction SQLiteCppWrapper::GetBidKindFromAuction(const std::string& previousBidding, int bidId)
 {
-    //NonReverse,
-    //    Reverse,
-    //    OwnSuit,
-    //    PartnersSuit,
-
     if (bidId <= 0)
         return BidKindAuction::UnknownSuit;
 
@@ -179,8 +179,7 @@ bool SQLiteCppWrapper::IsRepondingToDouble(const std::vector<int>& bids, size_t 
     return (lengthAuction >= 2 && bids.at(lengthAuction - 2) == -1);
 }
 
-std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& board, 
-    const std::string& previousBidding)
+std::tuple<int, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& board, const std::string& previousBidding)
 {
     try
     {
@@ -205,9 +204,9 @@ std::tuple<int, Phase, std::string> SQLiteCppWrapper::GetRelativeRule(const Hand
             auto str = queryShapeRelative->getColumn(1).getString();
 
             if (bidId != 0)
-                return std::make_tuple(bidId, Phase::SlamBidding, str);
+                return std::make_tuple(bidId, str);
         }
-        return std::make_tuple(0, Phase::SlamBidding, "");
+        return std::make_tuple(0, "");
     }
     catch (const std::exception& e)
     {
@@ -273,16 +272,16 @@ int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
 /// TODO filter rules not applicable for this bid by using a different bidsuitkind
 /// </summary>
 /// <returns>a JSON string with all the rules</returns>
-std::string SQLiteCppWrapper::GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive)
+std::string SQLiteCppWrapper::GetRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive)
 {
-    nlohmann::json j = GetInternalRulesByBid(phase, bidId, position, previousBidding, isCompetitive);
+    nlohmann::json j = GetInternalRulesByBid(bidId, position, previousBidding, isCompetitive);
     std::stringstream ss;
     ss << j;
     auto s = ss.str();
     return s;
 }
 
-std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetInternalRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive)
+std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetInternalRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive)
 {
     try
     {
@@ -291,15 +290,22 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
         queryRules->bind(1, bidId);
         queryRules->bind(2, bidId);
         queryRules->bind(3, modules);
-        queryRules->bind(4, (int)phase);
-        queryRules->bind(5, position);
-        queryRules->bind(6, (std::string)previousBidding);
-        queryRules->bind(7, isCompetitive);
+        queryRules->bind(4, position);
+        queryRules->bind(5, isCompetitive);
 
         std::vector<std::unordered_map<std::string, std::string>> records;
 
         while (queryRules->executeStep())
         {
+            auto previousBiddingColumn = queryRules->getColumn(0);
+            if (!previousBiddingColumn.isNull())
+            {
+                auto value = previousBiddingColumn.getString();
+                std::regex regex(value);
+                if (!std::regex_search(previousBidding, regex))
+                    continue;
+            }
+
             if (!queryRules->getColumn("BidId").isNull() || (bidId % 5 != 0))
             {
                 auto relevantIdsColumn = queryRules->getColumn("RelevantIds");

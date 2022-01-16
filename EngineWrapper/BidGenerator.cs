@@ -11,10 +11,10 @@ namespace EngineWrapper
 {
     public class BidGenerator
     {
-        public static (int, Phase, string) GetBid(string handsString, Auction auction, Phase phase)
+        public static (int, string) GetBid(string handsString, Auction auction)
         {
             var description = new StringBuilder(128);
-            var bidId = Pinvoke.GetBidFromRule(phase, handsString, auction.GetBidsAsStringASCII(), out var nextPhase, description);
+            var bidId = Pinvoke.GetBidFromRule(handsString, auction.GetBidsAsStringASCII(), description);
 
             if (bidId == 0)
             {
@@ -23,7 +23,7 @@ namespace EngineWrapper
                 if (bid > auction.currentContract)
                     bidId = Bid.GetBidId(bid);
             }
-            return (bidId, nextPhase, description.ToString());
+            return (bidId, description.ToString());
 
             Bid GetCalculatedBid(Dictionary<string, object> info)
             {
@@ -72,22 +72,24 @@ namespace EngineWrapper
                     }
                 }
             }
-
-            static Dictionary<string, object> GetInformationFromAuction(Auction auction)
-            {
-                var stringBuilder = new StringBuilder(8129);
-                Pinvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
-                return JsonConvert.DeserializeObject<Dictionary<string, object>>(stringBuilder.ToString());
-            }
         }
 
-        public static BidInformation GetRecords(Bid bid, Phase phase, Phase nextPhase, Auction auction, string slamBids)
+        private static Dictionary<string, object> GetInformationFromAuction(Auction auction)
         {
+            var stringBuilder = new StringBuilder(8129);
+            Pinvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(stringBuilder.ToString());
+        }
+
+        public static BidInformation GetRecords(Bid bid, Auction auction)
+        {
+            var info = GetInformationFromAuction(auction);
+
             var informationJson = new StringBuilder(8192);
-            if (nextPhase == Phase.SlamBidding)
-                Pinvoke.GetRelativeRulesByBid(Bid.GetBidId(bid), slamBids, informationJson);
+            if ((bool)info["isSlamBidding"])
+                Pinvoke.GetRelativeRulesByBid(Bid.GetBidId(bid), auction.GetBidsAsStringASCII(), informationJson);
             else
-                Pinvoke.GetRulesByBid(phase, Bid.GetBidId(bid), auction.currentPosition, auction.GetBidsAsStringASCII(), auction.IsCompetitive(), informationJson);
+                Pinvoke.GetRulesByBid(Bid.GetBidId(bid), auction.currentPosition, auction.GetBidsAsStringASCII(), auction.IsCompetitive(), informationJson);
             var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
             var bidInformation = new BidInformation
             {

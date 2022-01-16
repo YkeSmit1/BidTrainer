@@ -9,7 +9,7 @@ enum class BidKind;
 
 class SQLiteCppWrapper : public ISQLiteWrapper
 {
-    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description, Id, BidKindAuction FROM Rules 
+    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, NextPhase, Description, Id, BidKindAuction, PreviousBidding FROM Rules 
         WHERE (bidId > ? OR bidId <= 0 OR bidID is NULL)
         AND ? BETWEEN MinSpades AND MaxSpades
         AND ? BETWEEN MinHearts AND MaxHearts
@@ -25,19 +25,15 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (FitIsMajor IS NULL or FitIsMajor = ?)
         AND (Module IS NULL or ? & Module = Module)
         AND Position = ?
-        AND Phase = ?
-        AND (PreviousBidding IS NULL or PreviousBidding = ?)
         AND (IsCompetitive IS NULL or IsCompetitive = ?)
         AND (IsReverse IS NULL or IsReverse = ?)
         AND (IsSemiBalanced IS NULL or IsSemiBalanced = ?)
         ORDER BY Priority ASC)";
 
-    constexpr static std::string_view rulesSql = R"(SELECT * FROM Rules 
+    constexpr static std::string_view rulesSql = R"(SELECT PreviousBidding, * FROM Rules 
         WHERE ((bidId = ?) OR (bidId is NULL AND ? > 0))
         AND (Module IS NULL or ? & Module = Module)
-        AND Phase = ?
         AND Position = ?
-        AND (PreviousBidding IS NULL or PreviousBidding = ?)
         AND (IsCompetitive IS NULL or IsCompetitive = ?)
         AND UseInCalculation IS NULL)";
 
@@ -74,14 +70,12 @@ public:
     static BidKindAuction GetBidKindFromAuction(const std::string& previousBidding, int bidId);
 private:
     void GetBid(int bidId, int& rank, int& suit) final;
-    std::tuple<int, Phase, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, 
-        const Phase& phase, const std::string& previousBidding) final;
-    std::tuple<int, Phase, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic,
-        const std::string& previousBidding) final;
+    std::tuple<int, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const std::string& previousBidding) final;
+    std::tuple<int, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const std::string& previousBidding) final;
     std::string GetLastBid(const std::string& previousBidding);
     void SetDatabase(const std::string& database) override;
-    std::string GetRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
-    std::vector<std::unordered_map<std::string, std::string>> GetInternalRulesByBid(Phase phase, int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    std::string GetRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    std::vector<std::unordered_map<std::string, std::string>> GetInternalRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
     static bool HasFitWithPartnerPrevious(const std::vector<int>& bids, size_t lengthAuction, int suit);
     static bool HasFitWithPartnerFirst(const std::vector<int>& bids, size_t lengthAuction, int suit);
     static bool HasFitWithPartner(const std::vector<int>& bids, size_t lengthAuction, int suit);

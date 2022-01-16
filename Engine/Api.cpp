@@ -24,19 +24,18 @@ ISQLiteWrapper* GetSqliteWrapper()
     return sqliteWrapper.get();
 }
 
-int GetBidFromRule(Phase phase, const char* hand, const char* previousBidding, Phase* newPhase, char* description)
+int GetBidFromRule(const char* hand, const char* previousBidding, char* description)
 {    
     auto handCharacteristic = GetHandCharacteristic(hand);
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding};
     BoardCharacteristic boardCharacteristic{ handCharacteristic, previousBidding, informationFromAuction };
 
-    auto [bidId, lNewfase, descr] = informationFromAuction.phase != Phase::SlamBidding ?
-        GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, informationFromAuction.phase, previousBidding) :
+    auto [bidId, descr] = !informationFromAuction.isSlamBidding  ?
+        GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, previousBidding) :
         GetSqliteWrapper()->GetRelativeRule(handCharacteristic, boardCharacteristic, informationFromAuction.previousSlamBidding);
     assert(descr.size() < 128);
     strncpy(description, descr.c_str(), descr.size());
     description[descr.size()] = '\0';
-    *newPhase = lNewfase;
     return bidId;
 }
 
@@ -55,9 +54,9 @@ void GetBid(int bidId, int& rank, int& suit)
     GetSqliteWrapper()->GetBid(bidId, rank, suit);
 }
 
-void GetRulesByBid(Phase phase, int bidId, int position, const char* previousBidding, bool isCompetitive, char* information)
+void GetRulesByBid(int bidId, int position, const char* previousBidding, bool isCompetitive, char* information)
 {
-    auto linformation = GetSqliteWrapper()->GetRulesByBid(phase, bidId, position, previousBidding, isCompetitive);
+    auto linformation = GetSqliteWrapper()->GetRulesByBid(bidId, position, previousBidding, isCompetitive);
     assert(linformation.size() < 8192);
     strncpy(information, linformation.c_str(), linformation.size());
     information[linformation.size()] = '\0';
@@ -65,12 +64,12 @@ void GetRulesByBid(Phase phase, int bidId, int position, const char* previousBid
 
 void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* information)
 {
-    auto linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, previousBidding);
+    InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
+    auto linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
     assert(linformation.size() < 8192);
     strncpy(information, linformation.c_str(), linformation.size());
     information[linformation.size()] = '\0';
 }
-
 
 void SetModules(int modules)
 {

@@ -12,8 +12,6 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
     std::vector<std::vector<int>> minSuitLengths{ std::vector<int>{0, 0, 0, 0}, std::vector<int>{0, 0, 0, 0}, std::vector<int>{0, 0, 0, 0}, std::vector<int>{0, 0, 0, 0} };
 
     auto bidIds = Utils::SplitAuction(previousBidding);
-    auto phaseOpener = Phase::Opening;
-    auto phaseDefensive = Phase::Opening;
     auto position = 1;
     auto currentBidding = ""s;
     auto lastIdNonSlam = 13;
@@ -23,16 +21,13 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
     {
         if (bidId != 0)
         {
-            auto* currentPhase = position % 2 == 0 ? &phaseDefensive : &phaseOpener;
             auto player = ((size_t)position - 1) % 4;
             if (!isSlamBidding)
             {
                 auto isCompetitive = Utils::GetIsCompetitive(currentBidding);
-                auto rules = sqliteWrapper->GetInternalRulesByBid(*currentPhase, bidId, position, currentBidding, isCompetitive);
+                auto rules = sqliteWrapper->GetInternalRulesByBid(bidId, position, currentBidding, isCompetitive);
                 if (rules.size() > 0)
                 {
-                    if (rules.at(0)["NextPhase"] != "")
-                        *currentPhase = (Phase)std::stoi(rules.at(0)["NextPhase"]);
                     for (auto i = 0; i < 4; i++)
                         minSuitLengths.at(player).at(i) = std::max(minSuitLengths.at(player).at(i), GetLowestValue(rules, "Min"s + Utils::GetSuit(i)));
                     if (player == partner)
@@ -55,12 +50,12 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
                     }
                 }
             }
+            //TODO Ugly hack
             if (bidId == lastIdNonSlam)
             {
                 isSlamBidding = true;
                 currentBidding = "";
                 position++;
-                *currentPhase = Phase::SlamBidding;
                 continue;
             }
         }
@@ -69,7 +64,9 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
         position++;
     }
 
-    phase = position % 2 == 0 ? phaseDefensive : phaseOpener;
+    //TODO Ugly hack
+    if ((size_t)bidIds.size() % 2 != 0)
+        isSlamBidding = false;
     if (isSlamBidding)
         previousSlamBidding = currentBidding;
 
@@ -102,7 +99,8 @@ std::string InformationFromAuction::AsJson()
         {"minHcpPartner", minHcpPartner},
         {"controls", controls},
         {"keyCardsPartner", keyCardsPartner},
-        {"trumpQueenPartner", trumpQueenPartner}
+        {"trumpQueenPartner", trumpQueenPartner},
+        {"isSlamBidding", isSlamBidding}
     };
 
     std::stringstream ss;

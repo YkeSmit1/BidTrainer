@@ -16,7 +16,6 @@ struct InformationFromAuction
     std::vector<int> openersSuits{0,0,0,0};
     int minHcpPartner = 0;
 
-    Phase phase = Phase::Opening;
     std::vector<int> slamBidIds{};
     int bidIdBase = 0;
     std::vector<bool> controls{false, false, false, false};

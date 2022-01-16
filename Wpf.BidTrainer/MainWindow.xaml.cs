@@ -79,11 +79,11 @@ namespace Wpf.BidTrainer
             {
                 currentResult.UsedHint = true;
                 Cursor = Cursors.Arrow;
-                MessageBox.Show(bidManager.GetInformation(bid, auction), "Information");
+                MessageBox.Show(BidManager.GetInformation(bid, auction), "Information");
             }
             else
             {
-                var engineBid = bidManager.GetBid(auction, Deal[Player.South]);
+                var engineBid = BidManager.GetBid(auction, Deal[Player.South]);
                 UpdateBidControls(engineBid);
 
                 if (bid != engineBid)
@@ -139,7 +139,6 @@ namespace Wpf.BidTrainer
             auction.Clear(Dealer);
             BiddingBoxViewModel.DoBid.RaiseCanExecuteChanged();
             AuctionViewModel.UpdateAuction(auction);
-            bidManager.Init();
             StatusBarLesson.Content = $"Lesson: {lesson.LessonNr} Board: {CurrentBoardIndex + 1}";
             startTimeBoard = DateTime.Now;
             currentResult = new Result();
@@ -156,7 +155,7 @@ namespace Wpf.BidTrainer
         {
             while (auction.CurrentPlayer != Player.South && !auction.IsEndOfBidding())
             {
-                var bid = bidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
+                var bid = BidManager.GetBid(auction, Deal[auction.CurrentPlayer]);
                 UpdateBidControls(bid);
             }
 
