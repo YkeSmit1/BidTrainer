@@ -34,8 +34,7 @@ int GetBidFromRule(const char* hand, const char* previousBidding, char* descript
         GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, previousBidding) :
         GetSqliteWrapper()->GetRelativeRule(handCharacteristic, boardCharacteristic, informationFromAuction.previousSlamBidding);
     assert(descr.size() < 128);
-    strncpy(description, descr.c_str(), descr.size());
-    description[descr.size()] = '\0';
+    strcpy(description, descr.c_str());
     return bidId;
 }
 
@@ -54,12 +53,11 @@ void GetBid(int bidId, int& rank, int& suit)
     GetSqliteWrapper()->GetBid(bidId, rank, suit);
 }
 
-void GetRulesByBid(int bidId, int position, const char* previousBidding, bool isCompetitive, char* information)
+void GetRulesByBid(int bidId, const char* previousBidding, char* information)
 {
-    auto linformation = GetSqliteWrapper()->GetRulesByBid(bidId, position, previousBidding, isCompetitive);
+    auto linformation = GetSqliteWrapper()->GetRulesByBid(bidId, previousBidding);
     assert(linformation.size() < 8192);
-    strncpy(information, linformation.c_str(), linformation.size());
-    information[linformation.size()] = '\0';
+    strcpy(information, linformation.c_str());
 }
 
 void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* information)
@@ -67,8 +65,7 @@ void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* informa
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
     auto linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
     assert(linformation.size() < 8192);
-    strncpy(information, linformation.c_str(), linformation.size());
-    information[linformation.size()] = '\0';
+    strcpy(information, linformation.c_str());
 }
 
 void SetModules(int modules)
@@ -81,6 +78,5 @@ void GetInformationFromAuction(const char* previousBidding, char* informationFro
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
     auto json = informationFromAuction.AsJson();
     assert(json.size() < 8192);
-    strncpy(informationFromAuctionjson, json.c_str(), json.size());
-    informationFromAuctionjson[json.size()] = '\0';
+    strcpy(informationFromAuctionjson, json.c_str());
 }

@@ -74,8 +74,8 @@ private:
     std::tuple<int, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const std::string& previousBidding) final;
     std::string GetLastBid(const std::string& previousBidding);
     void SetDatabase(const std::string& database) override;
-    std::string GetRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
-    std::vector<std::unordered_map<std::string, std::string>> GetInternalRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive) final;
+    std::string GetRulesByBid(int bidId, const std::string& previousBidding) final;
+    std::vector<std::unordered_map<std::string, std::string>> GetInternalRulesByBid(int bidId, const std::string& previousBidding) final;
     static bool HasFitWithPartnerPrevious(const std::vector<int>& bids, size_t lengthAuction, int suit);
     static bool HasFitWithPartnerFirst(const std::vector<int>& bids, size_t lengthAuction, int suit);
     static bool HasFitWithPartner(const std::vector<int>& bids, size_t lengthAuction, int suit);

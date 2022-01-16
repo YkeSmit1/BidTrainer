@@ -272,17 +272,21 @@ int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
 /// TODO filter rules not applicable for this bid by using a different bidsuitkind
 /// </summary>
 /// <returns>a JSON string with all the rules</returns>
-std::string SQLiteCppWrapper::GetRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive)
+std::string SQLiteCppWrapper::GetRulesByBid(int bidId, const std::string& previousBidding)
 {
-    nlohmann::json j = GetInternalRulesByBid(bidId, position, previousBidding, isCompetitive);
+    nlohmann::json j = GetInternalRulesByBid(bidId, previousBidding);
     std::stringstream ss;
     ss << j;
     auto s = ss.str();
     return s;
 }
 
-std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetInternalRulesByBid(int bidId, int position, const std::string& previousBidding, bool isCompetitive)
+std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetInternalRulesByBid(int bidId, const std::string& previousBidding)
 {
+    auto bidIds = Utils::SplitAuction(previousBidding);
+    auto position = (int)bidIds.size() + 1;
+    auto isCompetitive = Utils::GetIsCompetitive(previousBidding);
+
     try
     {
         // Bind parameters

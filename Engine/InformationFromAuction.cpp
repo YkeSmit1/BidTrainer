@@ -24,8 +24,7 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
             auto player = ((size_t)position - 1) % 4;
             if (!isSlamBidding)
             {
-                auto isCompetitive = Utils::GetIsCompetitive(currentBidding);
-                auto rules = sqliteWrapper->GetInternalRulesByBid(bidId, position, currentBidding, isCompetitive);
+                auto rules = sqliteWrapper->GetInternalRulesByBid(bidId, currentBidding);
                 if (rules.size() > 0)
                 {
                     for (auto i = 0; i < 4; i++)

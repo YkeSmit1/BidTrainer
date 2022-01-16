@@ -21,7 +21,6 @@ namespace Wpf.BidTrainer
     public partial class MainWindow : Window
     {
         // Bidding
-        private readonly BidManager bidManager = new();
         private readonly Auction auction = new();
         private readonly Pbn pbn = new();
 
