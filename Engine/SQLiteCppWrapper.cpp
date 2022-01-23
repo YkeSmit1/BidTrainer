@@ -72,8 +72,8 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
 
         while (queryShape->executeStep())
         {
-            auto id = queryShape->getColumn(5).getInt();
-            auto previousBiddingColumn = queryShape->getColumn(7);
+            auto id = queryShape->getColumn(4).getInt();
+            auto previousBiddingColumn = queryShape->getColumn(6);
             if (!previousBiddingColumn.isNull())
             {
                 auto value = previousBiddingColumn.getString();
@@ -82,7 +82,7 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
                     continue;
             }
             auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
-            auto str = queryShape->getColumn(4).getString();
+            auto str = queryShape->getColumn(3).getString();
 
             if (bidId != 0)
                 return std::make_tuple(bidId, str);
@@ -90,7 +90,7 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
             auto bidSuitKind = (BidKind)queryShape->getColumn(1).getInt();
             auto bidRank = queryShape->getColumn(2).getInt();
             auto relBidId = GetBidIdRelative(bidSuitKind, bidRank, board.lastBidId, hand, board);
-            auto bidKindAuctionColumn = queryShape->getColumn(6);
+            auto bidKindAuctionColumn = queryShape->getColumn(5);
             auto bidKindAuction = bidKindAuctionColumn.isNull() ? BidKindAuction::UnknownSuit : (BidKindAuction)bidKindAuctionColumn.getInt();
             if (relBidId != 0 && (bidKindAuction == BidKindAuction::UnknownSuit || bidKindAuction == GetBidKindFromAuction(previousBidding, relBidId)))
                 return std::make_tuple(relBidId, str);
@@ -111,9 +111,6 @@ BidKindAuction SQLiteCppWrapper::GetBidKindFromAuction(const std::string& previo
 
     auto bids = Utils::SplitAuction(previousBidding);
     auto lengthAuction = bids.size();
-
-    if (IsRepondingToDouble(bids, lengthAuction))
-        return BidKindAuction::RespondingToDouble;
 
     auto suit = Utils::GetSuitInt(bidId);
     if (HasFitWithPartner(bids, lengthAuction, suit))
@@ -166,11 +163,6 @@ bool SQLiteCppWrapper::IsNonReverse(int suit, int rank, int previousSuit, int pr
 bool SQLiteCppWrapper::IsRebidOwnSuit(const std::vector<int>& bids, size_t lengthAuction, int suit)
 {
     return (lengthAuction >= 4 && Utils::GetSuitInt(bids.at(lengthAuction - 4)) == suit);
-}
-
-bool SQLiteCppWrapper::IsRepondingToDouble(const std::vector<int>& bids, size_t lengthAuction)
-{
-    return (lengthAuction >= 2 && bids.at(lengthAuction - 2) == -1);
 }
 
 std::tuple<int, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& board, const std::string& previousBidding)

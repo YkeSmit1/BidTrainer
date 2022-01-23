@@ -23,7 +23,6 @@ enum class BidKindAuction
     Reverse,
     OwnSuit,
     PartnersSuit,
-    RespondingToDouble
 };
 
 enum class Modules
@@ -39,7 +38,7 @@ enum class Modules
 
 extern "C" {
     __declspec(dllexport) int GetBidFromRule(const char* hand, const char* previousBidding, char* description);
-    __declspec(dllexport) void GetRulesByBid(int bidId, int position, const char* previousBidding, bool isCompetitive, char* information);
+    __declspec(dllexport) void GetRulesByBid(int bidId, const char* previousBidding, char* information);
     __declspec(dllexport) void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* information);
     __declspec(dllexport) int Setup(const char* database);
     __declspec(dllexport) void SetModules(int modules);
