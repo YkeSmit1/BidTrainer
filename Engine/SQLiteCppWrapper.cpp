@@ -236,6 +236,8 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
     auto bidIds = Utils::SplitAuction(previousBidding);
     auto position = (int)bidIds.size() + 1;
     auto isCompetitive = Utils::GetIsCompetitive(previousBidding);
+    auto bidRank = Utils::GetRank(bidId);
+    auto bidKindAuction = GetBidKindFromAuction(previousBidding, bidId);
 
     try
     {
@@ -246,6 +248,8 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
         queryRules->bind(3, modules);
         queryRules->bind(4, position);
         queryRules->bind(5, isCompetitive);
+        queryRules->bind(6, bidRank);
+        queryRules->bind(7, (int)bidKindAuction);
 
         std::vector<std::unordered_map<std::string, std::string>> records;
 
@@ -260,32 +264,21 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
                     continue;
             }
 
+            auto relevantIdsColumn = queryRules->getColumn("RelevantIds");
+            if (!relevantIdsColumn.isNull())
+            {
+                auto vectorOfIds = Utils::Split(relevantIdsColumn.getString(), ',');
+                if (std::find(vectorOfIds.begin(), vectorOfIds.end(), std::to_string(bidId)) == vectorOfIds.end())
+                    continue;
+            }
+
             if (!queryRules->getColumn("BidId").isNull() || (bidId % 5 != 0))
             {
-                auto relevantIdsColumn = queryRules->getColumn("RelevantIds");
-                if (!relevantIdsColumn.isNull())
-                {
-                    auto vectorOfIds = Utils::Split(relevantIdsColumn.getString(), ',');
-                    if (std::find(vectorOfIds.begin(), vectorOfIds.end(), std::to_string(bidId)) == vectorOfIds.end())
-                        continue;
-                }
-
-                auto bidRankColumn = queryRules->getColumn("BidRank");
-                if (!bidRankColumn.isNull() && Utils::GetRank(bidId) != bidRankColumn.getInt())
-                    continue;
-
-                auto BidKindAuctionColumn = queryRules->getColumn("BidKindAuction");
-                if (!BidKindAuctionColumn.isNull() && (BidKindAuction)BidKindAuctionColumn.getInt() != GetBidKindFromAuction(previousBidding, bidId))
-                  continue;
-
                 std::unordered_map<std::string, std::string> record;
-                auto balancedColumn = queryRules->getColumn("IsBalanced");
-                auto isBalanced = !balancedColumn.isNull() && (bool)balancedColumn.getInt();
-
                 for (int i = 0; i < queryRules->getColumnCount() - 1; i++)
                 {
                     auto column = queryRules->getColumn(i);
-                    record.emplace(std::make_pair(column.getName(), isBalanced && column.getString() == "0" && (IsColumnMinSuit(column.getName())) ? "2" : column.getString()));
+                    record.emplace(std::make_pair(column.getName(), column.getString()));
                 }
                 UpdateMinMax(bidId, record);
                 records.push_back(record);
@@ -298,11 +291,6 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
         std::cerr << e.what();
         throw;
     }
-}
-
-bool SQLiteCppWrapper::IsColumnMinSuit(const std::string& columnName)
-{
-    return columnName == "MinSpades" || columnName == "MinHearts" || columnName == "MinDimonds" || columnName == "MinClubs";
 }
 
 void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record)

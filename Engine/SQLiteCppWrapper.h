@@ -41,9 +41,11 @@ class SQLiteCppWrapper : public ISQLiteWrapper
 
     constexpr static std::string_view rulesSql = R"(SELECT PreviousBidding, * FROM Rules 
         WHERE ((bidId = ?) OR (bidId is NULL AND ? > 0))
-        AND (Module IS NULL or ? & Module = Module)
+        AND (Module IS NULL OR ? & Module = Module)
         AND Position = ?
-        AND (IsCompetitive IS NULL or IsCompetitive = ?)
+        AND (IsCompetitive IS NULL OR IsCompetitive = ?)
+        AND (BidRank IS NULL OR BidRank = ?)
+        AND (BidKindAuction IS NULL OR BidKindAuction = ?)
         AND UseInCalculation IS NULL)";
 
     constexpr static std::string_view relativeShapeSql = R"(SELECT bidId, Description FROM RelativeRules 
@@ -90,7 +92,6 @@ private:
     static bool IsReverse(int suit, int rank, int previousSuit, int previousRank);
     static bool IsNonReverse(int suit, int rank, int previousSuit, int previousRank);
     static bool IsRebidOwnSuit(const std::vector<int>& bids, size_t lengthAuction, int suit);
-    bool IsColumnMinSuit(const std::string& columnName);
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
     std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding);
     std::vector<std::unordered_map<std::string, std::string>> GetInternalRelativeRulesByBid(int bidId, const std::string& previousBidding) final;
