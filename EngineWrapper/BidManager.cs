@@ -57,6 +57,8 @@ namespace EngineWrapper
 
                 bool SlamIsPossible()
                 {
+                    if (playingSuit == Suit.NoTrump)
+                        return hcpPartnership >= 33;
                     var totalKeyCards = Util.GetKeyCards(handsString, playingSuit) + (long)info["keyCardsPartner"];
                     var totalTrumpQueen = Util.GetHasTrumpQueen(handsString, playingSuit) || (bool)info["trumpQueenPartner"];
 

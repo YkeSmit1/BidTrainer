@@ -49,31 +49,47 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
     {
         // Bind parameters
         queryShape->reset();
-        queryShape->bind(1, board.lastBidId);
-        queryShape->bind(2, hand.suitLengths[0]);
-        queryShape->bind(3, hand.suitLengths[1]);
-        queryShape->bind(4, hand.suitLengths[2]);
-        queryShape->bind(5, hand.suitLengths[3]);
 
-        queryShape->bind(6, hand.Hcp);
-        queryShape->bind(7, hand.isBalanced);
-        queryShape->bind(8, (int)board.opponentsSuit);
-        queryShape->bind(9, board.stopInOpponentsSuit);
+        queryShape->bind(":firstSuit", hand.firstSuit);
+        queryShape->bind(":secondSuit", hand.secondSuit);
+        queryShape->bind(":lowestSuit", hand.lowestSuit);
+        queryShape->bind(":highestSuit", hand.highestSuit);
+        queryShape->bind(":fitWithPartnerSuit", board.fitWithPartnerSuit);
 
-        queryShape->bind(10, hand.lengthFirstSuit);
-        queryShape->bind(11, hand.lengthSecondSuit);
-        queryShape->bind(12, board.hasFit);
-        queryShape->bind(13, board.fitIsMajor);
-        queryShape->bind(14, modules);
-        queryShape->bind(15, board.position);
-        queryShape->bind(16, board.isCompetitive);
-        queryShape->bind(17, hand.isReverse);
-        queryShape->bind(18, hand.isSemiBalanced);
+        queryShape->bind(":lastBidId", board.lastBidId);
+        queryShape->bind(":minSpades", hand.suitLengths[0]);
+        queryShape->bind(":minHearts", hand.suitLengths[1]);
+        queryShape->bind(":minDiamonds", hand.suitLengths[2]);
+        queryShape->bind(":minClubs", hand.suitLengths[3]);
+
+        queryShape->bind(":minHcp", hand.Hcp);
+        queryShape->bind(":isBalanced", hand.isBalanced);
+        queryShape->bind(":opponentsSuit", (int)board.opponentsSuit);
+        queryShape->bind(":stopInOpponentsSuit", board.stopInOpponentsSuit);
+
+        queryShape->bind(":lengthFirstSuit", hand.lengthFirstSuit);
+        queryShape->bind(":lengthSecondSuit", hand.lengthSecondSuit);
+        queryShape->bind(":hasFit", board.hasFit);
+        queryShape->bind(":fitIsMajor", board.fitIsMajor);
+        queryShape->bind(":modules", modules);
+        queryShape->bind(":position", board.position);
+        queryShape->bind(":isCompetitive", board.isCompetitive);
+        queryShape->bind(":isReverse", hand.isReverse);
+        queryShape->bind(":isSemiBalanced", hand.isSemiBalanced);
 
         while (queryShape->executeStep())
         {
-            auto id = queryShape->getColumn(4).getInt();
-            auto previousBiddingColumn = queryShape->getColumn(6);
+            auto id = queryShape->getColumn(2).getInt();
+
+            auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
+            if (bidId == 0 || (bidId > 0 && bidId <= board.lastBidId))
+                continue;
+
+            auto bidKindAuctionColumn = queryShape->getColumn(3);
+            if (!bidKindAuctionColumn.isNull() && (BidKindAuction)bidKindAuctionColumn.getInt() != GetBidKindFromAuction(previousBidding, bidId))
+                continue;
+
+            auto previousBiddingColumn = queryShape->getColumn(4);
             if (!previousBiddingColumn.isNull())
             {
                 auto value = previousBiddingColumn.getString();
@@ -81,19 +97,13 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
                 if (!std::regex_search(previousBidding, regex))
                     continue;
             }
-            auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
-            auto str = queryShape->getColumn(3).getString();
 
-            if (bidId != 0)
-                return std::make_tuple(bidId, str);
+            auto IsOpponentsSuitColumn = queryShape->getColumn(5);
+            if (!IsOpponentsSuitColumn.isNull() && IsOpponentsSuitColumn.getInt() == 0 && Utils::GetSuitInt(bidId) == board.opponentsSuit)
+                continue;
 
-            auto bidSuitKind = (BidKind)queryShape->getColumn(1).getInt();
-            auto bidRank = queryShape->getColumn(2).getInt();
-            auto relBidId = GetBidIdRelative(bidSuitKind, bidRank, board.lastBidId, hand, board);
-            auto bidKindAuctionColumn = queryShape->getColumn(5);
-            auto bidKindAuction = bidKindAuctionColumn.isNull() ? BidKindAuction::UnknownSuit : (BidKindAuction)bidKindAuctionColumn.getInt();
-            if (relBidId != 0 && (bidKindAuction == BidKindAuction::UnknownSuit || bidKindAuction == GetBidKindFromAuction(previousBidding, relBidId)))
-                return std::make_tuple(relBidId, str);
+            auto str = queryShape->getColumn(1).getString();
+            return std::make_tuple(bidId, str);
         }
         return std::make_tuple(0, "");
     }
@@ -205,52 +215,6 @@ std::string SQLiteCppWrapper::GetLastBid(const std::string& previousBidding)
 {
     auto lastBid = previousBidding.length() == 0 ? previousBidding : previousBidding.substr(previousBidding.length() - 2);
     return lastBid == "NT" ? previousBidding.substr(previousBidding.length() - 3) : lastBid;
-}
-
-int SQLiteCppWrapper::GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, const BoardCharacteristic& board)
-{
-    switch (bidSuitKind)
-    {
-    case BidKind::UnknownSuit:
-        return 0;
-    case BidKind::FirstSuit:
-        return GetBidId(bidRank, IsNewSuit(hand.firstSuit, board.partnersSuits, board.opponentsSuit) ? hand.firstSuit : hand.secondSuit, lastBidId, hand.suitLengths);
-    case BidKind::SecondSuit:
-        return GetBidId(bidRank, hand.secondSuit, lastBidId, hand.suitLengths);
-    case BidKind::LowestSuit:
-        {
-            auto bidId = GetBidId(bidRank, IsNewSuit(hand.lowestSuit, board.partnersSuits, board.opponentsSuit) ? hand.lowestSuit : hand.highestSuit, lastBidId, hand.suitLengths);
-            return bidId != 0 ? bidId : GetBidId(bidRank, IsNewSuit(hand.lowestSuit, board.partnersSuits, board.opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
-        }
-    case BidKind::HighestSuit:
-        return GetBidId(bidRank, IsNewSuit(hand.highestSuit, board.partnersSuits, board.opponentsSuit) ? hand.highestSuit : hand.lowestSuit, lastBidId, hand.suitLengths);
-    case BidKind::PartnersSuit:
-        return GetBidId(bidRank, board.fitWithPartnerSuit, lastBidId);
-    default:
-        throw new std::invalid_argument("Invalid value for bidSuitKind");
-    }
-}
-
-bool SQLiteCppWrapper::IsNewSuit(int suit, const std::vector<int>& partnersSuits, int opponentsSuit)
-{
-    return (suit != -1 && partnersSuits.at(suit) == 0) && suit != opponentsSuit;
-}
-
-int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths)
-{
-    if (suit == -1)
-        return 0;
-    if (suitLengths.size() > 0 && suitLengths.at(suit) < 4)
-        return 0;
-    return GetBidId(bidRank, suit, lastBidId);
-}
-
-int SQLiteCppWrapper::GetBidId(int bidRank, int suit, int lastBidId)
-{
-    if (suit == -1)
-        return 0;
-    auto bidId = (bidRank - 1) * 5 + (3 - suit) + 1;
-    return bidId > lastBidId ? bidId : 0;
 }
 
 /// <summary>

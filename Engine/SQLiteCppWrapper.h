@@ -9,25 +9,34 @@ enum class BidKind;
 
 class SQLiteCppWrapper : public ISQLiteWrapper
 {
-    constexpr static std::string_view shapeSql = R"(SELECT bidId, BidSuitKind, BidRank, Description, Id, BidKindAuction, PreviousBidding FROM Rules 
-        WHERE (bidId > ? OR bidId <= 0 OR bidID is NULL)
-        AND ? BETWEEN MinSpades AND MaxSpades
-        AND ? BETWEEN MinHearts AND MaxHearts
-        AND ? BETWEEN MinDiamonds AND MaxDiamonds
-        AND ? BETWEEN MinClubs AND MaxClubs
-        AND ? BETWEEN MinHcp AND MaxHcp
-        AND (IsBalanced IS NULL or IsBalanced = ?)
-        AND (OpponentsSuit is NULL or OpponentsSuit = ?)
-        AND (StopInOpponentsSuit is NULL or StopInOpponentsSuit = ?)
-        AND ? BETWEEN MinFirstSuit AND MaxFirstSuit
-        AND ? BETWEEN MinSecondSuit AND MaxSecondSuit
-        AND (HasFit IS NULL or HasFit = ?)
-        AND (FitIsMajor IS NULL or FitIsMajor = ?)
-        AND (Module IS NULL or ? & Module = Module)
-        AND Position = ?
-        AND (IsCompetitive IS NULL or IsCompetitive = ?)
-        AND (IsReverse IS NULL or IsReverse = ?)
-        AND (IsSemiBalanced IS NULL or IsSemiBalanced = ?)
+    constexpr static std::string_view shapeSql = R"(SELECT CASE 
+                WHEN BidId IS NOT null THEN BidId
+                WHEN BidId IS NULL AND BidSuitKind = 1 AND :firstSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :firstSuit) + 1
+                WHEN BidId IS NULL AND BidSuitKind = 2 AND :secondSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :secondSuit) + 1
+                WHEN BidId IS NULL AND BidSuitKind = 3 AND :lowestSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :lowestSuit) + 1
+                WHEN BidId IS NULL AND BidSuitKind = 4 AND :highestSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :highestSuit) + 1
+                WHEN BidId IS NULL AND BidSuitKind = 5 AND :fitWithPartnerSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :fitWithPartnerSuit) + 1
+                ELSE 0
+            END,
+            Description, Id, BidKindAuction, PreviousBidding, IsOpponentsSuit FROM Rules 
+        WHERE (bidId > :lastBidId OR bidId <= 0 OR bidID is NULL)
+        AND :minSpades BETWEEN MinSpades AND MaxSpades
+        AND :minHearts BETWEEN MinHearts AND MaxHearts
+        AND :minDiamonds BETWEEN MinDiamonds AND MaxDiamonds
+        AND :minClubs BETWEEN MinClubs AND MaxClubs
+        AND :minHcp BETWEEN MinHcp AND MaxHcp
+        AND (IsBalanced IS NULL or IsBalanced = :isBalanced)
+        AND (OpponentsSuit is NULL or OpponentsSuit = :opponentsSuit)
+        AND (StopInOpponentsSuit is NULL or StopInOpponentsSuit = :stopInOpponentsSuit)
+        AND :lengthFirstSuit BETWEEN MinFirstSuit AND MaxFirstSuit
+        AND :lengthSecondSuit BETWEEN MinSecondSuit AND MaxSecondSuit
+        AND (HasFit IS NULL or HasFit = :hasFit)
+        AND (FitIsMajor IS NULL or FitIsMajor = :fitIsMajor)
+        AND (Module IS NULL or :modules & Module = Module)
+        AND Position = :position
+        AND (IsCompetitive IS NULL or IsCompetitive = :isCompetitive)
+        AND (IsReverse IS NULL or IsReverse = :isReverse)
+        AND (IsSemiBalanced IS NULL or IsSemiBalanced = :isSemiBalanced)
         ORDER BY Priority ASC)";
 
     constexpr static std::string_view rulesSql = R"(SELECT PreviousBidding, * FROM Rules 
@@ -83,10 +92,6 @@ private:
     static bool IsRebidOwnSuit(const std::vector<int>& bids, size_t lengthAuction, int suit);
     bool IsColumnMinSuit(const std::string& columnName);
     void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
-    int GetBidIdRelative(BidKind bidSuitKind, int bidRank, int lastBidId, const HandCharacteristic& hand, const BoardCharacteristic& board);
-    bool IsNewSuit(int suit, const std::vector<int>& partnersSuits, int opponentsSuit);
-    int GetBidId(int bidRank, int suit, int lastBidId, const std::vector<int>& suitLengths);
-    int GetBidId(int bidRank, int suit, int lastBidId);
     std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding);
     std::vector<std::unordered_map<std::string, std::string>> GetInternalRelativeRulesByBid(int bidId, const std::string& previousBidding) final;
     void SetModules(int modules) override;
