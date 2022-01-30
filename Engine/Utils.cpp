@@ -170,3 +170,16 @@ std::string Utils::GetBidASCII(int bidId)
         return "X";
     return std::to_string(GetRank(bidId)) + GetSuitASCII(bidId);
 }
+
+int Utils::GetLastBidIdFromAuction(const std::string& bidding)
+{
+    auto bidIds = Utils::SplitAuction(bidding);
+    auto lastBidding = std::find_if(bidIds.rbegin(), bidIds.rend(), [](auto bidId) {return bidId > 0; });
+    auto lastBidId = lastBidding == bidIds.rend() ? 0 : *lastBidding;
+    return lastBidId;
+}
+
+std::string Utils::GetLastBidFromAuction(const std::string& bidding)
+{
+    return GetBidASCII(GetLastBidIdFromAuction(bidding));
+}

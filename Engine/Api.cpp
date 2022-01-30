@@ -33,7 +33,9 @@ int GetBidFromRule(const char* hand, const char* previousBidding, char* descript
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding};
     BoardCharacteristic boardCharacteristic{ handCharacteristic, previousBidding, informationFromAuction };
 
-    auto [bidId, descr] = !informationFromAuction.isSlamBidding  ?
+    auto isSlambidding = informationFromAuction.isSlamBidding || (handCharacteristic.Hcp + boardCharacteristic.minHcpPartner >= 29);
+
+    auto [bidId, descr] = !isSlambidding ?
         GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, previousBidding) :
         GetSqliteWrapper()->GetRelativeRule(handCharacteristic, boardCharacteristic, informationFromAuction.previousSlamBidding);
     assert(descr.size() < 128);

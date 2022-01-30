@@ -14,14 +14,14 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
     auto bidIds = Utils::SplitAuction(previousBidding);
     auto position = 1;
     auto currentBidding = ""s;
-    auto lastIdNonSlam = 13;
-    auto partner = ((size_t)bidIds.size() + 2) % 4;
+    auto partner = ((int)bidIds.size() + 2) % 4;
 
     for (auto& bidId : bidIds)
     {
         if (bidId != 0)
         {
-            auto player = ((size_t)position - 1) % 4;
+            auto player = (position - 1) % 4;
+            bool isPartner = player == partner;
             if (!isSlamBidding)
             {
                 auto rules = sqliteWrapper->GetInternalRulesByBid(bidId, currentBidding);
@@ -29,42 +29,26 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
                 {
                     for (auto i = 0; i < 4; i++)
                         minSuitLengths.at(player).at(i) = std::max(minSuitLengths.at(player).at(i), GetLowestValue(rules, "Min"s + Utils::GetSuit(i)));
-                    if (player == partner)
-                    {
+                    if (isPartner)
                         minHcpPartner = std::max(minHcpPartner, GetLowestValue(rules, "MinHcp"));
-                    }
+                }
+                else // Check if there is a bid in the slambidding
+                {
+                    ExtraInfoFromRelativeRules(sqliteWrapper, bidId, "", isPartner);
+                    isSlamBidding = true;
+                    currentBidding = "";
                 }
             }
             else
-            {
-                auto rules = sqliteWrapper->GetInternalRelativeRulesByBid(bidId, currentBidding);
-                if (rules.size() > 0)
-                {
-                    if (player == partner)
-                    {
-                        for (auto i = 0; i < 4; i++)
-                            controls.at(i) = controls.at(i) || AllTrue(rules, Utils::GetSuit2(i) + "Control"s);
-                        keyCardsPartner = std::max(keyCardsPartner, GetLowestValue(rules, "KeyCards"));
-                        trumpQueenPartner = trumpQueenPartner || AllTrue(rules, "TrumpQueen");
-                    }
-                }
-            }
-            //TODO Ugly hack
-            if (bidId == lastIdNonSlam)
-            {
-                isSlamBidding = true;
-                currentBidding = "";
-                position++;
-                continue;
-            }
+                ExtraInfoFromRelativeRules(sqliteWrapper, bidId, currentBidding, isPartner);
+
         }
-        if (!isSlamBidding || position % 2 != 0)
-            currentBidding += Utils::GetBidASCII(bidId);
+        currentBidding += Utils::GetBidASCII(bidId);
         position++;
     }
 
     //TODO Ugly hack
-    if ((size_t)bidIds.size() % 2 != 0)
+    if (bidIds.size() % 2 != 0)
         isSlamBidding = false;
     if (isSlamBidding)
         previousSlamBidding = currentBidding;
@@ -73,7 +57,22 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
     openersSuits = minSuitLengths.at(0);
 }
 
-int InformationFromAuction::GetLowestValue(const std::vector<std::unordered_map<std::string, std::string>>& rules, std::string columnName)
+void InformationFromAuction::ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWrapper, int bidId, const std::string& currentBidding, bool isPartner)
+{
+    auto rules = sqliteWrapper->GetInternalRelativeRulesByBid(bidId, currentBidding);
+    if (rules.size() > 0)
+    {
+        if (isPartner)
+        {
+            for (auto i = 0; i < 4; i++)
+                controls.at(i) = controls.at(i) || AllTrue(rules, Utils::GetSuit2(i) + "Control"s);
+            keyCardsPartner = std::max(keyCardsPartner, GetLowestValue(rules, "KeyCards"));
+            trumpQueenPartner = trumpQueenPartner || AllTrue(rules, "TrumpQueen");
+        }
+    }
+}
+
+int InformationFromAuction::GetLowestValue(const std::vector<std::unordered_map<std::string, std::string>>& rules, const std::string& columnName)
 {
     if (rules.size() == 0)
         return 0;
@@ -82,7 +81,7 @@ int InformationFromAuction::GetLowestValue(const std::vector<std::unordered_map<
     return value == "" ? 0 : std::stoi(value);
 }
 
-bool InformationFromAuction::AllTrue(const std::vector<std::unordered_map<std::string, std::string>>& rules, std::string columnName)
+bool InformationFromAuction::AllTrue(const std::vector<std::unordered_map<std::string, std::string>>& rules, const std::string& columnName)
 {
     if (rules.size() == 0)
         return false;
@@ -99,7 +98,6 @@ std::string InformationFromAuction::AsJson()
         {"controls", controls},
         {"keyCardsPartner", keyCardsPartner},
         {"trumpQueenPartner", trumpQueenPartner},
-        {"isSlamBidding", isSlamBidding}
     };
 
     std::stringstream ss;

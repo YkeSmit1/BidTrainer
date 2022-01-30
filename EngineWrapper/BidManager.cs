@@ -66,7 +66,8 @@ namespace EngineWrapper
                     var controls = handsString.Split(",").Select((x, index) => (HasControl(x), index));
                     var controlsPartnership = controls.Select(x => x.Item1 || controlsPartner[x.index]);
 
-                    return totalKeyCards >= 4 && totalTrumpQueen && controlsPartnership.All(x => x);
+                    var slamIsPossible = ((totalKeyCards == 4 && totalTrumpQueen) || totalKeyCards == 5) && controlsPartnership.All(x => x);
+                    return slamIsPossible;
 
                     static bool HasControl(string x) => x.Contains("A") || x.Contains("K") || x.Length <= 1;
                 }

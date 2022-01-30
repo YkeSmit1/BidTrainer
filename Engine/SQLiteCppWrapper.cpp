@@ -142,7 +142,6 @@ BidKindAuction SQLiteCppWrapper::GetBidKindFromAuction(const std::string& previo
             return BidKindAuction::Reverse;
     }
 
-
     return BidKindAuction::UnknownSuit;
 }
 
@@ -191,7 +190,7 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharact
         queryShapeRelative->bind(8, hand.controls[2]);
         queryShapeRelative->bind(9, hand.controls[3]);
         queryShapeRelative->bind(10, board.allControlsPresent);
-        queryShapeRelative->bind(11, GetLastBid(previousBidding));
+        queryShapeRelative->bind(11, Utils::GetBidASCII(board.lastBidId));
         queryShapeRelative->bind(12, modules);
 
         while (queryShapeRelative->executeStep())
@@ -209,12 +208,6 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharact
         std::cerr << e.what();
         throw;
     }
-}
-
-std::string SQLiteCppWrapper::GetLastBid(const std::string& previousBidding)
-{
-    auto lastBid = previousBidding.length() == 0 ? previousBidding : previousBidding.substr(previousBidding.length() - 2);
-    return lastBid == "NT" ? previousBidding.substr(previousBidding.length() - 3) : lastBid;
 }
 
 /// <summary>
@@ -255,6 +248,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
 
         while (queryRules->executeStep())
         {
+            // Check regular expression with previousbidding
             auto previousBiddingColumn = queryRules->getColumn(0);
             if (!previousBiddingColumn.isNull())
             {
@@ -264,6 +258,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
                     continue;
             }
 
+            // Check if id is part of RelevantIds
             auto relevantIdsColumn = queryRules->getColumn("RelevantIds");
             if (!relevantIdsColumn.isNull())
             {
@@ -272,6 +267,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
                     continue;
             }
 
+            // Build map
             if (!queryRules->getColumn("BidId").isNull() || (bidId % 5 != 0))
             {
                 std::unordered_map<std::string, std::string> record;
@@ -352,7 +348,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
         queryRelativeRules->reset();
         queryRelativeRules->bind(1, bidId);
         queryRelativeRules->bind(2, previousBidding);
-        queryRelativeRules->bind(3, GetLastBid(previousBidding));
+        queryRelativeRules->bind(3, Utils::GetLastBidFromAuction(previousBidding));
         
         std::vector<std::unordered_map<std::string, std::string>> records;
 

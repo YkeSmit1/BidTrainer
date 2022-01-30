@@ -29,6 +29,8 @@ public:
     static int CalculateHcp(const std::string& hand);
     static bool GetIsCompetitive(const std::string& bidding);
     static std::string GetBidASCII(int bidId);
+    static int GetLastBidIdFromAuction(const std::string& bidding);
+    static std::string GetLastBidFromAuction(const std::string& bidding);
 };
 
 template<typename chartype>

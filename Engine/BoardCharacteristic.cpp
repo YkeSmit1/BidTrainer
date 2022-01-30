@@ -27,9 +27,7 @@ BoardCharacteristic::BoardCharacteristic(HandCharacteristic hand, const std::str
     auto trumpSuit = fitWithPartnerSuit == -1 ? "" : suits.at(fitWithPartnerSuit);
     keyCards = Utils::NumberOfCards(hand.hand, 'A') + Utils::NumberOfCards(trumpSuit, 'K');
     trumpQueen = Utils::NumberOfCards(trumpSuit, 'Q');
-
-    auto lastBidding = std::find_if(bidIds.rbegin(), bidIds.rend(), [](auto bidId) {return bidId > 0; });
-    lastBidId = lastBidding == bidIds.rend() ? 0 : *lastBidding;
+    lastBidId = Utils::GetLastBidIdFromAuction(previousBidding);
 
     isCompetitive = Utils::GetIsCompetitive(previousBidding);
     minHcpPartner = informationFromAuction.minHcpPartner;
