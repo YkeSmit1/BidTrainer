@@ -53,22 +53,14 @@ int Setup(const char* database)
     return 0;
 }
 
-void GetBid(int bidId, int& rank, int& suit)
-{
-    GetSqliteWrapper()->GetBid(bidId, rank, suit);
-}
-
 void GetRulesByBid(int bidId, const char* previousBidding, char* information)
 {
-    auto linformation = GetSqliteWrapper()->GetRulesByBid(bidId, previousBidding);
-    assert(linformation.size() < 8192);
-    strcpy(information, linformation.c_str());
-}
-
-void GetRelativeRulesByBid(int bidId, const char* previousBidding, char* information)
-{
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
-    auto linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
+    std::string linformation;
+    if (informationFromAuction.isSlamBidding)
+        linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
+    else
+        linformation = GetSqliteWrapper()->GetRulesByBid(bidId, previousBidding);
     assert(linformation.size() < 8192);
     strcpy(information, linformation.c_str());
 }

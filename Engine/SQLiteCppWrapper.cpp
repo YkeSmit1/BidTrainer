@@ -31,18 +31,6 @@ SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
     }
 }
 
-void SQLiteCppWrapper::GetBid(int bidId, int& rank, int& suit)
-{
-    SQLite::Statement query(*db, "SELECT Rank, Suit, description FROM bids where id = ?");
-    query.bind(1, bidId);
-
-    if (query.executeStep())
-    {
-        rank = query.getColumn(0);
-        suit = query.getColumn(1);
-    }
-}
-
 std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic& hand, const BoardCharacteristic& board, const std::string& previousBidding)
 {
     try
@@ -274,7 +262,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
                 for (int i = 0; i < queryRules->getColumnCount() - 1; i++)
                 {
                     auto column = queryRules->getColumn(i);
-                    record.emplace(std::make_pair(column.getName(), column.getString()));
+                    record.emplace(column.getName(), column.getString());
                 }
                 UpdateMinMax(bidId, record);
                 records.push_back(record);
@@ -360,7 +348,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
                 for (int i = 0; i < queryRelativeRules->getColumnCount() - 1; i++)
                 {
                     auto column = queryRelativeRules->getColumn(i);
-                    record.emplace(std::make_pair(column.getName(), column.getString()));
+                    record.emplace(column.getName(), column.getString());
                 }
                 records.push_back(record);
             }

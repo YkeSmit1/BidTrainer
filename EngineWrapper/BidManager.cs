@@ -55,6 +55,13 @@ namespace EngineWrapper
 
                 return new Bid(rank, playingSuit);
 
+                static Dictionary<string, object> GetInformationFromAuction(Auction auction)
+                {
+                    var stringBuilder = new StringBuilder(8129);
+                    Pinvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
+                    return JsonConvert.DeserializeObject<Dictionary<string, object>>(stringBuilder.ToString());
+                }
+
                 bool SlamIsPossible()
                 {
                     if (playingSuit == Suit.NoTrump)
@@ -72,13 +79,6 @@ namespace EngineWrapper
                     static bool HasControl(string x) => x.Contains("A") || x.Contains("K") || x.Length <= 1;
                 }
             }
-        }
-
-        private static Dictionary<string, object> GetInformationFromAuction(Auction auction)
-        {
-            var stringBuilder = new StringBuilder(8129);
-            Pinvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(stringBuilder.ToString());
         }
 
         public static string GetInformation(Bid bid, Auction auction)
@@ -100,13 +100,9 @@ namespace EngineWrapper
 
             BidInformation GetRecords()
             {
-                var info = GetInformationFromAuction(auction);
                 var informationJson = new StringBuilder(8192);
 
-                if ((bool)info["isSlamBidding"])
-                    Pinvoke.GetRelativeRulesByBid(Bid.GetBidId(bid), auction.GetBidsAsStringASCII(), informationJson);
-                else
-                    Pinvoke.GetRulesByBid(Bid.GetBidId(bid), auction.GetBidsAsStringASCII(), informationJson);
+                Pinvoke.GetRulesByBid(Bid.GetBidId(bid), auction.GetBidsAsStringASCII(), informationJson);
 
                 var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
                 var bidInformation = new BidInformation

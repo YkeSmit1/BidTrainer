@@ -80,7 +80,6 @@ public:
     SQLiteCppWrapper(const std::string& database);
     static BidKindAuction GetBidKindFromAuction(const std::string& previousBidding, int bidId);
 private:
-    void GetBid(int bidId, int& rank, int& suit) final;
     std::tuple<int, std::string> GetRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const std::string& previousBidding) final;
     std::tuple<int, std::string> GetRelativeRule(const HandCharacteristic& hand, const BoardCharacteristic& boardCharacteristic, const std::string& previousBidding) final;
     std::string GetRulesByBid(int bidId, const std::string& previousBidding) final;

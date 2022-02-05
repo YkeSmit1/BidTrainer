@@ -10,8 +10,6 @@ namespace EngineWrapper
         [DllImport("Engine", CharSet = CharSet.Ansi)]
         public static extern void GetRulesByBid(int bidId, string previousBidding, StringBuilder information);
         [DllImport("Engine", CharSet = CharSet.Ansi)]
-        public static extern void GetRelativeRulesByBid(int bidId, string previousBidding, StringBuilder information);
-        [DllImport("Engine")]
         public static extern void SetModules(int modules);
 
         [DllImport("Engine")]
