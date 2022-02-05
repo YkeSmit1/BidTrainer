@@ -25,6 +25,6 @@ struct InformationFromAuction
 private:
     int GetLowestValue(const std::vector<std::unordered_map<std::string, std::string>>& rules, const std::string& columnName);
     bool AllTrue(const std::vector<std::unordered_map<std::string, std::string>>& rules, const std::string& columnName);
-    void ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWrapper, int bidId, const std::string& currentBidding, bool isPartner);
+    bool ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWrapper, int bidId, const std::string& currentBidding, bool isPartner);
 };
 

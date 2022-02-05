@@ -51,7 +51,7 @@ namespace EngineWrapper
                     if (hcpPartnership < 29)
                         rank++;
                     else
-                        rank = SlamIsPossible() ? 6 : new Bid(4, playingSuit) >= auction.currentContract ? 4 : 5;
+                        rank = SlamIsPossible() ? 6 : Bid.GetGameContract(playingSuit, auction.currentContract, true).rank;
 
                 return new Bid(rank, playingSuit);
 

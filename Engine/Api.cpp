@@ -33,7 +33,7 @@ int GetBidFromRule(const char* hand, const char* previousBidding, char* descript
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding};
     BoardCharacteristic boardCharacteristic{ handCharacteristic, previousBidding, informationFromAuction };
 
-    auto isSlambidding = informationFromAuction.isSlamBidding || (handCharacteristic.Hcp + boardCharacteristic.minHcpPartner >= 29);
+    auto isSlambidding = informationFromAuction.isSlamBidding || ((handCharacteristic.Hcp + boardCharacteristic.minHcpPartner >= 29 && boardCharacteristic.hasFit));
 
     auto [bidId, descr] = !isSlambidding ?
         GetSqliteWrapper()->GetRule(handCharacteristic, boardCharacteristic, previousBidding) :

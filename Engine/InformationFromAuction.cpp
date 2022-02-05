@@ -34,14 +34,19 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
                 }
                 else // Check if there is a bid in the slambidding
                 {
-                    ExtraInfoFromRelativeRules(sqliteWrapper, bidId, "", isPartner);
-                    isSlamBidding = true;
-                    currentBidding = "";
+                    if (ExtraInfoFromRelativeRules(sqliteWrapper, bidId, "", isPartner))
+                    {
+                        auto trumpSuit = Utils::GetSuitInt(bidIds.at((size_t)(position - 3)));
+                        // Slambidding promises fit. So update minsuit
+                        if (isPartner)
+                            minSuitLengths.at(player).at(trumpSuit) = std::max(minSuitLengths.at(player).at(trumpSuit), 4);
+                        isSlamBidding = true;
+                        currentBidding = "";
+                    }
                 }
             }
             else
                 ExtraInfoFromRelativeRules(sqliteWrapper, bidId, currentBidding, isPartner);
-
         }
         currentBidding += Utils::GetBidASCII(bidId);
         position++;
@@ -57,7 +62,7 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
     openersSuits = minSuitLengths.at(0);
 }
 
-void InformationFromAuction::ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWrapper, int bidId, const std::string& currentBidding, bool isPartner)
+bool InformationFromAuction::ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWrapper, int bidId, const std::string& currentBidding, bool isPartner)
 {
     auto rules = sqliteWrapper->GetInternalRelativeRulesByBid(bidId, currentBidding);
     if (rules.size() > 0)
@@ -69,13 +74,18 @@ void InformationFromAuction::ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWr
             keyCardsPartner = std::max(keyCardsPartner, GetLowestValue(rules, "KeyCards"));
             trumpQueenPartner = trumpQueenPartner || AllTrue(rules, "TrumpQueen");
         }
+        return true;
     }
+    return false;
 }
 
 int InformationFromAuction::GetLowestValue(const std::vector<std::unordered_map<std::string, std::string>>& rules, const std::string& columnName)
 {
     if (rules.size() == 0)
         return 0;
+    if (std::all_of(rules.begin(), rules.end(), [&](const auto& a) {return a.at(columnName) == ""; }))
+        return 0;
+
     auto minElement = std::min_element(rules.begin(), rules.end(), [&](const auto& a, const auto& b) {return std::stoi(a.at(columnName)) < std::stoi(b.at(columnName)); });
     auto &value = (*minElement).at(columnName);
     return value == "" ? 0 : std::stoi(value);
