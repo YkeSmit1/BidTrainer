@@ -5,6 +5,7 @@
 
 #include "SQLiteCppWrapper.h"
 #include "nlohmann/json.hpp"
+#include <sqlite3.h>
 
 #include "Rule.h"
 #include "Utils.h"
@@ -12,12 +13,30 @@
 #include "BoardCharacteristic.h"
 #include <regex>
 
+static void regex_match(sqlite3_context* context, int argc, sqlite3_value** argv)
+{
+    if (argc == 2)
+    {
+        auto* regexp = (const char*)sqlite3_value_text(argv[0]);
+        auto* text = (const char*)sqlite3_value_text(argv[1]);
+        if (text && text[0] && regexp && regexp[0])
+        {
+            std::regex regex(regexp);
+            auto match = std::regex_search(text, regex);
+            sqlite3_result_int(context, match);
+            return;
+        }
+    }
+    sqlite3_result_null(context);
+}
+
 SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
 {
     try
     {
         db.release();
         db = std::make_unique<SQLite::Database>(database);
+        db->createFunction("regex_match", 2, true, nullptr, &regex_match, nullptr, nullptr, nullptr);
 
         queryShape = std::make_unique<SQLite::Statement>(*db, shapeSql.data());
         queryRules = std::make_unique<SQLite::Statement>(*db, rulesSql.data());
@@ -64,6 +83,7 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
         queryShape->bind(":isCompetitive", board.isCompetitive);
         queryShape->bind(":isReverse", hand.isReverse);
         queryShape->bind(":isSemiBalanced", hand.isSemiBalanced);
+        queryShape->bind(":previousBidding", previousBidding);
 
         while (queryShape->executeStep())
         {
@@ -73,14 +93,6 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
 
             if (!queryShape->isColumnNull(3) && (BidKindAuction)queryShape->getColumn(3).getInt() != GetBidKindFromAuction(previousBidding, bidId))
                 continue;
-
-            if (!queryShape->isColumnNull(4))
-            {
-                auto value = queryShape->getColumn(4).getString();
-                std::regex regex(value);
-                if (!std::regex_search(previousBidding, regex))
-                    continue;
-            }
 
             return std::make_tuple(bidId, str);
         }

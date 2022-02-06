@@ -4,6 +4,8 @@
 #include "../Engine/SQLiteCppWrapper.h"
 #include "../Engine/InformationFromAuction.h"
 #include "gtest/gtest.h"
+#include <sqlite3.h>
+#include <regex>
 
 TEST(TestHandCharacteristic, TestName)
 {
@@ -147,4 +149,77 @@ TEST(TestGetBidKindFromAuction, TestName)
     EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass1NTPass", 8), (int)BidKindAuction::OwnSuit);
     EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass1NTPass", 9), (int)BidKindAuction::Reverse);
     EXPECT_EQ((int)SQLiteCppWrapper::GetBidKindFromAuction("1DPass1HPass2SPass", 14), (int)BidKindAuction::PartnersSuit);
+}
+
+static void firstchar(sqlite3_context* context, int argc, sqlite3_value** argv)
+{
+    if (argc == 1)
+    {
+        auto* text = sqlite3_value_text(argv[0]);
+        if (text && text[0])
+        {
+            char result[2];
+            result[0] = text[0];
+            result[1] = '\0';
+            sqlite3_result_text(context, result, -1, SQLITE_TRANSIENT);
+            return;
+        }
+    }
+    sqlite3_result_null(context);
+}
+
+TEST(Database, createFunction_firstchar)
+{
+    SQLite::Database db(":memory:", SQLite::OPEN_READWRITE);
+    db.exec("CREATE TABLE test (id INTEGER PRIMARY KEY, value TEXT)");
+
+    EXPECT_EQ(1, db.exec("INSERT INTO test VALUES (NULL, \"first\")"));
+    EXPECT_EQ(1, db.exec("INSERT INTO test VALUES (NULL, \"second\")"));
+
+    // exception with SQL error: "no such function: firstchar"
+    EXPECT_THROW(db.exec("SELECT firstchar(value) FROM test WHERE id=1"), SQLite::Exception);
+
+    db.createFunction("firstchar", 1, true, nullptr, &firstchar, nullptr, nullptr, nullptr);
+
+    EXPECT_EQ(1, db.exec("SELECT firstchar(value) FROM test WHERE id=1"));
+}
+
+static void regex_match(sqlite3_context* context, int argc, sqlite3_value** argv)
+{
+    if (argc == 2)
+    {
+        auto* regexp = (const char*)sqlite3_value_text(argv[0]);
+        auto* text = (const char*)sqlite3_value_text(argv[1]);
+        if (regexp && regexp[0] && text && text[0])
+        {
+            std::regex regex(regexp);
+            auto match = std::regex_search(text, regex);
+            sqlite3_result_int(context, match);
+            return;
+        }
+    }
+    sqlite3_result_null(context);
+}
+
+TEST(Database, createFunction_regex_match)
+{
+    SQLite::Database db(":memory:", SQLite::OPEN_READWRITE);
+    db.exec("CREATE TABLE test (id INTEGER PRIMARY KEY, value TEXT)");
+
+    EXPECT_EQ(1, db.exec("INSERT INTO test VALUES (NULL, \"first\")"));
+    EXPECT_EQ(1, db.exec("INSERT INTO test VALUES (NULL, \"second\")"));
+
+    // exception with SQL error: "no such function: regex_match"
+    auto sql = "SELECT value FROM test WHERE regex_match('frst', value) = 1";
+    EXPECT_THROW(SQLite::Statement query(db, sql), SQLite::Exception);
+
+    db.createFunction("regex_match", 2, true, nullptr, &regex_match, nullptr, nullptr, nullptr);
+    SQLite::Statement query(db, sql);
+    query.executeStep();
+    EXPECT_FALSE(query.hasRow()); // frst does not match first
+
+    auto sql3 = "SELECT value FROM test WHERE regex_match('first', value) = 1";
+    SQLite::Statement query2(db, sql3);
+    query2.executeStep();
+    EXPECT_TRUE(query2.hasRow()); // first does not match first
 }

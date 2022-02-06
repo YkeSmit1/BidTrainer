@@ -37,9 +37,10 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (IsCompetitive IS NULL or IsCompetitive = :isCompetitive)
         AND (IsReverse IS NULL or IsReverse = :isReverse)
         AND (IsSemiBalanced IS NULL or IsSemiBalanced = :isSemiBalanced)
+        AND (PreviousBidding IS NULL OR regex_match(PreviousBidding, :previousBidding) = 1)
         ORDER BY Priority ASC)
 
-        select bidId, Description, Id, BidKindAuction, PreviousBidding from cte_rules 
+        select bidId, Description, Id, BidKindAuction from cte_rules 
         WHERE (bidId > :lastBidId OR bidId < 0)
         AND (IsOpponentsSuit IS NULL 
             OR (IsOpponentsSuit = 1 AND (4 - (bidId % 5)) = :opponentsSuit)
