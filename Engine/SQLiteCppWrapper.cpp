@@ -67,30 +67,21 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
 
         while (queryShape->executeStep())
         {
+            auto bidId = queryShape->getColumn(0).getInt();
+            auto str = queryShape->getColumn(1).getString();
             auto id = queryShape->getColumn(2).getInt();
 
-            auto bidId = queryShape->getColumn(0).isNull() ? 0 : queryShape->getColumn(0).getInt();
-            if (bidId == 0 || (bidId > 0 && bidId <= board.lastBidId))
+            if (!queryShape->isColumnNull(3) && (BidKindAuction)queryShape->getColumn(3).getInt() != GetBidKindFromAuction(previousBidding, bidId))
                 continue;
 
-            auto bidKindAuctionColumn = queryShape->getColumn(3);
-            if (!bidKindAuctionColumn.isNull() && (BidKindAuction)bidKindAuctionColumn.getInt() != GetBidKindFromAuction(previousBidding, bidId))
-                continue;
-
-            auto previousBiddingColumn = queryShape->getColumn(4);
-            if (!previousBiddingColumn.isNull())
+            if (!queryShape->isColumnNull(4))
             {
-                auto value = previousBiddingColumn.getString();
+                auto value = queryShape->getColumn(4).getString();
                 std::regex regex(value);
                 if (!std::regex_search(previousBidding, regex))
                     continue;
             }
 
-            auto IsOpponentsSuitColumn = queryShape->getColumn(5);
-            if (!IsOpponentsSuitColumn.isNull() && IsOpponentsSuitColumn.getInt() == 0 && Utils::GetSuitInt(bidId) == board.opponentsSuit)
-                continue;
-
-            auto str = queryShape->getColumn(1).getString();
             return std::make_tuple(bidId, str);
         }
         return std::make_tuple(0, "");
@@ -104,9 +95,6 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
 
 BidKindAuction SQLiteCppWrapper::GetBidKindFromAuction(const std::string& previousBidding, int bidId)
 {
-    if (bidId <= 0)
-        return BidKindAuction::UnknownSuit;
-
     auto bids = Utils::SplitAuction(previousBidding);
     auto lengthAuction = bids.size();
 
@@ -256,7 +244,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
             }
 
             // Build map
-            if (!queryRules->getColumn("BidId").isNull() || (bidId % 5 != 0))
+            if (!queryRules->getColumn("BidId").isNull() || (bidId % 5 != 0 && bidId > -1))
             {
                 std::unordered_map<std::string, std::string> record;
                 for (int i = 0; i < queryRules->getColumnCount() - 1; i++)
@@ -279,7 +267,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
 
 void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record)
 {
-    if (queryRules->getColumn("BidId").isNull() && (bidId % 5 != 0) && (bidId != -1) && !queryRules->getColumn("BidSuitKind").isNull())
+    if (queryRules->getColumn("BidId").isNull() && !queryRules->getColumn("BidSuitKind").isNull())
     {
         auto suit = Utils::GetSuitPretty(bidId);
         auto bidKind = (BidKind)queryRules->getColumn("BidSuitKind").getInt();

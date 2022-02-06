@@ -9,7 +9,7 @@ enum class BidKind;
 
 class SQLiteCppWrapper : public ISQLiteWrapper
 {
-    constexpr static std::string_view shapeSql = R"(SELECT CASE 
+    constexpr static std::string_view shapeSql = R"(WITH cte_rules AS (SELECT CASE 
                 WHEN BidId IS NOT null THEN BidId
                 WHEN BidId IS NULL AND BidSuitKind = 1 AND :firstSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :firstSuit) + 1
                 WHEN BidId IS NULL AND BidSuitKind = 2 AND :secondSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :secondSuit) + 1
@@ -17,7 +17,7 @@ class SQLiteCppWrapper : public ISQLiteWrapper
                 WHEN BidId IS NULL AND BidSuitKind = 4 AND :highestSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :highestSuit) + 1
                 WHEN BidId IS NULL AND BidSuitKind = 5 AND :fitWithPartnerSuit >= 0 THEN (BidRank - 1) * 5 + (3 - :fitWithPartnerSuit) + 1
                 ELSE 0
-            END,
+            END AS bidId,
             Description, Id, BidKindAuction, PreviousBidding, IsOpponentsSuit FROM Rules 
         WHERE (bidId > :lastBidId OR bidId <= 0 OR bidID is NULL)
         AND :minSpades BETWEEN MinSpades AND MaxSpades
@@ -37,7 +37,13 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (IsCompetitive IS NULL or IsCompetitive = :isCompetitive)
         AND (IsReverse IS NULL or IsReverse = :isReverse)
         AND (IsSemiBalanced IS NULL or IsSemiBalanced = :isSemiBalanced)
-        ORDER BY Priority ASC)";
+        ORDER BY Priority ASC)
+
+        select bidId, Description, Id, BidKindAuction, PreviousBidding from cte_rules 
+        WHERE (bidId > :lastBidId OR bidId < 0)
+        AND (IsOpponentsSuit IS NULL 
+            OR (IsOpponentsSuit = 1 AND (4 - (bidId % 5)) = :opponentsSuit)
+            OR (IsOpponentsSuit = 0 AND (4 - (bidId % 5)) <> :opponentsSuit)))";
 
     constexpr static std::string_view rulesSql = R"(SELECT PreviousBidding, * FROM Rules 
         WHERE ((bidId = ?) OR (bidId is NULL AND ? > 0))
