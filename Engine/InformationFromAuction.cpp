@@ -28,7 +28,7 @@ InformationFromAuction::InformationFromAuction(ISQLiteWrapper* sqliteWrapper, co
                 if (rules.size() > 0)
                 {
                     for (auto i = 0; i < 4; i++)
-                        minSuitLengths.at(player).at(i) = std::max(minSuitLengths.at(player).at(i), GetLowestValue(rules, "Min"s + Utils::GetSuit(i)));
+                        minSuitLengths.at(player).at(i) = std::max(minSuitLengths.at(player).at(i), GetLowestValue(rules, "Min"s + Utils::GetSuit(i) + "s"));
                     if (isPartner)
                         minHcpPartner = std::max(minHcpPartner, GetLowestValue(rules, "MinHcp"));
                 }
@@ -70,7 +70,7 @@ bool InformationFromAuction::ExtraInfoFromRelativeRules(ISQLiteWrapper* sqliteWr
         if (isPartner)
         {
             for (auto i = 0; i < 4; i++)
-                controls.at(i) = controls.at(i) || AllTrue(rules, Utils::GetSuit2(i) + "Control"s);
+                controls.at(i) = controls.at(i) || AllTrue(rules, Utils::GetSuit(i) + "Control"s);
             keyCardsPartner = std::max(keyCardsPartner, GetLowestValue(rules, "KeyCards"));
             trumpQueenPartner = trumpQueenPartner || AllTrue(rules, "TrumpQueen");
         }

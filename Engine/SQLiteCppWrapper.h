@@ -40,40 +40,43 @@ class SQLiteCppWrapper : public ISQLiteWrapper
         AND (PreviousBidding IS NULL OR regex_match(PreviousBidding, :previousBidding) = 1)
         ORDER BY Priority ASC)
 
-        select bidId, Description, Id, BidKindAuction from cte_rules 
+        select bidId, Description, Id from cte_rules 
         WHERE (bidId > :lastBidId OR bidId < 0)
+        AND (BidKindAuction IS NULL OR getBidKindFromAuction(:previousBidding, bidId) = BidKindAuction)
         AND (IsOpponentsSuit IS NULL 
             OR (IsOpponentsSuit = 1 AND (4 - (bidId % 5)) = :opponentsSuit)
             OR (IsOpponentsSuit = 0 AND (4 - (bidId % 5)) <> :opponentsSuit)))";
 
     constexpr static std::string_view rulesSql = R"(SELECT PreviousBidding, * FROM Rules 
-        WHERE ((bidId = ?) OR (bidId is NULL AND ? > 0))
-        AND (Module IS NULL OR ? & Module = Module)
-        AND Position = ?
-        AND (IsCompetitive IS NULL OR IsCompetitive = ?)
-        AND (BidRank IS NULL OR BidRank = ?)
-        AND (BidKindAuction IS NULL OR BidKindAuction = ?)
+        WHERE ((bidId = :bidId) OR (bidId is NULL AND :bidId > 0))
+        AND (Module IS NULL OR :modules & Module = Module)
+        AND Position = :position
+        AND (IsCompetitive IS NULL OR IsCompetitive = :isCompetitive)
+        AND (BidRank IS NULL OR BidRank = :bidRank)
+        AND (BidKindAuction IS NULL OR BidKindAuction = :bidKindAuction)
+        AND (PreviousBidding IS NULL OR regex_match(PreviousBidding, :previousBidding) = 1)
+        AND (RelevantIds IS NULL OR :bidID LIKE '%' || RelevantIds || '%')
         AND UseInCalculation IS NULL)";
 
     constexpr static std::string_view relativeShapeSql = R"(SELECT bidId, Description FROM RelativeRules 
-        WHERE bidId > ?
-        AND (KeyCards IS NULL or KeyCards = ?)
-        AND (TrumpQueen IS NULL or TrumpQueen = ?)
-        AND (PreviousBidding IS NULL or PreviousBidding = ?)
-        AND (TrumpSuits IS NULL OR TrumpSuits LIKE '%' || ? || '%')
-        AND (SpadeControl IS NULL or SpadeControl = ?)
-        AND (HeartControl IS NULL or HeartControl = ?)
-        AND (DiamondControl IS NULL or DiamondControl = ?)
-        AND (ClubControl IS NULL or ClubControl = ?)
-        AND (AllControlsPresent IS NULL or AllControlsPresent = ?)
-        AND (LastBid IS NULL or LastBid = ?)
-        AND (Module IS NULL or ? & Module = Module)
+        WHERE bidId > :lastBidId
+        AND (KeyCards IS NULL or KeyCards = :keyCards)
+        AND (TrumpQueen IS NULL or TrumpQueen = :trumpQueen)
+        AND (PreviousBidding IS NULL or PreviousBidding = :previousBidding)
+        AND (TrumpSuits IS NULL OR TrumpSuits LIKE '%' || :fitWithPartner || '%')
+        AND (SpadeControl IS NULL or SpadeControl = :spadeControl)
+        AND (HeartControl IS NULL or HeartControl = :heartControl)
+        AND (DiamondControl IS NULL or DiamondControl = :diamondControl)
+        AND (ClubControl IS NULL or ClubControl = :clubControl)
+        AND (AllControlsPresent IS NULL or AllControlsPresent = :allControlsPresent)
+        AND (LastBid IS NULL or LastBid = :lastBid)
+        AND (Module IS NULL or :modules & Module = Module)
         ORDER BY Priority ASC)";
 
     constexpr static std::string_view relativeRulesSql = R"(SELECT * FROM RelativeRules 
-        WHERE bidId = ?
-        AND (PreviousBidding IS NULL or PreviousBidding = ?)
-        AND (LastBid IS NULL or LastBid = ?))";
+        WHERE bidId = :bidId
+        AND (PreviousBidding IS NULL or PreviousBidding = :previousBidding)
+        AND (LastBid IS NULL or LastBid = :lastBid))";
 
     std::unique_ptr<SQLite::Database> db;
     std::unique_ptr<SQLite::Statement> queryShape;

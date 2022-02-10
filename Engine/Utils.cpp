@@ -1,26 +1,12 @@
 #include "Utils.h"
 #include <algorithm>
 
-std::string Utils::GetSuitPretty(int bidId)
+std::string Utils::GetSuitFromBidId(int bidId)
 {
-    auto suit = 4 - (bidId % 5);
-    return GetSuit(suit);
+    return GetSuit(GetSuitInt(bidId));
 }
 
 std::string Utils::GetSuit(int suit)
-{
-    switch (suit)
-    {
-    case 0: return "Spades";
-    case 1: return "Hearts";
-    case 2: return "Diamonds";
-    case 3: return "Clubs";
-    default:
-        throw new std::invalid_argument("Unknown suit");
-    }
-}
-
-std::string Utils::GetSuit2(int suit)
 {
     switch (suit)
     {
@@ -56,8 +42,7 @@ int Utils::GetSuit(const std::string& suit)
 
 std::string Utils::GetSuitASCII(int bidId)
 {
-    auto suit = 4 - (bidId % 5);
-    switch (suit)
+    switch (GetSuitInt(bidId))
     {
     case 0: return "S";
     case 1: return "H";

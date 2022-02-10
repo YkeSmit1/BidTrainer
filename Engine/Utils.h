@@ -15,9 +15,8 @@ class Utils
 public:
     template<typename chartype>
     static std::vector<std::basic_string<chartype>> Split(const std::basic_string<chartype>& str, const chartype& delimeter);
-    static std::string GetSuitPretty(int bidId);
+    static std::string GetSuitFromBidId(int bidId);
     static std::string GetSuit(int suit);
-    static std::string GetSuit2(int suit);
     static int GetSuitInt(int bidId);
     static int GetSuit(const std::string& suit);
     static std::string GetSuitASCII(int bidId);
