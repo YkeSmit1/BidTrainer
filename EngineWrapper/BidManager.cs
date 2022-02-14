@@ -55,7 +55,7 @@ namespace EngineWrapper
 
                 return new Bid(rank, playingSuit);
 
-                static Dictionary<string, object> GetInformationFromAuction(Auction auction)
+                Dictionary<string, object> GetInformationFromAuction(Auction auction)
                 {
                     var stringBuilder = new StringBuilder(8129);
                     Pinvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
@@ -76,7 +76,7 @@ namespace EngineWrapper
                     var slamIsPossible = ((totalKeyCards == 4 && totalTrumpQueen) || totalKeyCards == 5) && controlsPartnership.All(x => x);
                     return slamIsPossible;
 
-                    static bool HasControl(string x) => x.Contains("A") || x.Contains("K") || x.Length <= 1;
+                    bool HasControl(string x) => x.Contains("A") || x.Contains("K") || x.Length <= 1;
                 }
             }
         }
