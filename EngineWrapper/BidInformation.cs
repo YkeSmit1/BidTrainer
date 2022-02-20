@@ -31,7 +31,7 @@ namespace EngineWrapper
             bool? GetHasProperty(string fieldName)
             {
                 var recordsWithValue = records.SelectMany(x => x).Where(x => x.Key == fieldName && !string.IsNullOrWhiteSpace(x.Value));
-                bool? p = recordsWithValue.Any() ? int.Parse(recordsWithValue.First().Value) == 1 : null;
+                bool? p = recordsWithValue.Any() ? (bool?)(int.Parse(recordsWithValue.First().Value) == 1) : null;
                 return p;
             }
         }
@@ -53,7 +53,7 @@ namespace EngineWrapper
                     return "";
                 var stringbuilder = new StringBuilder();
                 stringbuilder.Append($"\nControls: ");
-                foreach (var suit in Enum.GetValues<Suit>().Except(new[] { Suit.NoTrump }))
+                foreach (var suit in Enum.GetValues(typeof(Suit)).Cast<Suit>().Except(new[] { Suit.NoTrump }))
                     if (controls[3 - (int)suit].GetValueOrDefault())
                         stringbuilder.Append(suit);
                 return stringbuilder.ToString();
