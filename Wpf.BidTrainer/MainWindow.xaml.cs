@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -18,7 +16,7 @@ using Wpf.BidTrainer.Views;
 
 namespace Wpf.BidTrainer
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         // Bidding
         private readonly Auction auction = new();
@@ -51,11 +49,11 @@ namespace Wpf.BidTrainer
             AuctionViewModel.Auction = auction;
             if (File.Exists("results.json"))
                 results = JsonConvert.DeserializeObject<Results>(File.ReadAllText("results.json"));
-            var _ = Pinvoke.Setup("four_card_majors.db3");
+            var _ = PInvoke.Setup("four_card_majors.db3");
             StartLesson();
         }
 
-        public void StartLesson()
+        private void StartLesson()
         {
             var startPage = new StartPage();
             startPage.ShowDialog();
@@ -63,8 +61,8 @@ namespace Wpf.BidTrainer
             if (!startPage.IsContinueWhereLeftOff)
                 Settings1.Default.CurrentBoardIndex = 0;
             lesson = startPage.Lesson;
-            pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
-            Pinvoke.SetModules(lesson.Modules);
+            pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName ?? "", "Pbn", lesson.PbnFile));
+            PInvoke.SetModules(lesson.Modules);
             if (!startPage.IsContinueWhereLeftOff)
                 results.AllResults.Remove(lesson.LessonNr);
 
@@ -115,11 +113,11 @@ namespace Wpf.BidTrainer
             BiddingBoxView.IsEnabled = true;
             if (CurrentBoardIndex > pbn.Boards.Count - 1)
             {
-                var newLessons = lessons.Where(x => x.LessonNr == lesson.LessonNr + 1);
+                var newLessons = lessons.Where(x => x.LessonNr == lesson.LessonNr + 1).ToList();
                 if (newLessons.Any())
                 {
                     lesson = newLessons.Single();
-                    pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "Pbn", lesson.PbnFile));
+                    pbn.Load(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location)?.FullName ?? "", "Pbn", lesson.PbnFile));
                     Settings1.Default.CurrentBoardIndex = 0;
                 }
                 else
@@ -179,8 +177,8 @@ namespace Wpf.BidTrainer
             var username = Settings1.Default.Username;
             if (username != "")
             {
-                var res = results.AllResults.Values.SelectMany(x => x.Results.Values);
-                Task.Run(() => UpdateOrCreateAccount(username, res.Count(), res.Count(x => x.AnsweredCorrectly), res.Sum(x => x.TimeElapsed.Ticks)));
+                var res = results.AllResults.Values.SelectMany(x => x.Results.Values).ToList();
+                Task.Run(() => UpdateOrCreateAccount(username, res.Count, res.Count(x => x.AnsweredCorrectly), res.Sum(x => x.TimeElapsed.Ticks)));
             }
 
             static async Task UpdateOrCreateAccount(string username, int boardPlayed, int correctBoards, long timeElapsed)
@@ -193,16 +191,16 @@ namespace Wpf.BidTrainer
                     timeElapsed = new TimeSpan(timeElapsed)
                 };
 
-                var user = await CosmosDBHelper.GetAccount(username);
+                var user = await CosmosDbHelper.GetAccount(username);
                 if (user == null)
                 {
                     account.id = Guid.NewGuid().ToString();
-                    await CosmosDBHelper.InsertAccount(account);
+                    await CosmosDbHelper.InsertAccount(account);
                 }
                 else
                 {
                     account.id = user.Value.id;
-                    await CosmosDBHelper.UpdateAccount(account);
+                    await CosmosDbHelper.UpdateAccount(account);
                 }
             }
         }
@@ -210,34 +208,30 @@ namespace Wpf.BidTrainer
         private void MenuOpenPbn_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog().Value)
+            if (!openFileDialog.ShowDialog().GetValueOrDefault()) return;
+            try
             {
-                try
-                {
-                    pbn.Load(openFileDialog.FileName);
-                    Settings1.Default.CurrentBoardIndex = 0;
-                    StartBidding();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error opening PBN({ex.Message})", "Error");
-                }
+                pbn.Load(openFileDialog.FileName);
+                Settings1.Default.CurrentBoardIndex = 0;
+                StartBidding();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening PBN({ex.Message})", "Error");
             }
         }
 
         private void MenuSavePbn_Click(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();
-            if (saveFileDialog.ShowDialog().Value)
+            if (!saveFileDialog.ShowDialog().GetValueOrDefault()) return;
+            try
             {
-                try
-                {
-                    pbn.Save(saveFileDialog.FileName);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error saving PBN({ex.Message})", "Error");
-                }
+                pbn.Save(saveFileDialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving PBN({ex.Message})", "Error");
             }
         }
 
@@ -280,7 +274,7 @@ namespace Wpf.BidTrainer
         {
             try
             {
-                var accounts = await CosmosDBHelper.GetAllAccounts();
+                var accounts = await CosmosDbHelper.GetAllAccounts();
                 new LeaderboardWindow(accounts.OrderByDescending(x => (double)x.numberOfCorrectBoards / x.numberOfBoardsPlayed)).ShowDialog();
             }
             catch (Exception ex)
@@ -291,19 +285,17 @@ namespace Wpf.BidTrainer
 
         private void MenuOptions_Click(object sender, RoutedEventArgs e)
         {
-            if (new SettingsWindow().ShowDialog().Value)
-            {
-                if ((string)StatusBarUsername.Content != Settings1.Default.Username)
-                    results.AllResults.Clear();
-                ShowBothHands();
-                StatusBarUsername.Content = $"Username: {Settings1.Default.Username}";
-            }
+            if (!new SettingsWindow().ShowDialog().GetValueOrDefault()) return;
+            if ((string)StatusBarUsername.Content != Settings1.Default.Username)
+                results.AllResults.Clear();
+            ShowBothHands();
+            StatusBarUsername.Content = $"Username: {Settings1.Default.Username}";
         }
 
         private void MenuBiddingSystem_Click(object sender, RoutedEventArgs e)
         {
-            if (new BiddingSystemWindow().ShowDialog().Value)
-                Pinvoke.SetModules(Settings1.Default.EnabledModules);
+            if (new BiddingSystemWindow().ShowDialog().GetValueOrDefault())
+                PInvoke.SetModules(Settings1.Default.EnabledModules);
         }
     }
 }

@@ -3,12 +3,11 @@ using Microsoft.Azure.Documents.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Wpf.BidTrainer
 {
-    public class CosmosDBHelper
+    public static class CosmosDbHelper
     {
         private static readonly DocumentClient client = new(new Uri(Constants.EndpointUri), Constants.PrimaryKey);
         private static readonly Uri collectionLink = UriFactory.CreateDocumentCollectionUri(Constants.DatabaseName, Constants.CollectionName);

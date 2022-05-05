@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Wpf.BidTrainer
+﻿namespace Wpf.BidTrainer
 {
     public struct Lesson
     {

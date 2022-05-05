@@ -1,13 +1,11 @@
 ﻿using Xunit;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using EngineWrapper;
 using System.IO;
 using Common;
 using Xunit.Abstractions;
 
-namespace BidTrainer.Tests
+namespace BidTrainerTests
 {
     public class BidManagerIntegrationTests
     {
@@ -16,7 +14,7 @@ namespace BidTrainer.Tests
         public BidManagerIntegrationTests(ITestOutputHelper testOutputHelper)
         {
             this.testOutputHelper = testOutputHelper;
-            var _ = Pinvoke.Setup("four_card_majors.db3");
+            var _ = PInvoke.Setup("four_card_majors.db3");
         }
 
         [Fact]
@@ -56,7 +54,7 @@ namespace BidTrainer.Tests
                 "lesson7.pbn" => 126,
                 _ => 127
             };
-            Pinvoke.SetModules(modules);
+            PInvoke.SetModules(modules);
             pbn.Load(pbnFile);
         }
 

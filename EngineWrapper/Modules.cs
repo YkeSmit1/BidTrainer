@@ -8,6 +8,7 @@
         NegativeDbl = 8,
         Reverse = 16,
         ControlBids = 32,
+        // ReSharper disable once InconsistentNaming
         RKC = 64
     };
 

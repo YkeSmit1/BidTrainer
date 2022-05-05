@@ -3,7 +3,7 @@ using System.Text;
 
 namespace EngineWrapper
 {
-    public class Pinvoke
+    public static class PInvoke
     {
         [DllImport("Engine")]
         public static extern int GetBidFromRule(string hand, string previousBidding, StringBuilder description);
@@ -13,7 +13,7 @@ namespace EngineWrapper
         public static extern void SetModules(int modules);
 
         [DllImport("Engine")]
-        public static extern void GetInformationFromAuction(string previousBidding, StringBuilder informationFromAuctionjson);
+        public static extern void GetInformationFromAuction(string previousBidding, StringBuilder informationFromAuctionJson);
         [DllImport("Engine")]
         public static extern int Setup(string database);
     }

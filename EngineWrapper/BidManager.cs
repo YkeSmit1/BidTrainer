@@ -1,8 +1,8 @@
-﻿using Common;
+﻿using System;
+using Common;
 using MoreLinq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace EngineWrapper
         public static Bid GetBid(Auction auction, string handsString)
         {
             var description = new StringBuilder(128);
-            var bidId = Pinvoke.GetBidFromRule(handsString, auction.GetBidsAsStringASCII(), description);
+            var bidId = PInvoke.GetBidFromRule(handsString, auction.GetBidsAsStringASCII(), description);
 
             if (bidId == 0)
             {
@@ -28,16 +28,16 @@ namespace EngineWrapper
 
             Bid GetCalculatedBid()
             {
-                var info = GetInformationFromAuction(auction);
+                var info = GetInformationFromAuction();
                 if ((long)info["minHcpPartner"] == 0)
                     return Bid.PassBid;
                 var suits = handsString.Split(',');
                 var minSuitLengthsPartner = ((JArray)info["minSuitLengthsPartner"]).ToObject<int[]>();
-                var majorFits = minSuitLengthsPartner
+                var majorFits = (minSuitLengthsPartner ?? Array.Empty<int>())
                     .Zip(suits, (x, y) => x + y.Length)
                     .Take(2)
                     .Select((x, index) => (x, (Suit)(3 - index)))
-                    .Where(z => z.x >= 8);
+                    .Where(z => z.x >= 8).ToList();
                 var playingSuit = !majorFits.Any() ? Suit.NoTrump : majorFits.MaxBy(z => z.x).First().Item2;
                 var hcpPartnership = Util.GetHcpCount(handsString) + (long)info["minHcpPartner"];
 
@@ -55,10 +55,10 @@ namespace EngineWrapper
 
                 return new Bid(rank, playingSuit);
 
-                Dictionary<string, object> GetInformationFromAuction(Auction auction)
+                Dictionary<string, object> GetInformationFromAuction()
                 {
                     var stringBuilder = new StringBuilder(8129);
-                    Pinvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
+                    PInvoke.GetInformationFromAuction(auction.GetBidsAsStringASCII(), stringBuilder);
                     return JsonConvert.DeserializeObject<Dictionary<string, object>>(stringBuilder.ToString());
                 }
 
@@ -71,7 +71,7 @@ namespace EngineWrapper
 
                     var controlsPartner = ((JArray)info["controls"]).ToObject<bool[]>();
                     var controls = handsString.Split(",").Select((x, index) => (HasControl(x), index));
-                    var controlsPartnership = controls.Select(x => x.Item1 || controlsPartner[x.index]);
+                    var controlsPartnership = controls.Select(x => controlsPartner != null && (x.Item1 || controlsPartner[x.index]));
 
                     var slamIsPossible = ((totalKeyCards == 4 && totalTrumpQueen) || totalKeyCards == 5) && controlsPartnership.All(x => x);
                     return slamIsPossible;
@@ -84,7 +84,7 @@ namespace EngineWrapper
         public static string GetInformation(Bid bid, Auction auction)
         {
             var informationJson = new StringBuilder(8192);
-            Pinvoke.GetRulesByBid(Bid.GetBidId(bid), auction.GetBidsAsStringASCII(), informationJson);
+            PInvoke.GetRulesByBid(Bid.GetBidId(bid), auction.GetBidsAsStringASCII(), informationJson);
 
             var records = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(informationJson.ToString());
             var bidInformation = new BidInformation(records);
