@@ -56,7 +56,7 @@ int Setup(const char* database)
 void GetRulesByBid(int bidId, const char* previousBidding, char* information)
 {
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
-    std::string linformation;
+    std::string lInformation;
     if (informationFromAuction.isSlamBidding)
         lInformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
     else

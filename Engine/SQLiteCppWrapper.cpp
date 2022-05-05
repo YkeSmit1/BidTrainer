@@ -273,7 +273,7 @@ std::vector<std::unordered_map<std::string, std::string>> SQLiteCppWrapper::GetI
     }
 }
 
-void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record)
+void SQLiteCppWrapper::UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record) const
 {
     auto suit = Utils::GetSuitFromBidId(bidId) + "s";
     auto bidKind = (BidKind)queryRules->getColumn("BidSuitKind").getInt();
