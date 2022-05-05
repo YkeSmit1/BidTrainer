@@ -22,7 +22,7 @@ struct BoardCharacteristic
     bool isCompetitive;
     int minHcpPartner;
     bool allControlsPresent;
-    BoardCharacteristic(HandCharacteristic hand, const std::string& previousBidding, InformationFromAuction informationFromAuction);
+    BoardCharacteristic(const HandCharacteristic& hand, const std::string& previousBidding, const InformationFromAuction& informationFromAuction);
 private:
     static int GetLongestSuit(const std::vector<int>& suitLengths);
     static bool GetHasStopInOpponentsSuit(const std::string& hand, int opponentsSuit);

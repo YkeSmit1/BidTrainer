@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
 #include <unordered_map>
 
@@ -50,7 +49,7 @@ SQLiteCppWrapper::SQLiteCppWrapper(const std::string& database)
 {
     try
     {
-        db.release();
+        db.reset();
         db = std::make_unique<SQLite::Database>(database);
         db->createFunction("regex_match", 2, true, nullptr, &regex_match, nullptr, nullptr, nullptr);
         db->createFunction("getBidKindFromAuction", 2, true, nullptr, &getBidKindFromAuction, nullptr, nullptr, nullptr);
@@ -106,7 +105,7 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRule(const HandCharacteristic&
         {
             auto bidId = queryShape->getColumn(0).getInt();
             auto str = queryShape->getColumn(1).getString();
-            auto id = queryShape->getColumn(2).getInt();
+            [[maybe_unused]] auto id = queryShape->getColumn(2).getInt();
 
             return std::make_tuple(bidId, str);
         }
@@ -213,7 +212,6 @@ std::tuple<int, std::string> SQLiteCppWrapper::GetRelativeRule(const HandCharact
 
 /// <summary>
 /// Gets all the rules for this bid
-/// TODO filter rules not applicable for this bid by using a different bidsuitkind
 /// </summary>
 /// <returns>a JSON string with all the rules</returns>
 std::string SQLiteCppWrapper::GetRulesByBid(int bidId, const std::string& previousBidding)

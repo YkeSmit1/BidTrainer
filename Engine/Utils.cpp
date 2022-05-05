@@ -15,14 +15,14 @@ std::string Utils::GetSuit(int suit)
     case 2: return "Diamond";
     case 3: return "Club";
     default:
-        throw new std::invalid_argument("Unknown suit");
+        throw std::invalid_argument("Unknown suit");
     }
 }
 
 
 int Utils::GetSuitInt(int bidId)
 {
-    return 4 - (bidId % 5);
+    return 4 - bidId % 5;
 }
 
 int Utils::GetSuit(const std::string& suit)
@@ -37,7 +37,7 @@ int Utils::GetSuit(const std::string& suit)
         return 2;
     if (suit == "C")
         return 3;
-    throw new std::invalid_argument("Unknown suit");
+    throw std::invalid_argument("Unknown suit");
 }
 
 std::string Utils::GetSuitASCII(int bidId)
@@ -50,7 +50,7 @@ std::string Utils::GetSuitASCII(int bidId)
     case 3: return "C";
     case 4: return "NT";
     default:
-        throw new std::invalid_argument("Unknown suit");
+        throw std::invalid_argument("Unknown suit");
     }
 }
 
@@ -115,7 +115,7 @@ int Utils::GetRank(int bidId)
 
 int Utils::NumberOfCards(const std::string& hand, char card)
 {
-    return (int)std::count_if(hand.begin(), hand.end(), [card](auto c) {return c == card; });
+    return (int)std::ranges::count_if(hand, [card](auto c) {return c == card; });
 }
 
 int Utils::CalculateHcp(const std::string& hand)
@@ -143,8 +143,8 @@ bool Utils::GetIsCompetitive(const std::string& bidding)
             bidsOtherTeam.push_back(bidId);
         isOpenerTeam = !isOpenerTeam;
     }
-    return std::any_of(bidsOpenerTeam.begin(), bidsOpenerTeam.end(), [](auto bidId) {return bidId > 0; }) &&
-        std::any_of(bidsOtherTeam.begin(), bidsOtherTeam.end(), [](auto bidId) {return bidId > 0; });
+    return std::ranges::any_of(bidsOpenerTeam, [](auto bidId) {return bidId > 0; }) &&
+        std::ranges::any_of(bidsOtherTeam, [](auto bidId) {return bidId > 0; });
 }
 
 std::string Utils::GetBidASCII(int bidId)
@@ -159,7 +159,7 @@ std::string Utils::GetBidASCII(int bidId)
 int Utils::GetLastBidIdFromAuction(const std::string& bidding)
 {
     auto bidIds = Utils::SplitAuction(bidding);
-    auto lastBidding = std::find_if(bidIds.rbegin(), bidIds.rend(), [](auto bidId) {return bidId > 0; });
+    auto lastBidding = std::ranges::find_if(bidIds.rbegin(), bidIds.rend(), [](auto bidId) {return bidId > 0; });
     auto lastBidId = lastBidding == bidIds.rend() ? 0 : *lastBidding;
     return lastBidId;
 }

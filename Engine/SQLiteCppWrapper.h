@@ -100,8 +100,8 @@ private:
     static bool IsReverse(int suit, int rank, int previousSuit, int previousRank);
     static bool IsNonReverse(int suit, int rank, int previousSuit, int previousRank);
     static bool IsRebidOwnSuit(const std::vector<int>& bids, size_t lengthAuction, int suit);
-    void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record);
-    std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding);
+    void UpdateMinMax(int bidId, std::unordered_map<std::string, std::string>& record) const;
+    std::string GetRelativeRulesByBid(int bidId, const std::string& previousBidding) final;
     std::vector<std::unordered_map<std::string, std::string>> GetInternalRelativeRulesByBid(int bidId, const std::string& previousBidding) final;
     void SetModules(int modules) override;
 };

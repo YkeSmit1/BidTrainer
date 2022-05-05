@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BidTrainer\BidTrainer.csproj" />
+    <ProjectReference Include="..\EngineWrapper\EngineWrapper.csproj" />
   </ItemGroup>
   
 </Project>

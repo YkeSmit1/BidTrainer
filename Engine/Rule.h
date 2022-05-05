@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <array>
 #include <vector>
 
 enum class Player { West, North, East, South };
@@ -24,7 +23,7 @@ struct HandCharacteristic
 	int Hcp = 0;
 	std::vector<bool> controls{};
 
-	bool GetHasControl(const std::string& suit);
+    static bool GetHasControl(const std::string& suit);
 	void Initialize(const std::string& hand);
 	explicit HandCharacteristic(const std::string& hand);
 	HandCharacteristic() = default;

@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include "Api.h"
 #include <unordered_map>
 
 class ISQLiteWrapper;
@@ -10,7 +9,7 @@ class ISQLiteWrapper;
 struct InformationFromAuction
 {
     InformationFromAuction(ISQLiteWrapper* sqliteWrapper, const std::string& previousBidding);
-    InformationFromAuction() {};
+    InformationFromAuction() = default;;
 
     std::vector<int> partnersSuits{0,0,0,0};
     std::vector<int> openersSuits{0,0,0,0};

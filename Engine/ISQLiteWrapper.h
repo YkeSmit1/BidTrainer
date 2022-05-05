@@ -8,7 +8,7 @@
 struct HandCharacteristic;
 struct BoardCharacteristic;
 
-class ISQLiteWrapper  // NOLINT(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
+class ISQLiteWrapper  // NOLINT(cppcoreguidelines-special-member-functions)
 {
 public:
     virtual ~ISQLiteWrapper() = default;

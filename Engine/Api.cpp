@@ -58,11 +58,11 @@ void GetRulesByBid(int bidId, const char* previousBidding, char* information)
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
     std::string linformation;
     if (informationFromAuction.isSlamBidding)
-        linformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
+        lInformation = GetSqliteWrapper()->GetRelativeRulesByBid(bidId, informationFromAuction.previousSlamBidding);
     else
-        linformation = GetSqliteWrapper()->GetRulesByBid(bidId, previousBidding);
-    assert(linformation.size() < 8192);
-    strcpy(information, linformation.c_str());
+        lInformation = GetSqliteWrapper()->GetRulesByBid(bidId, previousBidding);
+    assert(lInformation.size() < 8192);
+    strcpy(information, lInformation.c_str());
 }
 
 void SetModules(int modules)
@@ -70,10 +70,10 @@ void SetModules(int modules)
     GetSqliteWrapper()->SetModules(modules);
 }
 
-void GetInformationFromAuction(const char* previousBidding, char* informationFromAuctionjson)
+void GetInformationFromAuction(const char* previousBidding, char* informationFromAuctionJson)
 {
     InformationFromAuction informationFromAuction{ GetSqliteWrapper(), previousBidding };
     auto json = informationFromAuction.AsJson();
     assert(json.size() < 8192);
-    strcpy(informationFromAuctionjson, json.c_str());
+    strcpy(informationFromAuctionJson, json.c_str());
 }

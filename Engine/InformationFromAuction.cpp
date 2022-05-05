@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "InformationFromAuction.h"
 #include <algorithm>
 #include "Utils.h"
@@ -83,10 +82,10 @@ int InformationFromAuction::GetLowestValue(const std::vector<std::unordered_map<
 {
     if (rules.size() == 0)
         return 0;
-    if (std::all_of(rules.begin(), rules.end(), [&](const auto& a) {return a.at(columnName) == ""; }))
+    if (std::ranges::all_of(rules, [&](const auto& a) {return a.at(columnName) == ""; }))
         return 0;
 
-    auto minElement = std::min_element(rules.begin(), rules.end(), [&](const auto& a, const auto& b) {return std::stoi(a.at(columnName)) < std::stoi(b.at(columnName)); });
+    auto minElement = std::ranges::min_element(rules, [&](const auto& a, const auto& b) {return std::stoi(a.at(columnName)) < std::stoi(b.at(columnName)); });
     auto &value = (*minElement).at(columnName);
     return value == "" ? 0 : std::stoi(value);
 }
@@ -95,7 +94,7 @@ bool InformationFromAuction::AllTrue(const std::vector<std::unordered_map<std::s
 {
     if (rules.size() == 0)
         return false;
-    auto s = std::all_of(rules.begin(), rules.end(), [&](const auto& a) {return a.at(columnName) != "" && std::stoi(a.at(columnName)) == 1; });
+    auto s = std::ranges::all_of(rules, [&](const auto& a) {return a.at(columnName) != "" && std::stoi(a.at(columnName)) == 1; });
     return s;
 }
 
