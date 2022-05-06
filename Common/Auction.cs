@@ -16,7 +16,6 @@ namespace Common
         public Dictionary<int, Dictionary<Player, Bid>> bids { get; set; } = new Dictionary<int, Dictionary<Player, Bid>>();
         public Bid currentContract = Bid.PassBid;
         public bool responderHasSignedOff = false;
-        public int currentPosition = 1;
         public BidType currentBidType = BidType.pass;
 
         private string DebuggerDisplay
@@ -70,9 +69,6 @@ namespace Common
 
         public void AddBid(Bid bid)
         {
-            if (bid != Bid.PassBid || currentContract != Bid.PassBid)
-                currentPosition++;
-
             if (!bids.ContainsKey(CurrentBiddingRound))
                 bids[CurrentBiddingRound] = new Dictionary<Player, Bid>();
             bids[CurrentBiddingRound][CurrentPlayer] = bid;
@@ -97,7 +93,6 @@ namespace Common
             CurrentPlayer = dealer;
             CurrentBiddingRound = 1;
             currentContract = Bid.PassBid;
-            currentPosition = 1;
 
             var player = Player.West;
             while (player != dealer)
@@ -121,36 +116,9 @@ namespace Common
                 .Aggregate(string.Empty, (string current, Bid bid) => current + bid.ToStringASCII());
         }
 
-        public string GetBidsAsString(Fase fase)
-        {
-            return GetBidsAsString(new Fase[] { fase });
-        }
-
-        public string GetBidsAsString(Fase[] fases)
-        {
-            const Player south = Player.South;
-            return bids.Where(x => x.Value.TryGetValue(south, out var bid) && fases.Contains(bid.fase)).
-                Aggregate(string.Empty, (current, biddingRound) => current + biddingRound.Value[south]);
-        }
-
         public IEnumerable<Bid> GetBids(Player player)
         {
             return bids.Where(x => x.Value.ContainsKey(player)).Select(x => x.Value[player]);
-        }
-
-        public IEnumerable<Bid> GetBids(Player player, Fase fase)
-        {
-            return GetBids(player, new Fase[] { fase });
-        }
-
-        public IEnumerable<Bid> GetBids(Player player, Fase[] fases)
-        {
-            return bids.Where(x => x.Value.TryGetValue(player, out var bid) && fases.Contains(bid.fase)).Select(x => x.Value[player]);
-        }
-
-        public IEnumerable<Bid> GetPullBids(Player player, Fase[] fases)
-        {
-            return bids.Where(x => x.Value.TryGetValue(player, out var bid) && fases.Contains(bid.pullFase)).Select(x => x.Value[player]);
         }
 
         public void SetBids(Player player, IEnumerable<Bid> newBids)
@@ -212,18 +180,5 @@ namespace Common
                 _ => throw new InvalidEnumArgumentException(nameof(bid.bidType), (int)bid.bidType, null),
             };
         }
-
-        public bool IsCompetitive()
-        {
-            var nsHasBid = PlayerHasBid(Player.North) || PlayerHasBid(Player.South);
-            var ewHasBid = PlayerHasBid(Player.West) || PlayerHasBid(Player.East);
-            return nsHasBid && ewHasBid;
-
-            bool PlayerHasBid(Player player)
-            {
-                return GetBids(player).Any(x => x.bidType == BidType.bid);
-            }
-        }
-
     }
 }

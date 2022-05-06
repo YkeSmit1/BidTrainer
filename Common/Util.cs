@@ -8,17 +8,6 @@ using System.Text.RegularExpressions;
 
 namespace Common
 {
-    public static class DictionaryExtension
-    {
-        public static void AddOrUpdateDictionary<T>(this IDictionary<T, int> dictionary, T item)
-        {
-            if (!dictionary.ContainsKey(item))
-                dictionary.Add(item, 1);
-            else
-                dictionary[item]++;
-        }
-    }
-
     public enum Player
     {
         West,
@@ -54,24 +43,6 @@ namespace Common
         King
     }
 
-    public enum Fase
-    {
-        Unknown,
-        Shape,
-        Controls,
-        ScanningControls,
-        ScanningOther,
-        End,
-        Pull3NTNoAsk,
-        Pull3NTOneAskMin,
-        Pull3NTOneAskMax,
-        Pull3NTTwoAsks,
-        Pull4DiamondsNoAsk,
-        Pull4DiamondsOneAskMin,
-        Pull4DiamondsOneAskMax,
-        BidGame,
-    };
-
     public enum ExpectedContract
     {
         Game,
@@ -81,11 +52,6 @@ namespace Common
 
     public static class Util
     {
-        public static readonly List<Fase> signOffFasesFor3NT = new List<Fase> { Fase.Pull3NTNoAsk, Fase.Pull3NTOneAskMin, Fase.Pull3NTOneAskMax, Fase.Pull3NTTwoAsks };
-        public static readonly List<Fase> signOffFasesFor4Di = new List<Fase> { Fase.Pull4DiamondsNoAsk, Fase.Pull4DiamondsOneAskMin, Fase.Pull4DiamondsOneAskMax };
-        public static readonly List<Fase> signOffFases = signOffFasesFor3NT.Concat(signOffFasesFor4Di).ToList();
-        public static readonly List<Fase> signOffFasesWithout3NTNoAsk = signOffFasesFor4Di.Concat(new[] { Fase.Pull3NTOneAskMin, Fase.Pull3NTOneAskMax, Fase.Pull3NTTwoAsks }).ToList();
-
         public static string GetSuitDescription(Suit suit)
         {
             return suit switch
@@ -243,13 +209,6 @@ namespace Common
             return suitLengthNorth + suitLengthSouth;
         }
 
-        public static bool IsFreakHand(IEnumerable<int> handLength)
-        {
-            var handPattern = handLength.OrderByDescending(y => y).ToArray();
-            return int.Parse(handPattern[0].ToString()) >= 8 ||
-                int.Parse(handPattern[0].ToString()) + int.Parse(handPattern[1].ToString()) >= 12;
-        }
-
         public static int GetHcpCount(string hand)
         {
             return hand.Count(x => x == 'J') + hand.Count(x => x == 'Q') * 2 + hand.Count(x => x == 'K') * 3 + hand.Count(x => x == 'A') * 4;
@@ -284,79 +243,6 @@ namespace Common
             if (suitLength > 8 && (northHand.Split(',').Select(x => x.Length).Min() <= 1 || southHand.Split(',').Select(x => x.Length).Min() <= 1))
                 return longestSuit;
             return Suit.NoTrump;
-        }
-
-        public static string GetHandWithOnlyControlsAs4333(string handsString, string honors)
-        {
-            return new string(string.Join(',', handsString.Split(',').OrderByDescending(x => x.Length).
-                Select((x, index) => Regex.Replace(x, $"[^{honors}]", string.Empty).PadRight(index == 0 ? 4 : 3, 'x'))));
-        }
-
-        public static bool TryAddQuacksTillHCP(int hcp, ref string[] suits, int[] suitLength)
-        {
-            if (hcp <= GetHcpCount(suits))
-                return true;
-
-            int suitToAdd = 3;
-            while (hcp - GetHcpCount(suits) > 1)
-            {
-                if (suitToAdd == 0)
-                    break;
-
-                if (suits[suitToAdd].Length < suitLength[suitToAdd])
-                    suits[suitToAdd] += 'Q';
-                suitToAdd--;
-            };
-
-            suitToAdd = 3;
-            while (hcp != GetHcpCount(suits))
-            {
-                if (suitToAdd == 0)
-                    return false;
-
-                if (suits[suitToAdd].Length < suitLength[suitToAdd])
-                    suits[suitToAdd] += 'J';
-
-                suitToAdd--;
-            };
-
-            return hcp == GetHcpCount(suits);
-        }
-
-        public static bool TryAddJacksTillHCP(int hcp, ref string[] suits, int[] suitLength)
-        {
-            if (hcp <= GetHcpCount(suits))
-                return true;
-
-            int suitToAdd = 3;
-            while (hcp != GetHcpCount(suits))
-            {
-                if (suitToAdd == 0)
-                    return false;
-
-                if (suits[suitToAdd].Length < suitLength[suitToAdd])
-                    suits[suitToAdd] += 'J';
-
-                suitToAdd--;
-            };
-
-            return hcp == GetHcpCount(suits);
-        }
-
-        public static int NrOfShortages(string hand)
-        {
-            return hand.Select(x => int.Parse(x.ToString())).Count(y => y <= 1);
-        }
-
-        public static int GetDDSFirst(Player declarer)
-        {
-            int declarerDDS = 3 - (int)declarer;
-            return declarerDDS == 3 ? 0 : declarerDDS + 1;
-        }
-
-        public static int GetDDSSuit(Suit suit)
-        {
-            return suit == Suit.NoTrump ? (int)suit : 3 - (int)suit;
         }
 
         public static (ExpectedContract expectedContract, Dictionary<ExpectedContract, int> confidence) GetExpectedContract(IEnumerable<int> scores)
@@ -400,21 +286,6 @@ namespace Common
             var suits = boardNoDealer.Split(" ");
             var suitsNFirst = suits.ToList().Rotate(3);
             return suitsNFirst.ToArray();
-        }
-
-        public static string HandWithx(string hand)
-        {
-            return Regex.Replace(hand, "[QJT98765432]", "x");
-        }
-
-        public static string ReadResource(string resourceName)
-        {
-            var assembly = Assembly.LoadFrom("Tosr.dll");
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            using (var reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
         }
 
         public static Player GetPartner(Player player)

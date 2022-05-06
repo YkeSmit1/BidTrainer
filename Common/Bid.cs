@@ -38,10 +38,6 @@ namespace Common
         public int rank { get; set; }
         public Suit suit { get; set; }
         public string description = string.Empty;
-        public Fase fase = Fase.Unknown;
-        public Fase pullFase = Fase.Unknown;
-        public bool zoom;
-        public object extraInformation;
 
         public Bid(int rank, Suit suit)
         {
@@ -195,7 +191,6 @@ namespace Common
         private static Bid IncreaseBid(Bid a, int i)
         {
             var bid = GetBid(GetBidId(a) + i);
-            bid.fase = a.fase;
             bid.description = a.description;
             return bid;
         }
@@ -203,7 +198,6 @@ namespace Common
         private static Bid DecreaseBid(Bid a, int i)
         {
             var bid = GetBid(GetBidId(a) - i);
-            bid.fase = a.fase;
             bid.description = a.description;
             return bid;
         }
