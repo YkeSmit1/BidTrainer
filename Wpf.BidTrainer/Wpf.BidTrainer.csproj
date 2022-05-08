@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <RepositoryUrl>https://nuget.pkg.github.com/YkeSmit1/index.json</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
