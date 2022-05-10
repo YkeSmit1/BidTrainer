@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Common.BridgeClasses" Version="1.0.5" />
+    <PackageReference Include="Common.BridgeClasses" Version="1.0.6" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.18.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="ObjectCloner" Version="2.2.2" />
