@@ -9,14 +9,14 @@ namespace Wpf.BidTrainer
 {
     public static class CosmosDbHelper
     {
-        private static readonly DocumentClient client = new(new Uri(Constants.EndpointUri), Constants.PrimaryKey);
-        private static readonly Uri collectionLink = UriFactory.CreateDocumentCollectionUri(Constants.DatabaseName, Constants.CollectionName);
-        private static readonly FeedOptions feedOptions = new() { EnableCrossPartitionQuery = true };
+        private static readonly DocumentClient Client = new(new Uri(Constants.EndpointUri), Constants.PrimaryKey);
+        private static readonly Uri CollectionLink = UriFactory.CreateDocumentCollectionUri(Constants.DatabaseName, Constants.CollectionName);
+        private static readonly FeedOptions FeedOptions = new() { EnableCrossPartitionQuery = true };
 
         public static async Task<IEnumerable<Account>> GetAllAccounts()
         {
             var accounts = new List<Account>();
-            var query = client.CreateDocumentQuery<Account>(collectionLink, feedOptions).AsDocumentQuery();
+            var query = Client.CreateDocumentQuery<Account>(CollectionLink, FeedOptions).AsDocumentQuery();
             while (query.HasMoreResults)
             {
                 accounts.AddRange(await query.ExecuteNextAsync<Account>());
@@ -26,19 +26,19 @@ namespace Wpf.BidTrainer
 
         public static async Task<Account?> GetAccount(string username)
         {
-            var account = await client.CreateDocumentQuery<Account>(collectionLink, feedOptions).
+            var account = await Client.CreateDocumentQuery<Account>(CollectionLink, FeedOptions).
                 Where(x => x.username == username).AsDocumentQuery().ExecuteNextAsync<Account>();
             return account.FirstOrDefault();
         }
 
         public static async Task InsertAccount(Account account)
         {
-            await client.CreateDocumentAsync(collectionLink, account);
+            await Client.CreateDocumentAsync(CollectionLink, account);
         }
 
         public static async Task UpdateAccount(Account account)
         {
-            await client.UpsertDocumentAsync(collectionLink, account);
+            await Client.UpsertDocumentAsync(CollectionLink, account);
         }
     }
 }

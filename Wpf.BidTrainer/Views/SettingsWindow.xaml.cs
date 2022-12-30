@@ -6,7 +6,7 @@ namespace Wpf.BidTrainer.Views
     /// <summary>
     /// Interaction logic for SettingsWindow.xaml
     /// </summary>
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow
     {
         public SettingsWindow()
         {
@@ -20,7 +20,7 @@ namespace Wpf.BidTrainer.Views
             if (Settings1.Default.Username != settingsViewModel.Username)
             {
                 var account = await CosmosDbHelper.GetAccount(settingsViewModel.Username);
-                if (account.Value.id != null)
+                if (account != null && account.Value.id != null)
                 {
                     MessageBox.Show("Username already exists");
                     return;

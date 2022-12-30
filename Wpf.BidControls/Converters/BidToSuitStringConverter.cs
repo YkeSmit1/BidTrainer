@@ -10,7 +10,7 @@ namespace Wpf.BidControls.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var bid = (Bid)value;
-            return bid.bidType == BidType.bid ? Util.GetSuitDescription(bid.suit) : "";
+            return bid!.bidType == BidType.bid ? Util.GetSuitDescription(bid.suit) : "";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

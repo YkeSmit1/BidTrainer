@@ -1,12 +1,11 @@
-﻿using System.Windows;
-using Wpf.BidTrainer.ViewModels;
+﻿using Wpf.BidTrainer.ViewModels;
 
-namespace Wpf.BidTrainer
+namespace Wpf.BidTrainer.Views
 {
     /// <summary>
     /// Interaction logic for ReportWindow.xaml
     /// </summary>
-    public partial class ReportWindow : Window
+    public partial class ReportWindow
     {
         public ReportWindow(Results results)
         {

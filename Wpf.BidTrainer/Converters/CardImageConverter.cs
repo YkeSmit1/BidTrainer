@@ -9,12 +9,12 @@ namespace Wpf.BidTrainer.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return parameter.Equals(value);
+            return parameter!.Equals(value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.Equals(true) ? parameter : DependencyProperty.UnsetValue;
+            return value!.Equals(true) ? parameter : DependencyProperty.UnsetValue;
         }
     }
 }

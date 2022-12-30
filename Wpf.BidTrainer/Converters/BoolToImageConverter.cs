@@ -8,7 +8,7 @@ namespace Wpf.BidTrainer.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value
+            return (bool)value!
                 ? "pack://application:,,,/Resources/correct.png"
                 : "pack://application:,,,/Resources/incorrect.png";
         }

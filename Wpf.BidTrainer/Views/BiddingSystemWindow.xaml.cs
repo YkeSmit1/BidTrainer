@@ -1,12 +1,12 @@
 ﻿using System.Windows;
 using Wpf.BidTrainer.ViewModels;
 
-namespace Wpf.BidTrainer
+namespace Wpf.BidTrainer.Views
 {
     /// <summary>
     /// Interaction logic for BiddingSystemWindow.xaml
     /// </summary>
-    public partial class BiddingSystemWindow : Window
+    public partial class BiddingSystemWindow
     {
         public BiddingSystemWindow()
         {

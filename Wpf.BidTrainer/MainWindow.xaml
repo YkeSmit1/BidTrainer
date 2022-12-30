@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Wpf.BidTrainer"
         xmlns:userControls="clr-namespace:Wpf.BidControls.Views;assembly=Wpf.BidControls" 
         xmlns:toggleswitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
         mc:Ignorable="d"
@@ -26,32 +25,32 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0" Background="SeaGreen">
             <MenuItem Header="_File">
-                <MenuItem Name="MenuOpenPbn" Header="_Open Pbn" Click="MenuOpenPbn_Click"/>
-                <MenuItem Name="MenuSavePbn" Header="_Save Pbn" Click="MenuSavePbn_Click"/>
+                <MenuItem Header="_Open Pbn" Click="MenuOpenPbn_Click"/>
+                <MenuItem Header="_Save Pbn" Click="MenuSavePbn_Click"/>
                 <Separator/>
-                <MenuItem Name="MenuChangeDatabase" Header="_Change rules database"/>
+                <MenuItem Header="_Change rules database"/>
             </MenuItem>
             <MenuItem  Header="_Navigate">
-                <MenuItem Name="MenuGoToLesson" Header="_Go to lesson" Click="GoToLesson_Click"/>
-                <MenuItem Name="MenuBidAgain" Header="_Bid board again" Click="MenuBidAgain_Click"/>
-                <MenuItem Name="MenuGoBack" Header="_Go one board back" Click="MenuGoBack_Click"/>
+                <MenuItem Header="_Go to lesson" Click="GoToLesson_Click"/>
+                <MenuItem Header="_Bid board again" Click="MenuBidAgain_Click"/>
+                <MenuItem Header="_Go one board back" Click="MenuGoBack_Click"/>
             </MenuItem>
             <MenuItem Header="_View">
-                <MenuItem Name="MenuShowReport" Header="_Show report" Click="MenuShowReport_Click"/>
-                <MenuItem Name="MenuShowLeaderboard" Header="_Leaderboard" Click="MenuShowLeaderboard_Click"/>
+                <MenuItem Header="_Show report" Click="MenuShowReport_Click"/>
+                <MenuItem Header="_Leaderboard" Click="MenuShowLeaderboard_Click"/>
             </MenuItem>
             <MenuItem Header="_Tools">
-                <MenuItem Name="MenuOptions" Header="_Options" Click="MenuOptions_Click"/>
+                <MenuItem Header="_Options" Click="MenuOptions_Click"/>
                 <Separator/>
-                <MenuItem Name="MenuBiddingSystem" Header="_Bidding system" Click="MenuBiddingSystem_Click"/>
+                <MenuItem Header="_Bidding system" Click="MenuBiddingSystem_Click"/>
             </MenuItem>                      
         </Menu>
         <!--Cards-->
         <StackPanel Grid.Row="1" Orientation="Vertical">
-            <userControls:HandView x:Name="panelNorth" Padding="217, 27"/>
-            <Label x:Name="labelNorth" Content="North" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Padding="0 72"/>
+            <userControls:HandView x:Name="PanelNorth" Padding="217, 27"/>
+            <Label x:Name="LabelNorth" Content="North" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Padding="0 72"/>
         </StackPanel>
-        <!--Biddingbox and auction-->
+        <!--BiddingBox and auction-->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -60,7 +59,7 @@
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="1">
-                <toggleswitch:HorizontalToggleSwitch x:Name="toggleSwitchMode" IsChecked="True"
+                <toggleswitch:HorizontalToggleSwitch x:Name="ToggleSwitchMode" IsChecked="True"
                     CheckedContent="Bid" UncheckedContent="Hint" CheckedBackground="SandyBrown" UncheckedBackground="RosyBrown"/>
                     <userControls:BiddingBoxView x:Name="BiddingBoxView"/>
             </StackPanel>
@@ -69,7 +68,7 @@
             </Border>
         </Grid>
         <StackPanel Grid.Row="3" Orientation="Vertical">
-            <userControls:HandView x:Name="panelSouth" Padding="217, 27"/>
+            <userControls:HandView x:Name="PanelSouth" Padding="217, 27"/>
             <Label Content="South" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Padding="0 72"/>
         </StackPanel>
         <StatusBar Grid.Row="5" Background="SeaGreen">

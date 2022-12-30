@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Wpf.BidTrainer
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public struct Account
     {
         public string id { get; set; }

@@ -5,19 +5,19 @@ using System.Windows;
 using MvvmHelpers.Commands;
 using Newtonsoft.Json;
 
-namespace Wpf.BidTrainer
+namespace Wpf.BidTrainer.Views
 {
     /// <summary>
     /// Interaction logic for StartPage.xaml
     /// </summary>
-    public partial class StartPage : Window
+    public partial class StartPage
     {
-        public List<Lesson> Lessons { get; set; }
+        public List<Lesson> Lessons { get; }
 
-        public Command StartLessonCommand { get; set; }
+        public Command StartLessonCommand { get; }
 
-        public Lesson Lesson { get; set; }
-        public bool IsContinueWhereLeftOff = false;
+        public Lesson Lesson { get; private set; }
+        public bool IsContinueWhereLeftOff;
 
         public StartPage()
         {
@@ -25,7 +25,7 @@ namespace Wpf.BidTrainer
             Lessons = JsonConvert.DeserializeObject<List<Lesson>>(File.ReadAllText("Lessons.json"));
             DataContext = this;
             StartLessonCommand = new Command<int>(ChooseLesson);
-            var currentLesson = Lessons.Where(x => x.LessonNr == Settings1.Default.CurrentLesson);
+            var currentLesson = Lessons.Where(x => x.LessonNr == Settings1.Default.CurrentLesson).ToList();
             Lesson = currentLesson.Any() ? currentLesson.First() : Lessons.First();
         }
 

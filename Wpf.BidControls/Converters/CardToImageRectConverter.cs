@@ -11,7 +11,7 @@ namespace Wpf.BidControls.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var card = (Card)value;
-            var settings = card.CardImageSettings;
+            var settings = card!.CardImageSettings;
             var suit = card.Suit;
             var face = settings.FirstCardIsAce ? (int)card.Face : card.Face == Face.Ace ? 12 : (int)card.Face - 1;
             var topy = suit switch

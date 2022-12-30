@@ -18,6 +18,11 @@
         <converters:PlayerToVisibilityConverter x:Key="PlayerToVisibilityConverter"/>
     </UserControl.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="2">
             <Canvas Panel.ZIndex="10">
                 <Label Content="?" Canvas.Left="175" 

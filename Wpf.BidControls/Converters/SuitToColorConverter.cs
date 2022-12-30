@@ -10,7 +10,7 @@ namespace Wpf.BidControls.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var x = (Suit)value;
+            var x = (Suit)value!;
             return x is Suit.Diamonds or Suit.Hearts ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Black);
         }
 

@@ -37,8 +37,8 @@ namespace Wpf.BidTrainer
         // ViewModels
         private BiddingBoxViewModel BiddingBoxViewModel => (BiddingBoxViewModel)BiddingBoxView.DataContext;
         private AuctionViewModel AuctionViewModel => (AuctionViewModel)AuctionView.DataContext;
-        private HandViewModel HandViewModelNorth => (HandViewModel)panelNorth.DataContext;
-        private HandViewModel HandViewModelSouth => (HandViewModel)panelSouth.DataContext;
+        private HandViewModel HandViewModelNorth => (HandViewModel)PanelNorth.DataContext;
+        private HandViewModel HandViewModelSouth => (HandViewModel)PanelSouth.DataContext;
 
         public MainWindow()
         {
@@ -72,7 +72,7 @@ namespace Wpf.BidTrainer
         private void ClickBiddingBoxButton(object parameter)
         {
             var bid = (Bid)parameter;
-            if (!toggleSwitchMode.IsChecked)
+            if (!ToggleSwitchMode.IsChecked)
             {
                 currentResult.UsedHint = true;
                 Cursor = Cursors.Arrow;
@@ -108,8 +108,8 @@ namespace Wpf.BidTrainer
 
         private void StartNextBoard()
         {
-            panelNorth.Visibility = Visibility.Hidden;
-            labelNorth.Visibility = Visibility.Hidden;
+            PanelNorth.Visibility = Visibility.Hidden;
+            LabelNorth.Visibility = Visibility.Hidden;
             BiddingBoxView.IsEnabled = true;
             if (CurrentBoardIndex > pbn.Boards.Count - 1)
             {
@@ -161,8 +161,8 @@ namespace Wpf.BidTrainer
                 auction.CurrentPlayer = Player.UnKnown;
                 AuctionViewModel.UpdateAuction(auction);
                 BiddingBoxView.IsEnabled = false;
-                panelNorth.Visibility = Visibility.Visible;
-                labelNorth.Visibility = Visibility.Visible;
+                PanelNorth.Visibility = Visibility.Visible;
+                LabelNorth.Visibility = Visibility.Visible;
                 currentResult.TimeElapsed = DateTime.Now - startTimeBoard;
                 MessageBox.Show($"Hand is done. Contract:{auction.currentContract}");
                 results.AddResult(lesson.LessonNr, CurrentBoardIndex, currentResult);
