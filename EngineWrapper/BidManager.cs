@@ -1,6 +1,5 @@
 ﻿using System;
 using Common;
-using MoreLinq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -38,7 +37,7 @@ namespace EngineWrapper
                     .Take(2)
                     .Select((x, index) => (x, (Suit)(3 - index)))
                     .Where(z => z.x >= 8).ToList();
-                var playingSuit = !majorFits.Any() ? Suit.NoTrump : majorFits.MaxBy(z => z.x).First().Item2;
+                var playingSuit = !majorFits.Any() ? Suit.NoTrump : majorFits.MaxBy(z => z.x).Item2;
                 var hcpPartnership = Util.GetHcpCount(handsString) + (long)info["minHcpPartner"];
 
                 if (hcpPartnership < 23)
@@ -76,7 +75,7 @@ namespace EngineWrapper
                     var slamIsPossible = ((totalKeyCards == 4 && totalTrumpQueen) || totalKeyCards == 5) && controlsPartnership.All(x => x);
                     return slamIsPossible;
 
-                    bool HasControl(string x) => x.Contains("A") || x.Contains("K") || x.Length <= 1;
+                    bool HasControl(string x) => x.Contains('A') || x.Contains('K') || x.Length <= 1;
                 }
             }
         }
