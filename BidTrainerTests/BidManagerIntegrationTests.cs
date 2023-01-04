@@ -9,6 +9,7 @@ namespace BidTrainerTests
 {
     public class BidManagerIntegrationTests
     {
+        private const string PbnPath = "..\\..\\..\\..\\Wpf.BidTrainer\\Pbn";
         private readonly ITestOutputHelper testOutputHelper;
 
         public BidManagerIntegrationTests(ITestOutputHelper testOutputHelper)
@@ -20,29 +21,36 @@ namespace BidTrainerTests
         [Fact]
         public void BidTest()
         {
-            var pbn = new Pbn();
-            foreach (var pbnFile in Directory.GetFiles("..\\..\\..\\..\\Wpf.BidTrainer\\Pbn", "*.pbn"))
+            var resultsPath = Path.Combine(PbnPath, "results");
+            Directory.CreateDirectory(resultsPath);
+            foreach (var pbnFile in Directory.GetFiles(PbnPath, "*.pbn"))
             {
-                BidPbnFile(pbn, pbnFile);
+                var pbn = BidPbnFile(pbnFile);
+                SaveAndCheckPbn(pbn, pbnFile, resultsPath);
             }
         }
 
-        private void BidPbnFile(Pbn pbn, string pbnFile)
+        private Pbn BidPbnFile(string pbnFile)
         {
             testOutputHelper.WriteLine($"Executing file {pbnFile}");
-            LoadPbnFile(pbn, pbnFile);
+            var pbn = LoadPbnFile(pbnFile);
             foreach (var board in pbn.Boards)
             {
                 BidBoard(board);
             }
+            return pbn;
+        }
 
-            var filePath = $"{pbnFile}.{DateTime.Now:d MMM yyyy}";
+        private static void SaveAndCheckPbn(Pbn pbn, string pbnFile, string resultsPath)
+        {
+            var filePath = $"{Path.Combine(resultsPath, Path.GetFileName(pbnFile))}.{DateTime.Now:d MMM yyyy}";
             pbn.Save(filePath);
             Assert.Equal(File.ReadAllText($"{pbnFile}.etalon"), File.ReadAllText(filePath));
         }
 
-        private static void LoadPbnFile(Pbn pbn, string pbnFile)
+        private static Pbn LoadPbnFile(string pbnFile)
         {
+            var pbn = new Pbn();
             var modules = Path.GetFileName(pbnFile) switch
             {
                 "lesson2.pbn" => 1,
@@ -56,6 +64,7 @@ namespace BidTrainerTests
             };
             PInvoke.SetModules(modules);
             pbn.Load(pbnFile);
+            return pbn;
         }
 
         private void BidBoard(BoardDto board)
@@ -70,19 +79,18 @@ namespace BidTrainerTests
         [Fact]
         public void BidSpecificBoard()
         {
-            var pbn = new Pbn();
-            var pbnFile = "..\\..\\..\\..\\Wpf.BidTrainer\\Pbn\\lesson7.pbn";
-            LoadPbnFile(pbn, pbnFile);
+            var pbn = LoadPbnFile(Path.Combine(PbnPath, "lesson7.pbn"));
             BidBoard(pbn.Boards[0]);
         }
 
         [Fact]
         public void BidSpecificPbnFile()
         {
-            var pbn = new Pbn();
-            var pbnFile = "..\\..\\..\\..\\Wpf.BidTrainer\\Pbn\\lesson7.pbn";
-            LoadPbnFile(pbn, pbnFile);
-            BidPbnFile(pbn, pbnFile);
+            var pbnFile = Path.Combine(PbnPath, "lesson7.pbn");
+            var pbn = BidPbnFile(pbnFile);
+            var resultsPath = Path.Combine(Path.GetDirectoryName(pbnFile)!, "results");
+            Directory.CreateDirectory(resultsPath);
+            SaveAndCheckPbn(pbn, pbnFile, resultsPath);
         }
     }
 }
