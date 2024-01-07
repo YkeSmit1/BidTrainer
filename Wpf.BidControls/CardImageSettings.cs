@@ -16,7 +16,7 @@ namespace Wpf.BidControls
         public int XCardPadding { get; private init; }
         public int CardDistance { get; private init; }
 
-        public static readonly CardImageSettings DefaultCardImageSettings = new()
+        private static readonly CardImageSettings DefaultCardImageSettings = new()
         {
             CardImage = "/Wpf.BidControls;component/Views/cardfaces.png",
             FirstCardIsAce = true,
@@ -31,7 +31,7 @@ namespace Wpf.BidControls
             CardDistance = 20
         };
 
-        public static readonly CardImageSettings BBOCardImageSettings = new()
+        private static readonly CardImageSettings BBOCardImageSettings = new()
         {
             CardImage = "/Wpf.BidControls;component/Views/cardfaces2.jpg",
             FirstCardIsAce = false,

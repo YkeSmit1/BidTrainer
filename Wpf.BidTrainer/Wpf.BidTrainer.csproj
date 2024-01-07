@@ -1,36 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Include="..\four_card_majors.db3" Link="four_card_majors.db3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Common.BridgeClasses" Version="1.0.6" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.37.1" />
     <PackageReference Include="ObjectCloner" Version="2.2.2" />
     <PackageReference Include="ToggleSwitch" Version="1.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\EngineWrapper\EngineWrapper.csproj" />
     <ProjectReference Include="..\Wpf.BidControls\Wpf.BidControls.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Resources\correct.png" />
     <Resource Include="Resources\cards_48.png" />
     <Resource Include="Resources\incorrect.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Settings1.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -38,7 +32,6 @@
       <DependentUpon>Settings1.settings</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Lessons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -66,5 +59,4 @@
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
 </Project>

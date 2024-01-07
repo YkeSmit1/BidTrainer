@@ -98,14 +98,14 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net7.0-windows\
-xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net7.0-windows\
+      <Command>xcopy /Y $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net8.0-windows\
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net8.0-windows\
 
-xcopy /Y $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net7.0\
-xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net7.0\
+xcopy /Y $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net8.0\
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net8.0\
 
-xcopy /Y $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net7.0-windows\
-xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net7.0-windows\
+xcopy /Y $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net8.0-windows\
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net8.0-windows\
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -187,14 +187,14 @@ xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\n
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net7.0-windows\
-xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net7.0-windows\
+      <Command>xcopy /Y $(TargetPath) $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net8.0-windows\
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Wpf.Bidtrainer\bin\$(Configuration)\net8.0-windows\
 
-xcopy /Y $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net7.0\
-xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net7.0\
+xcopy /Y $(TargetPath) $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net8.0\
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)BidTrainerTests\bin\$(Configuration)\net8.0\
 
-xcopy /Y $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net7.0-windows\
-xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net7.0-windows\
+xcopy /Y $(TargetPath) $(SolutionDir)Bidtrainer\bin\$(Configuration)\net8.0-windows\
+xcopy /Y $(TargetDir)sqlite3.dll $(SolutionDir)Bidtrainer\bin\$(Configuration)\net8.0-windows\
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

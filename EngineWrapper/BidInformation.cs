@@ -23,15 +23,17 @@ namespace EngineWrapper
             minRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Min")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Min());
             maxRecords = records.SelectMany(x => x).Where(x => x.Key.StartsWith("Max")).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Select(x => int.Parse(x.Value)).Max());
             ids = records.SelectMany(x => x).Where(x => x.Key == "Id").Select(x => Convert.ToInt32(x.Value)).ToList();
-            controls = records.Any() ? new List<bool?> { GetHasProperty("SpadeControl"), GetHasProperty("HeartControl"), GetHasProperty("DiamondControl"), GetHasProperty("ClubControl") } :
-                new List<bool?> { null, null, null, null };
+            controls = records.Count != 0 ?
+                [GetHasProperty("SpadeControl"), GetHasProperty("HeartControl"), GetHasProperty("DiamondControl"), GetHasProperty("ClubControl")] :
+                [null, null, null, null];
             possibleKeyCards = records.SelectMany(x => x).Where(x => x.Key == "KeyCards" && !string.IsNullOrWhiteSpace(x.Value)).Select(x => int.Parse(x.Value)).ToList();
-            trumpQueen = records.Any() ? GetHasProperty("TrumpQueen") : null;
-
+            trumpQueen = records.Count != 0 ? GetHasProperty("TrumpQueen") : null;
+            return;
+            
             bool? GetHasProperty(string fieldName)
             {
                 var recordsWithValue = records.SelectMany(x => x).Where(x => x.Key == fieldName && !string.IsNullOrWhiteSpace(x.Value)).ToList();
-                var p = recordsWithValue.Any() ? (bool?)(int.Parse(recordsWithValue.First().Value) == 1) : null;
+                var p = recordsWithValue.Count != 0 ? (bool?)(int.Parse(recordsWithValue.First().Value) == 1) : null;
                 return p;
             }
         }

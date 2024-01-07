@@ -46,11 +46,11 @@ namespace EngineWrapper
                         : Bid.PassBid;
 
                 var rank = playingSuit == Suit.NoTrump ? 2 : 3;
-                if (hcpPartnership >= 25)
-                    if (hcpPartnership < 29)
-                        rank++;
-                    else
-                        rank = SlamIsPossible() ? 6 : Bid.GetGameContract(playingSuit, auction.currentContract, true).rank;
+                if (hcpPartnership < 25) return new Bid(rank, playingSuit);
+                if (hcpPartnership < 29)
+                    rank++;
+                else
+                    rank = SlamIsPossible() ? 6 : Bid.GetGameContract(playingSuit, auction.currentContract, true).rank;
 
                 return new Bid(rank, playingSuit);
 

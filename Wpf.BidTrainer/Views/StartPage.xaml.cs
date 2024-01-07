@@ -26,7 +26,7 @@ namespace Wpf.BidTrainer.Views
             DataContext = this;
             StartLessonCommand = new Command<int>(ChooseLesson);
             var currentLesson = Lessons.Where(x => x.LessonNr == Settings1.Default.CurrentLesson).ToList();
-            Lesson = currentLesson.Any() ? currentLesson.First() : Lessons.First();
+            Lesson = currentLesson.Count != 0 ? currentLesson.First() : Lessons.First();
         }
 
         private void Button_Continue_Click(object sender, RoutedEventArgs e)

@@ -49,7 +49,7 @@ namespace Wpf.BidTrainer
             AuctionViewModel.Auction = auction;
             if (File.Exists("results.json"))
                 results = JsonConvert.DeserializeObject<Results>(File.ReadAllText("results.json"));
-            var _ = PInvoke.Setup("four_card_majors.db3");
+            _ = PInvoke.Setup("four_card_majors.db3");
             StartLesson();
         }
 

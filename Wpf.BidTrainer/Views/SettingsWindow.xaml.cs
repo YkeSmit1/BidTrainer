@@ -20,7 +20,7 @@ namespace Wpf.BidTrainer.Views
             if (Settings1.Default.Username != settingsViewModel.Username)
             {
                 var account = await CosmosDbHelper.GetAccount(settingsViewModel.Username);
-                if (account != null && account.Value.id != null)
+                if (account?.id != null)
                 {
                     MessageBox.Show("Username already exists");
                     return;
