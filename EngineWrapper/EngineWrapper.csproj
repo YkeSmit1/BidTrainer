@@ -6,7 +6,7 @@
     <NoWarn>1701;1702;CA1401;CA2101</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Common.BridgeClasses" Version="1.0.6" />
+    <PackageReference Include="Common.BridgeClasses" Version="1.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>
