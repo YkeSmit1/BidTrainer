@@ -12,13 +12,13 @@ jobs:
     runs-on:  windows-2022
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
           submodules: true      
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v1.3
     - name: Setup .NET 8.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: add source to nuget 
@@ -30,7 +30,7 @@ jobs:
     # Restore from cache the previously built ports. If cache-miss, download, build vcpkg.
     - name: Restore from cache and install vcpkg
       # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
-      uses: lukka/run-vcpkg@v4
+      uses: lukka/run-vcpkg@v11
       with:
         setupOnly: true
     # Now that vcpkg is installed, it is being used to run with desired arguments.
@@ -44,7 +44,7 @@ jobs:
       run: msbuild /t:Build /p:Configuration=Release -m BidTrainer.sln
     #- name: Run c# Test
     #  run: dotnet test --no-restore --configuration Release --verbosity normal .\BidTrainerTests\BidTrainerTests.csproj
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: distribute
-        path: .\Wpf.BidTrainer\bin\Release\net5.0-windows\  
+        path: .\Wpf.BidTrainer\bin\Release\net8.0-windows\  
