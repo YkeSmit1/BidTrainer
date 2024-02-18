@@ -297,5 +297,11 @@ namespace Wpf.BidTrainer
             if (new BiddingSystemWindow().ShowDialog().GetValueOrDefault())
                 PInvoke.SetModules(Settings1.Default.EnabledModules);
         }
+
+        private void MenuNextBoard_OnClick(object sender, RoutedEventArgs e)
+        {
+            Settings1.Default.CurrentBoardIndex++;
+            StartNextBoard();
+        }
     }
 }

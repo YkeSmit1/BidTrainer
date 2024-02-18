@@ -34,6 +34,7 @@
                 <MenuItem Header="_Go to lesson" Click="GoToLesson_Click"/>
                 <MenuItem Header="_Bid board again" Click="MenuBidAgain_Click"/>
                 <MenuItem Header="_Go one board back" Click="MenuGoBack_Click"/>
+                <MenuItem Header="_Next board" Click="MenuNextBoard_OnClick"></MenuItem>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="_Show report" Click="MenuShowReport_Click"/>
